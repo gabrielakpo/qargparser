@@ -9,7 +9,7 @@ def to_label_string(text):
 
 class Arg(QtCore.QObject):
     default = None
-    changed = QtCore.Signal()
+    changed = QtCore.Signal(tuple)
     
     def __init__(self, name, default=None, **kwargs):
         super(Arg, self).__init__(kwargs.pop('parent', None))
@@ -54,5 +54,5 @@ class Arg(QtCore.QObject):
     def is_edited(self):
         return self.read() != self._data["default"]
 
-    def on_changed(self):
-        self.changed.emit()
+    def on_changed(self,  *args):
+        self.changed.emit(*args)

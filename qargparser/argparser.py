@@ -2,8 +2,8 @@ from functools import partial
 from collections import OrderedDict
 from .Qt import QtWidgets, QtCore
 from .arg import Arg
-from .string import String
-from .code import Python, Mel
+from .string import String, Info
+from .text import Doc, Python, Mel
 from .array import Array
 from .number import Float, Integer
 from .item import Item
@@ -21,7 +21,9 @@ def deleteChildWidgets(item):
 def get_object_from_type(type):
     types = {
         'object': Arg,
+        'info': Info,
         'string': String,
+        'doc': Doc,
         'path': Path,
         'mel': Mel,
         'python': Python,
@@ -40,8 +42,7 @@ class ResetButton(QtWidgets.QPushButton):
 
     def paintEvent(self, event):
         super(ResetButton, self).paintEvent(event)
-        self.setFixedSize(35,
-                                   self.wdg.sizeHint().height())
+        self.setFixedSize(35, self.wdg.sizeHint().height())
 
 class ArgParser(QtWidgets.QWidget):
     changed = QtCore.Signal()
@@ -63,6 +64,7 @@ class ArgParser(QtWidgets.QWidget):
         layout = QtWidgets.QGridLayout(self)
         layout.setRowStretch(999, 1)
         layout.setVerticalSpacing(2)
+        layout.setColumnStretch(0, 0)
 
         # Construct from data
         if data:
@@ -158,7 +160,7 @@ class ArgParser(QtWidgets.QWidget):
                 deleteChildWidgets(item)
         self._arguments = OrderedDict()
 
-    def on_changed(self, arg, button):
+    def on_changed(self, arg, button, *args, **kwargs):
         button.setVisible(arg.is_edited())
         self.changed.emit()
 
