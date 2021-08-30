@@ -12,8 +12,8 @@ class Item(Arg):
         le.setText(self._data['default'])
         del_button = QtWidgets.QPushButton('X')
         del_button.clicked.connect(partial(self.delete, wdg))
-        del_button.setFixedSize(le.sizeHint().height(),
-                                le.sizeHint().height())
+        # del_button.setFixedSize(le.sizeHint().height(),
+        #                         le.sizeHint().height())
 
         layout = QtWidgets.QGridLayout(wdg)
         layout.addWidget(le, 0, 0)

@@ -32,7 +32,7 @@ class Array(Arg):
         layout.addWidget(self.add_item_button, layout.rowCount(), 1)
 
         self._write = None
-        self._read = lambda : [wdg._arguments[name]._read() for name in wdg._arguments]#{name : wdg._arguments[name]._read() for name in wdg._arguments}
+        self._read = lambda : [wdg._arguments[name]._read() for name in wdg._arguments]
         wdg.changed.connect(self.on_changed)
 
         return wdg

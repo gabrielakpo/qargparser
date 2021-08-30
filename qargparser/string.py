@@ -5,11 +5,13 @@ class String(Arg):
 
     def create(self):
         default = self._data['default']
+
         if "enum" in self._data:
             descriptions = self._data.get('enumDescriptions', [])
             enum = self._data['enum']
             wdg = QtWidgets.QComboBox()
             wdg.addItems(enum)
+            
             if default is not None and default in enum:
                 idx = wdg.findText(default, QtCore.Qt.MatchExactly)
                 wdg.setCurrentIndex(idx)
