@@ -1,8 +1,10 @@
-from .Qt import QtWidgets
+from .Qt import QtWidgets, QtCore
 from functools import partial
 from .arg import Arg
 
 class Item(Arg):
+
+    deleted = QtCore.Signal()
 
     def create(self):
         wdg = QtWidgets.QWidget()
@@ -12,8 +14,6 @@ class Item(Arg):
         le.setText(self._data['default'])
         del_button = QtWidgets.QPushButton('X')
         del_button.clicked.connect(partial(self.delete, wdg))
-        # del_button.setFixedSize(le.sizeHint().height(),
-        #                         le.sizeHint().height())
 
         layout = QtWidgets.QGridLayout(wdg)
         layout.addWidget(le, 0, 0)
@@ -31,7 +31,8 @@ class Item(Arg):
     def delete(self, wdg):
         parent_wdg = wdg.parent()
         parent_wdg.delete_argument(self._data['name'], wdg)
-        self.changed.emit()
+        self.deleted.emit()
+        self.changed.emit(None)
 
     def add_item(self, **kwargs):
         idx = len(self.wdg._arguments)
@@ -40,4 +41,4 @@ class Item(Arg):
 
     def reset(self):
         self._write(self._data['default'])
-        self.changed.emit()
+        self.changed.emit(None)

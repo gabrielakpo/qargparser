@@ -13,10 +13,12 @@ class Arg(QtCore.QObject):
     
     def __init__(self, name, default=None, **kwargs):
         super(Arg, self).__init__(kwargs.pop('parent', None))
+        
         kwargs['name'] = name
         kwargs['label'] = kwargs.get('label') or to_label_string(name)
         kwargs['default'] = default or self.default
         kwargs['description'] = kwargs.get('description', '')
+
         self._data = kwargs
         self._write = None
         self._read = None
@@ -27,9 +29,12 @@ class Arg(QtCore.QObject):
 
     def create(self):
         if self._data.get('items'):
+
             from .argparser import ArgParser
+
             wdg = ArgParser(description=self._data['description'])
             data = self._data.get('items')
+
             for name in data:
                 _data = data[name]
                 _data['name'] = name
@@ -49,10 +54,12 @@ class Arg(QtCore.QObject):
         return self._read()
 
     def reset(self):
-        self.changed.emit()
+        self.changed.emit(None)
 
     def is_edited(self):
         return self.read() != self._data["default"]
 
-    def on_changed(self,  *args):
+    def on_changed(self, *args):
+        if not args:
+            args = (None, )
         self.changed.emit(*args)
