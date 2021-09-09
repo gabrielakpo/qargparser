@@ -8,10 +8,11 @@ import compileall
 
 PROJECT = os.environ['REZ_BUILD_PROJECT_NAME']
 VERSION = os.environ['REZ_BUILD_PROJECT_VERSION']
-EXCLUDES=[
+EXCLUDES = [
     '__pycache__', 
     '*.py'
 ]
+KEEP_FOLDERS = ["examples"]
 
 def compile_package(path, overwrite=True, python2=True):
     if int(sys.version_info[0])>=3:
@@ -39,6 +40,12 @@ def build(source_path, build_path, install_path, targets):
             ignore= shutil.ignore_patterns(*EXCLUDES)
         )
 
+        for name in KEEP_FOLDERS:
+            src_bin = os.path.join(source_path, name)
+            dest_bin = os.path.join(build_path, name)
+            if not os.path.exists(dest_bin):
+                shutil.copytree(src_bin, dest_bin)
+
     def _install():
         build_pkg = os.path.join(build_path, PROJECT)
         install_pkg = os.path.join(install_path, PROJECT)
@@ -49,6 +56,15 @@ def build(source_path, build_path, install_path, targets):
             install_pkg,
             ignore= shutil.ignore_patterns(*EXCLUDES)
         )
+
+        for name in KEEP_FOLDERS:
+            src = os.path.join(build_path, name)
+            dest = os.path.join(install_path, name)
+
+            if os.path.exists(dest):
+                shutil.rmtree(dest)
+
+            shutil.copytree(src, dest)
 
     _build()
 

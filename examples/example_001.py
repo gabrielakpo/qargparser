@@ -25,10 +25,12 @@ scroll_area = QtWidgets.QScrollArea()
 scroll_area.setWidgetResizable(True)
 title_label = QtWidgets.QLabel('Create package')
 title_label.setAlignment(QtCore.Qt.AlignCenter)
+
 win_dow = ArgParser(
     label_suffix=':',
     data=data,
     description='Create package')
+    
 export_data_button = QtWidgets.QPushButton('Export data')
 export_data_button.clicked.connect(partial(print_data, win_dow))
 scroll_area.setWidget(win_dow)

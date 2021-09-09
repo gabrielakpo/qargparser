@@ -2,7 +2,7 @@
 
 name = 'qargparser'
 
-version = '0.3.1'
+version = '0.4.0'
 
 description = 'Build Qt UI by parsing argument'
 
@@ -17,6 +17,7 @@ build_requires = ['python-2']
 def commands():
     global env
     env.PYTHONPATH.append('{this.root}')
+    env.PYTHONPATH.append('{this.root}\\examples')
 
 def pre_commands():
     pass

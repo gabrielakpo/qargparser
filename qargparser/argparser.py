@@ -56,7 +56,7 @@ class ArgParser(QtWidgets.QWidget):
         #Init
         self._description = description
         self._label_suffix = label_suffix
-        self._arguments = OrderedDict()
+        self._args = OrderedDict()
 
         super(ArgParser, self).__init__(parent)
 
@@ -71,51 +71,57 @@ class ArgParser(QtWidgets.QWidget):
             for name in data:
                 _data = data[name]
                 _data['name'] = name
-                self.add_argument(**_data)
+                self.add_arg(**_data)
 
+        self._write = lambda *args, **kwargs: (self._args[name]._write(*args, **kwargs) \
+                                               for name in self._args)
+        self._read = lambda : {self._args[name].name : self._args[name]._read() \
+                               for name in self._args.keys()}
 
     def __repr__(self):
         return '%s(%s)' %(self.__class__.__name__, 
-                          dict(self._arguments))
+                          dict(self._args))
 
     @property
     def _row(self):
-        return len(self._arguments)
+        return len(self._args)
 
-    def add_argument(self, 
-                    name=None, 
-                    type=None, 
-                    default=None, 
-                    **kwargs):
+    def add_arg(self, 
+                name=None, 
+                type=None, 
+                default=None, 
+                **kwargs):
 
-        argument = get_object_from_type(type)(name, 
-                                            default,
-                                            **kwargs)
+        arg = get_object_from_type(type)(name, 
+                                         default,
+                                         **kwargs)
 
-        self._add_argument(argument)
-        return argument
+        self._add_arg(arg)
+        return arg
 
-    def _add_argument(self, argument):
-        name = argument._data["name"]
-        if name in self._arguments:
+    def _add_arg(self, arg):
+        name = arg._data["name"]
+        if name in self._args:
             raise ValueError("Duplicate argument '%s'" %name)
 
         #Create widget
-        wdg = argument.create()
-        desc = argument._data.get('description')
+        wdg = arg.create()
+        desc = arg._data.get('description')
         wdg.setToolTip(desc)
 
         #Reset
         reset_button = ResetButton(wdg)
-        reset_button.clicked.connect(argument.reset)
-        argument.changed.connect(partial(self.on_changed, argument, reset_button))
+        reset_button.clicked.connect(arg.reset)
+        arg.changed.connect(partial(self.on_changed, arg, reset_button))
         reset_button.hide()
 
         #add widget to Layout
         layout = self.layout()
-        label = argument._data['label']
+        label = arg._data['label']
+
         if self._label_suffix:
             label = "%s%s "%(label, self._label_suffix)
+
         layout.addWidget(QtWidgets.QLabel(label), 
                          self._row, 0, 
                          QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
@@ -126,9 +132,9 @@ class ArgParser(QtWidgets.QWidget):
                          self._row, 2, 
                          QtCore.Qt.AlignTop)     
                          
-        self._arguments[name] = argument
+        self._args[name] = arg
 
-    def delete_argument(self, name, wdg):
+    def delete_arg(self, name, wdg):
         layout = self.layout()
 
         #Delete layout row
@@ -150,7 +156,7 @@ class ArgParser(QtWidgets.QWidget):
         layout.setRowMinimumHeight(row, 0)
         layout.setRowStretch(row, 0)
 
-        self._arguments.pop(name)
+        self._args.pop(name)
 
     def delete_children(self):
         layout = self.layout()
@@ -158,14 +164,11 @@ class ArgParser(QtWidgets.QWidget):
             item = layout.itemAt(i)
             if item :
                 deleteChildWidgets(item)
-        self._arguments = OrderedDict()
+        self._args = OrderedDict()
 
     def on_changed(self, arg, button, *args, **kwargs):
         button.setVisible(arg.is_edited())
         self.changed.emit()
 
     def export_data(self):
-        data = OrderedDict()
-        for name, arg in self._arguments.items():
-            data[name] = arg.read()
-        return data
+        return self._read()

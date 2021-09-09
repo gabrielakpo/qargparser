@@ -7,7 +7,7 @@ class String(Arg):
         default = self._data['default']
 
         if "enum" in self._data:
-            descriptions = self._data.get('enumDescriptions', [])
+            descs = self._data.get('enumDescriptions', [])
             enum = self._data['enum']
             wdg = QtWidgets.QComboBox()
             wdg.addItems(enum)

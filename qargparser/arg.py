@@ -10,6 +10,7 @@ def to_label_string(text):
 class Arg(QtCore.QObject):
     default = None
     changed = QtCore.Signal(tuple)
+    deleted = QtCore.Signal()
     
     def __init__(self, name, default=None, **kwargs):
         super(Arg, self).__init__(kwargs.pop('parent', None))
@@ -19,9 +20,14 @@ class Arg(QtCore.QObject):
         kwargs['default'] = default or self.default
         kwargs['description'] = kwargs.get('description', '')
 
+        self.wdg = None
         self._data = kwargs
         self._write = None
         self._read = None
+
+    @property
+    def name(self):
+        return self._data['name'] 
 
     def __repr__(self):
         return '%s(%s)' %(self.__class__.__name__, 
@@ -33,14 +39,14 @@ class Arg(QtCore.QObject):
             from .argparser import ArgParser
 
             wdg = ArgParser(description=self._data['description'])
-            data = self._data.get('items')
 
-            for name in data:
-                _data = data[name]
+            for name, _data in self._data.get('items').items():
                 _data['name'] = name
-                wdg.add_argument(**_data)
+                wdg.add_arg(**_data)
         else:
             wdg = QtWidgets.QWidget()
+
+        self.wdg = wdg
 
         return wdg
 
