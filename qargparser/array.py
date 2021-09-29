@@ -10,11 +10,8 @@ class Array(Arg):
 
         wdg = ArgParser(description=self._data['description'])
         kwargs = self._data.get('items', {}).copy()
-        name = self._data['name']
 
         self.wdg = wdg
-
-        self._create_add_item_button(**kwargs)
 
         self._write = None
         self._read = lambda : [wdg._args[name]._read() for name in wdg._args]
@@ -25,6 +22,8 @@ class Array(Arg):
             kwargs['default'] = default
             self.add_item(**kwargs)
             
+        self._create_add_item_button(**kwargs)
+
         return wdg
 
     def is_edited(self):

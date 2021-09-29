@@ -10,16 +10,7 @@ from .item import Item
 from .boolean import Boolean
 from .path import Path
 
-def deleteChildWidgets(item):
-    layout = item.layout()
-    if layout:
-        for i in range(layout.count()):
-            deleteChildWidgets(layout.itemAt(i))
-    if item.widget():
-        item.widget().deleteLater()
-
-def get_object_from_type(type):
-    types = {
+TYPES = {
         'object': Arg,
         'info': Info,
         'string': String,
@@ -31,9 +22,19 @@ def get_object_from_type(type):
         'item': Item,
         'boolean': Boolean,
         'float': Float,
-        'interger': Integer
-    }
-    return types[type]
+        'integer': Integer
+}
+
+def deleteChildWidgets(item):
+    layout = item.layout()
+    if layout:
+        for i in range(layout.count()):
+            deleteChildWidgets(layout.itemAt(i))
+    if item.widget():
+        item.widget().deleteLater()
+
+def get_object_from_type(type):
+    return TYPES[type]
 
 class ResetButton(QtWidgets.QPushButton):
     def __init__(self, wdg, label = '<', *args, **kwargs):
@@ -62,6 +63,7 @@ class ArgParser(QtWidgets.QWidget):
 
         #Layout
         layout = QtWidgets.QGridLayout(self)
+        layout.setContentsMargins(2, 2, 2, 2)
         layout.setRowStretch(999, 1)
         layout.setVerticalSpacing(2)
         layout.setColumnStretch(0, 0)
