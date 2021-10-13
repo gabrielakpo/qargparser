@@ -8,10 +8,10 @@ class Boolean(Arg):
         wdg = QtWidgets.QCheckBox()
         wdg.setChecked(bool(self._data['default']))
 
-        self._write = wdg.setChecked
-        self._read = bool(wdg.isChecked)
+        self._write = lambda x: wdg.setChecked(bool(x))
+        self._read = wdg.isChecked
 
-        wdg.stateChanged.connect(self.on_changed)
+        wdg.stateChanged.connect(lambda x: self.on_changed(bool(x)))
 
         return wdg
 
