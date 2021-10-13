@@ -9,7 +9,7 @@ class Boolean(Arg):
         wdg.setChecked(bool(self._data['default']))
 
         self._write = wdg.setChecked
-        self._read = wdg.isChecked
+        self._read = bool(wdg.isChecked)
 
         wdg.stateChanged.connect(self.on_changed)
 

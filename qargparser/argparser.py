@@ -70,10 +70,7 @@ class ArgParser(QtWidgets.QWidget):
 
         # Construct from data
         if data:
-            for name in data:
-                _data = data[name]
-                _data['name'] = name
-                self.add_arg(**_data)
+            self.build(data)
 
         self._write = lambda *args, **kwargs: (self._args[name]._write(*args, **kwargs) \
                                                for name in self._args)
@@ -159,6 +156,12 @@ class ArgParser(QtWidgets.QWidget):
         layout.setRowStretch(row, 0)
 
         self._args.pop(name)
+
+    def build(self, data):
+        for name in data:
+            _data = data[name]
+            _data['name'] = name
+            self.add_arg(**_data)
 
     def delete_children(self):
         layout = self.layout()
