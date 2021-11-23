@@ -1,0 +1,21 @@
+{
+	"age": {
+		"type": "int",
+		"slider": true,
+		"default": 5,
+		"max": 10,
+		"min": -10,
+        "step": 2,
+		"description": "int slider"
+	},
+	"width": {
+		"type": "float",
+		"slider": true,
+		"default": 5.0,
+		"max": 10.0,
+		"min": -10.0,
+        "step": 0.1,
+		"description": "float slider"
+	}
+}
+	

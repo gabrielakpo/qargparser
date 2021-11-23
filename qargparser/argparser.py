@@ -22,7 +22,8 @@ TYPES = {
         'item': Item,
         'boolean': Boolean,
         'float': Float,
-        'integer': Integer
+        'integer': Integer,
+        'int': Integer,
 }
 
 def deleteChildWidgets(item):

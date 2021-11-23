@@ -14,6 +14,14 @@ requires = []
 
 build_requires = ['python-2']
 
+_data = {
+    "files": {
+        "VSCode": {
+            "code": ["{root}\\workspaces\\qargparser.code-workspace"]
+        }
+    }
+}
+
 def commands():
     global env
     env.PYTHONPATH.append('{this.root}')

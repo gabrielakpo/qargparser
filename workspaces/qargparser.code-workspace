@@ -1,0 +1,15 @@
+{
+   "folders": [
+      {
+         "name": "qargparser",
+         "path": "a:\\packages\\perso\\qargparser\\dev"
+      }
+   ],
+   "settings": {
+      "files.exclude": {
+         "**/.git**": true,
+         "**/README.**": true,
+         "build/": true
+      }
+   }
+}
