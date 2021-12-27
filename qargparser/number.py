@@ -37,6 +37,8 @@ class AbstractSliderSpinBox(QtWidgets.QWidget):
     valueChanged = QtCore.Signal(int)
 
     def __init__(self, min=0.0, max=1.0, step=1.0, default=0.0, *args, **kwargs):
+        use_slider = kwargs.pop("slider", False)
+
         super(AbstractSliderSpinBox, self).__init__(*args, **kwargs)
 
         if isinstance(self, SliderSpinBox):
@@ -61,6 +63,8 @@ class AbstractSliderSpinBox(QtWidgets.QWidget):
         lay.addWidget(self.slider)
         lay.addWidget(self.spin_box)
 
+        self.set_slider_visible(use_slider)
+
     def value(self):
         return self.spin_box.value()
 
@@ -84,6 +88,9 @@ class AbstractSliderSpinBox(QtWidgets.QWidget):
         self.slider.setSingleStep(value)
         self.slider.setTickInterval(value)
 
+    def set_slider_visible(self, show):
+        self.slider.setVisible(show)
+
 class SliderSpinBox(AbstractSliderSpinBox):
     pass
 
@@ -94,38 +101,48 @@ class Number(Arg):
     default = 0
 
     def create(self):
+        #Widget
         if isinstance(self, Float):
-            if self._data.get("slider"):
-                wdg = SliderDoubleSpinBox()
-            else:
-                wdg = QtWidgets.QDoubleSpinBox()
-            wdg.setSingleStep(self._data.get("step", 0.1))
+            _cls = SliderDoubleSpinBox
+            self._data["step"] = self._data.get("step", 0.1)
         else:
-            if self._data.get("slider"):
-                wdg = SliderSpinBox()
-            else:
-                wdg = QtWidgets.QSpinBox()
-            wdg.setSingleStep(self._data.get("step", 1))
+            _cls = SliderSpinBox
+            self._data["step"] = self._data.get("step", 1)
 
-        min = self._data.get('min')
-        if min is not None:
-            wdg.setMinimum(min)
+        #Min
+        if self._data.get("min") is None:
+            self._data['min'] = -100000
+            
+        #Max
+        if self._data.get("max") is None:
+            self._data['max'] = 100000
 
-        max = self._data.get("max")
-        if max is not None:
-            wdg.setMaximum(max)
+        #Slider
+        self._data["slider"] = self._data.get("slider", False)
 
-        wdg.setValue(self._data['default'])
+        wdg = _cls(slider=self._data["slider"],
+                   step=self._data["step"],
+                   min=self._data['min'],
+                   max=self._data['max'],
+                   default=self._data['default'])
 
         self._write = wdg.setValue
         self._read = wdg.value
 
         wdg.valueChanged.connect(self.on_changed)
 
+        self.wdg = wdg
         return wdg
 
     def reset(self):
         self._write(self._data['default'])
+
+    def _update(self):
+        super(Number, self)._update()
+        self.wdg.setMaximum(self._data["max"])
+        self.wdg.setMinimum(self._data["min"])
+        self.wdg.setSingleStep(self._data["step"])
+        self.wdg.set_slider_visible(self._data["slider"])
 
 class Float(Number):
     pass

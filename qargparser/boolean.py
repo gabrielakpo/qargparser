@@ -13,6 +13,7 @@ class Boolean(Arg):
 
         wdg.stateChanged.connect(lambda x: self.on_changed(bool(x)))
 
+        self.wdg = wdg
         return wdg
 
     def reset(self):

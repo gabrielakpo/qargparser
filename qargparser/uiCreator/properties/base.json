@@ -1,8 +1,12 @@
-{
-    "title": {
-        "type": "string"
-    },
-    "Description": {
-        "type": "string"
+[
+    {
+        "name": "name", 
+        "type": "string", 
+        "default": ""
+    }, 
+    {
+        "name": "description", 
+        "type": "text", 
+        "default": " "
     }
-}
+]

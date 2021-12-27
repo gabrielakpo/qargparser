@@ -64,6 +64,7 @@ class Path(Arg):
         self._read = self.le.text
         self.le.textChanged.connect(self.on_changed)
 
+        self.wdg = wdg
         return wdg
 
     def show_search_path_dialog(self):

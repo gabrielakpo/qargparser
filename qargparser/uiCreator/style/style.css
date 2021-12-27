@@ -1,0 +1,272 @@
+QLabel {
+  font: bold;
+  padding : 2px;
+  color: black;
+  background-color: transparent;
+}   
+
+/* QPushButton */
+QPushButton[default_style="True"]
+{
+  color : default;
+}
+
+QPushButton{
+  font: bold;
+  color: black;
+  background-color: white;
+  padding: 0.2em;
+  border: 2px solid black;
+  border-radius: 3%;
+}
+QPushButton:pressed:hover {
+  background-color: orange;
+  color: white;
+}
+QPushButton:hover { 
+  background-color:gray;
+  color: orange;
+}  
+QPushButton:checked{ 
+  background-color: orange;
+}  
+QPushButton:disabled {
+  color: disabled
+}
+
+RoundPushButton {
+  color: black;
+  border: 1px solid black;
+  background-color: white;
+  border-radius: 12%;
+}
+QGroupBox {
+  border: 2px solid gray;
+  border-radius : 10%;   
+  font: bold black;
+  padding-top: 30%; /* leave space at the top for the title */
+  padding-bottom: 30%; /* leave space at the top for the title */
+}
+
+QGroupBox:title {
+  subcontrol-origin: margin;
+  subcontrol-position: top center;
+  color: black;
+  top: -5%;
+}
+
+/* QTabBar */
+QTabWidget::pane {
+  border: 1px solid grey;
+  top: -1px; 
+  background: silver;
+} 
+QTabBar {
+  background-color: none;
+  border: none;
+}
+QTabBar:tab:top,
+QTabBar:tab:bottom{
+  color: black;
+  background: white;
+  border-top-left-radius: 4%;
+  border-top-right-radius: 4%;
+  margin: 1px;
+  min-width: 16ex;
+  padding: 5%;
+}
+QTabBar:tab:right{
+  color: black;
+  background: white;
+  border-top-right-radius: 4%;
+  border-bottom-right-radius: 4%;
+  margin: 1px;
+  min-height: 16ex;
+  padding: 5px;
+}
+QTabBar:tab:left{
+  color: black;
+  background: white;
+  border-top-left-radius: 4%;
+  border-bottom-left-radius: 4%;
+  margin: 1px;
+  min-height: 16ex;
+  padding: 5px;
+}
+QTabBar:tab:selected {
+  color: white;
+  background-color: orange;
+}
+QTabBar:tab:hover {
+  color: orange;
+}
+QTabBar:tab:selected:hover{
+  color: black;
+}
+QTabBar:tab:!selected:top,
+QTabBar:tab:!selected:bottom{
+  margin-top: 5px;
+}
+QTabBar:tab:!selected:left{
+  margin-left: 5px;
+}
+QTabBar:tab:!selected:right{
+  margin-right: 5px;
+}
+QTabBar:tab:disabled {
+  background-color: disabled;
+}
+/* 
+QHeaderView::section{
+  border: 4px bold black;
+}
+QHeaderView::section:firt{
+  border-top-left-radius: 10%;
+}
+QHeaderView::section:end{
+  border-top-right-radius: 10%;
+} */
+
+QTreeView,
+QListView, 
+QTableView{ 
+  border:none;
+  border-radius : 3px;   
+  selection-background-color: transparent;
+  background-color: rgb(37, 37, 37);
+}    
+
+QTreeView::item, 
+QListView::item, 
+QTableView::item{ 
+  color: white;
+  background-color: transparent;
+  padding : 2;
+  border-radius : 4px;   
+} 
+QTreeView:item:hover,
+QListView:item:hover,
+QTabView:item:hover{
+  color: orange; 
+}
+QTreeView:item:selected,
+QListView:item:selected,
+QTabView:item:selected{
+  background-color: orange;
+  color: white;
+}
+QTreeView:item:disabled, 
+QListView:item:disabled, 
+QTableView:item:disabled {
+  color: disabled;
+}
+
+QTreeView::branch:!adjoins-item{
+  border-image:none;image:  url("<path>/branch-vline.png") 0;
+}
+
+QTreeView::branch:!has-children:has-siblings:adjoins-item{
+  border-image:none;image:  url("<path>/branch-more.png") 0;
+}
+
+QTreeView::branch:!has-children:!has-siblings:adjoins-item {
+  border-image:none;image:  url("<path>/branch-end.png") 0;
+}
+
+QTreeView::branch:closed:has-children:!has-siblings,
+QTreeView::branch:closed:has-children:has-siblings {
+  border-image:none;image:  url("<path>/branch-root-closed.png") 0;
+}
+
+QTreeView::branch:open:has-children:!has-siblings,
+QTreeView::branch:open:has-children:has-siblings{
+  border-image:none;image:  url("<path>/branch-root-open.png") 0;
+}
+
+QSplitter{
+  width: 5px;
+  height : 5px;
+}
+QSplitter:handle{
+  background-color: orange;
+}
+
+/* QScrollBar */
+QScrollBar:vertical,
+QScrollBar:horizontal {
+  border: none;
+  height: 20px;
+  width: 20px;
+  margin: 1px;
+}
+QScrollBar::handle:vertical,
+QScrollBar::handle:horizontal {
+  background: silver;
+  min-width: 20px;
+  min-height: 20px;
+  border-radius: 2px;
+  border: 2px solid black
+}
+QScrollBar::add-line:horizontal {
+  border: none;
+  background: none;
+  color: none;
+}
+
+QScrollBar::sub-line:horizontal {
+  border: none;
+  background: none;
+  color: none;
+}
+
+/* CheckBox */
+QCheckBox {
+  color: black;
+  font: bold black;
+  spacing: 2px;
+}
+QTreeView::indicator,
+QCheckBox::indicator {
+  color: black;
+  background-color: white;
+  border: 1px solid black;
+  width: 20px;
+  height: 20px;
+}
+QTreeView::indicator:checked,
+QCheckBox:indicator:checked {
+  background-color: orange;
+}
+
+QLineEdit{
+  border: 1px solid siver;
+  border-radius: 5%;
+  min-height: 25px;
+}
+
+QPlainTextEdit{
+  border: 1px solid siver;
+  border-radius: 10%;
+  min-height: 200px;
+  background-color: palette(base);
+}
+
+QRadioButton{
+  color: black;
+}
+
+QSlider {
+  min-height: 50px;
+  max-height: 50px;
+  background:none;
+}
+QSlider::handle:horizontal {
+  height: 70px;
+  background: orange;
+  border: 1px solid black;
+  margin: -24px -12px;
+}
+QSlider::groove:hotizontal {
+  height: 5px;
+  margin: 0 12px;
+}

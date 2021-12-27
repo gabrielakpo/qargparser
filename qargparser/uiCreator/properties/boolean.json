@@ -1,0 +1,7 @@
+[
+    {
+        "name": "default", 
+        "type": "bool", 
+        "default": true
+    }
+]

@@ -14,7 +14,7 @@ class Array(Arg):
         self.wdg = wdg
 
         self._write = None
-        self._read = lambda : [wdg._args[name]._read() for name in wdg._args]
+        self._read = lambda : [arg.read() for arg in wdg._args]
         wdg.changed.connect(self.on_changed)
 
         #Array
@@ -66,20 +66,19 @@ class Array(Arg):
         button = QtWidgets.QPushButton('Add item')
         button.clicked.connect(partial(self.add_item, **kwargs))
         layout = self.wdg.layout()
-        layout.addWidget(button, layout.rowCount(), 1)
+        layout.insertRow(layout.rowCount(), button)
 
     def reset(self):
         self.wdg.delete_children()
 
-        wdg = self.wdg
         kwargs = self._data.get('items', {})
-        name = self._data['name']
 
         #Array
         for default in self._data['default']:
             kwargs['default'] = default
             self.add_item(**kwargs)
 
-        self._create_add_item_button(**kwargs)
-
         self.changed.emit(None)
+
+    def get_children(self):
+        return self.wdg._args

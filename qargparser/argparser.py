@@ -3,17 +3,20 @@ from collections import OrderedDict
 from .Qt import QtWidgets, QtCore
 from .arg import Arg
 from .string import String, Info
-from .text import Doc, Python, Mel
+from .text import Text, Doc, Python, Mel
 from .array import Array
 from .number import Float, Integer
 from .item import Item
 from .boolean import Boolean
 from .path import Path
+from .enum import Enum
 
 TYPES = {
         'object': Arg,
+        'enum': Enum,
         'info': Info,
         'string': String,
+        'text': Text,
         'doc': Doc,
         'path': Path,
         'mel': Mel,
@@ -21,6 +24,7 @@ TYPES = {
         'array': Array,
         'item': Item,
         'boolean': Boolean,
+        'bool': Boolean,
         'float': Float,
         'integer': Integer,
         'int': Integer,
@@ -46,7 +50,25 @@ class ResetButton(QtWidgets.QPushButton):
         super(ResetButton, self).paintEvent(event)
         self.setFixedSize(35, self.wdg.sizeHint().height())
 
-class ArgParser(QtWidgets.QWidget):
+class CustomLabel(QtWidgets.QLabel):
+
+    def __init__(self, *args, **kwargs):
+        self.label_suffix = kwargs.pop("label_suffix", None)
+        if args:
+            args = [self._new_text(args[0])] + [e for e in args[1:]]
+
+        super(CustomLabel, self).__init__(*args, **kwargs)
+            
+    def setText(self, txt):
+        txt = self._new_text(txt)
+        super(CustomLabel, self).setText(txt)
+
+    def _new_text(self, txt):
+        if self.label_suffix:
+            txt = "%s%s "%(txt, self.label_suffix)
+        return txt
+
+class ArgParser(QtWidgets.QGroupBox):
     changed = QtCore.Signal()
 
     def __init__(self, 
@@ -56,27 +78,28 @@ class ArgParser(QtWidgets.QWidget):
                  parent=None):
 
         #Init
+        self._nb_deleted = 0
         self._description = description
         self._label_suffix = label_suffix
-        self._args = OrderedDict()
+        self._args = []
 
         super(ArgParser, self).__init__(parent)
 
         #Layout
-        layout = QtWidgets.QGridLayout(self)
+        layout = QtWidgets.QFormLayout(self)
         layout.setContentsMargins(2, 2, 2, 2)
-        layout.setRowStretch(999, 1)
+        layout.setFormAlignment(QtCore.Qt.AlignTop)
+        layout.setLabelAlignment(QtCore.Qt.AlignRight)
+        # layout.setRowStretch(999, 1)
         layout.setVerticalSpacing(2)
-        layout.setColumnStretch(0, 0)
+        # layout.setColumnStretch(0, 0)
 
         # Construct from data
         if data:
             self.build(data)
 
-        self._write = lambda *args, **kwargs: (self._args[name]._write(*args, **kwargs) \
-                                               for name in self._args)
-        self._read = lambda : {self._args[name].name : self._args[name]._read() \
-                               for name in self._args.keys()}
+        self._write = lambda *args, **kwargs: (arg._write(*args, **kwargs) for arg in self._args)
+        self._read = lambda : {arg("name"): arg._read() for arg in self._args}
 
     def __repr__(self):
         return '%s(%s)' %(self.__class__.__name__, 
@@ -84,7 +107,7 @@ class ArgParser(QtWidgets.QWidget):
 
     @property
     def _row(self):
-        return len(self._args)
+        return len(self._args)# + self._nb_deleted
 
     def add_arg(self, 
                 name=None, 
@@ -101,13 +124,14 @@ class ArgParser(QtWidgets.QWidget):
 
     def _add_arg(self, arg):
         name = arg._data["name"]
-        if name in self._args:
+        if self.get_arg(name):
             raise ValueError("Duplicate argument '%s'" %name)
 
         #Create widget
         wdg = arg.create()
         desc = arg._data.get('description')
-        wdg.setToolTip(desc)
+        if desc.strip():
+            wdg.setToolTip(desc)
 
         #Reset
         reset_button = ResetButton(wdg)
@@ -119,58 +143,78 @@ class ArgParser(QtWidgets.QWidget):
         layout = self.layout()
         label = arg._data['label']
 
-        if self._label_suffix:
-            label = "%s%s "%(label, self._label_suffix)
+        label_ui = CustomLabel(label, label_suffix=self._label_suffix)
+        arg.label_ui = label_ui
 
-        layout.addWidget(QtWidgets.QLabel(label), 
-                         self._row, 0, 
-                         QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
-        layout.addWidget(wdg, 
-                         self._row, 1, 
-                         QtCore.Qt.AlignTop)
-        layout.addWidget(reset_button, 
-                         self._row, 2, 
-                         QtCore.Qt.AlignTop)     
+        row_wdg = QtWidgets.QWidget()
+        row_layout = QtWidgets.QHBoxLayout(row_wdg)
+        row_layout.setContentsMargins(0, 0, 0, 0)
+        row_layout.setSpacing(0)
+        row_layout.addWidget(wdg)
+        row_layout.addWidget(reset_button)
+        
+        layout.insertRow(self._row,
+                        label_ui, 
+                        row_wdg)
+
+        # layout.addWidget(label_ui, 
+        #                  self._row, 0, 
+        #                  QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
+        # layout.addWidget(wdg, 
+        #                  self._row, 1, 
+        #                  QtCore.Qt.AlignTop)
+        # layout.addWidget(reset_button, 
+        #                  self._row, 2, 
+        #                  QtCore.Qt.AlignTop)     
                          
-        self._args[name] = arg
+        self._args.append(arg)
 
-    def delete_arg(self, name, wdg):
+    def get_arg(self, key):
+        for i, arg in enumerate(self._args):
+            if ((isinstance(key, int) and i == key) 
+            or (isinstance(key, str) and arg("name") == key)):
+                return arg
+
+    def pop_arg(self, arg):
+        layout = self.layout()
+        idx, _ = layout.getWidgetPosition(arg.wdg.parent())
+
+        #Label
+        lay_item = layout.itemAt(idx, QtWidgets.QFormLayout.LabelRole)
+        deleteChildWidgets(lay_item)
+        layout.removeItem(lay_item)
+
+        lay_item = layout.itemAt(idx, QtWidgets.QFormLayout.FieldRole)
+        deleteChildWidgets(lay_item)
+        layout.removeItem(lay_item) 
+
+        self._args.remove(arg)
+
+    def move_arg(self, key, idx):
+        if isinstance(key, int):
+            key = self._args[key]
+
         layout = self.layout()
 
-        #Delete layout row
-        row = None
-        for i in range(layout.count() - 1):
-            r, c, rs, cs = layout.getItemPosition(i)
-            item = layout.itemAt(i)
-            if item.widget() is wdg:
-                row = r
-                break
-        else:
-            raise RuntimeError('Row not found')
+        _idx, _ = layout.getWidgetPosition(key.wdg.parent())
 
-        for col in range(layout.columnCount()):
-            item = layout.itemAtPosition(row, col)
-            deleteChildWidgets(item)
-            layout.removeItem(item)
+        label = layout.itemAt(_idx, QtWidgets.QFormLayout.LabelRole).widget()
+        wdg = layout.itemAt(_idx, QtWidgets.QFormLayout.FieldRole).widget()
 
-        layout.setRowMinimumHeight(row, 0)
-        layout.setRowStretch(row, 0)
+        label.setParent(None)
+        wdg.setParent(None)
+        layout.insertRow(idx+1, label, wdg)
 
-        self._args.pop(name)
+        self._args.remove(key)
+        self._args.insert(idx, key)
 
     def build(self, data):
-        for name in data:
-            _data = data[name]
-            _data['name'] = name
-            self.add_arg(**_data)
+        for d in data:
+            self.add_arg(**d)
 
     def delete_children(self):
-        layout = self.layout()
-        for i in range(layout.count()):
-            item = layout.itemAt(i)
-            if item :
-                deleteChildWidgets(item)
-        self._args = OrderedDict()
+        for arg in self._args[:]:
+            self.pop_arg(arg)
 
     def on_changed(self, arg, button, *args, **kwargs):
         button.setVisible(arg.is_edited())
@@ -178,3 +222,6 @@ class ArgParser(QtWidgets.QWidget):
 
     def export_data(self):
         return self._read()
+
+    def to_data(self):
+        return [arg.to_data() for arg in self._args]

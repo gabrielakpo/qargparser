@@ -1,4 +1,5 @@
 from .Qt import QtWidgets, QtCore
+from . import utils
 import re
 
 def to_label_string(text):
@@ -6,6 +7,26 @@ def to_label_string(text):
         r"((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))",
         r" \1", text
     ).title()
+
+
+def clear_layout(layout):
+    """Delete all UI children recurcively
+
+    :param layout: layout parent, defaults to None
+    :type layout: QLayout, optional
+    """
+    if not layout:
+        return 
+
+    while layout.count():
+        item = layout.takeAt(0)
+        if item:
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+            lay = item.layout()
+            if lay:
+                clear_layout(lay) 
 
 class Arg(QtCore.QObject):
     default = None
@@ -30,8 +51,12 @@ class Arg(QtCore.QObject):
         return self._data['name'] 
 
     def __repr__(self):
-        return '%s(%s)' %(self.__class__.__name__, 
-                          dict(self._data))
+        import pprint
+        return '<\n\n[%s]\n%s>' %(self.__class__.__name__, 
+                          pprint.pformat(utils.clean_unicodes(utils.to_dict(self._data))))
+
+    def __call__(self, key, default=None):
+        return self._data.get(key, default)
 
     def create(self):
         if self._data.get('items'):
@@ -47,11 +72,27 @@ class Arg(QtCore.QObject):
             wdg = QtWidgets.QWidget()
 
         self.wdg = wdg
-
         return wdg
+        
+    def set_data(self, name, value):
+        self._data[name] = value
+        self._update()
+
+    def update_data(self, data):
+        self._data.update(data)
+        self._update()
+
+    def _update(self):
+        self._data["label"] = to_label_string(self._data["name"])
+        self.label_ui.setText(self._data["label"])
+        self.reset()
 
     def delete(self):
-        pass
+        clear_layout(self.wdg.layout())
+        self.wdg.deleteLater()
+
+    def get_children(self):
+        return []
 
     def write(self, value):
         return self._write(value)
@@ -69,3 +110,8 @@ class Arg(QtCore.QObject):
         if not args:
             args = (None, )
         self.changed.emit(*args)
+
+    def to_data(self):
+        data = self._data.copy()
+        data["type"] = self.__class__.__name__.lower()
+        return data

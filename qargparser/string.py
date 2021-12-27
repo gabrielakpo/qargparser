@@ -38,6 +38,7 @@ class String(Arg):
             self._read = wdg.text
             wdg.editingFinished.connect(lambda: self.on_editing_finished(wdg))
 
+        self.wdg = wdg
         return wdg
 
     def reset(self):

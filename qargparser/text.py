@@ -2,7 +2,7 @@ from .Qt import QtWidgets
 from .arg import Arg
 
 class Text(Arg):
-    default = '#'
+    default = ''
     
     def create(self):
         wdg = QtWidgets.QPlainTextEdit()
@@ -15,19 +15,20 @@ class Text(Arg):
         if isinstance(self, Doc):
             wdg.setReadOnly(True)
 
+        self.wdg = wdg
         return wdg
 
     def reset(self):
         self._write(self._data['default'])
 
 class Doc(Text):
-    default = '#Documentation'
+    default = ''
 
 class Code(Text):
-    default = '#Code'
+    default = ''
 
 class Python(Code):
     default = '#Python'
 
 class Mel(Code):
-    default = '#Mel'
+    default = '//Mel'

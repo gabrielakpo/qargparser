@@ -1,7 +1,8 @@
+from ..__version__ import __version__, __authors__, __author_email__, __copyright__
 
 __title__='qargparserCreator'
 __description__='qargparser Creator'
-__version__='0.1.0'
-__authors__=['gabriel AKPO-ALLAVO']
-__author_email__='g.allavo@outlook.fr'
-__copyright__=''
+__version__= __version__
+__authors__= __authors__
+__author_email__=__author_email__
+__copyright__=__copyright__

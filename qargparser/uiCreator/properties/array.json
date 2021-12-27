@@ -1,0 +1,15 @@
+[
+    {
+        "name": "default", 
+        "type": "array", 
+        "default": [], 
+        "items": {
+            "type": "item", 
+            "template": [
+                {
+                    "type": "string"
+                }
+            ]
+        }
+    }
+]
