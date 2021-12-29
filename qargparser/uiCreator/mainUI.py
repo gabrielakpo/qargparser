@@ -1,8 +1,6 @@
 import sys
 from qargparser import utils as qargp_utils, \
-                       ArgParser, \
-                       TYPES as items_types
-import qargparser
+                       ArgParser
 
 from .Qt import QtWidgets, QtCore
 from . import utils
@@ -14,6 +12,27 @@ from .previewUI import Preview
 from .itemsUI import Items
 
 from . import constants as cons
+
+class ReadPreview(QtWidgets.QWidget):
+    def __init__(self, data, *args, **kwargs):
+        super(ReadPreview, self).__init__(*args, **kwargs)
+        self.setWindowTitle("Read Preview")
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.Window)
+
+        wdg = QtWidgets.QPlainTextEdit()
+        wdg.setReadOnly(True)
+
+        layout = QtWidgets.QVBoxLayout(self)
+        layout.setContentsMargins(0, 0, 0, 0)
+        layout.addWidget(wdg)
+
+        data = utils.format_json(data)
+        wdg.appendPlainText(data)
+
+        self.resize(cons.READPREVIEW_WIN_WIDTH, 
+                    cons.READPREVIEW_WIN_HEIGHT)
+
+        self.show()
 
 class MainUI(QtWidgets.QWidget):
     WINDOW_TITLE = "%s v-%s"%(__title__, __version__)
@@ -50,6 +69,7 @@ class MainUI(QtWidgets.QWidget):
         self.load_action = menu.addAction("Load")
         self.save_action = menu.addAction("Save")
         self.saveAs_action = menu.addAction("Save as...")
+        self.readPreview_action = self.menuBar.addAction("Read preview")
 
         #File
         self.file_le = QtWidgets.QLineEdit()
@@ -88,9 +108,10 @@ class MainUI(QtWidgets.QWidget):
         self.load_action.triggered.connect(self.on_load_file_clicked)
         self.save_action.triggered.connect(self.save_file)
         self.saveAs_action.triggered.connect(self.save_as_file)
-        self.hierarchy_wdg.to_delete.connect(self.delete_item)
+        self.readPreview_action.triggered.connect(self.readPreview_file_clicked)
         self.hierarchy_wdg.item_changed.connect(self.on_hierarchy_item_changed)
         self.hierarchy_wdg.item_added.connect(self.on_hierarchy_item_added)
+        self.items_wdg.add_requested.connect(self.on_add_requested)
         self.properties_wdg.edited.connect(self.on_properties_edited)
 
     def reload(self):
@@ -108,6 +129,9 @@ class MainUI(QtWidgets.QWidget):
 
     def on_hierarchy_item_added(self, arg):
         self.ap.add_arg(**data)
+
+    def on_add_requested(self, name):
+        self.hierarchy_wdg.add_item(name)
 
     def on_new_file_clicked(self):
         self.ap.delete_children()
@@ -139,16 +163,15 @@ class MainUI(QtWidgets.QWidget):
 
     def save_file(self):
         data = self.ap.to_data()
-        import json
         path = r"A:\packages\perso\qargparser\dev\examples\uiCreator\test.json"
-        with open(path, "w") as f:
-            json.dump(data, f, indent=4)
+        utils.write_json(data, path)
 
     def save_as_file(self):
         print('TODO: Save as file')
 
-    def delete_item(self, item, parent):
-        print(item, parent)
+    def readPreview_file_clicked(self):
+        data = self.ap.export_data()
+        ReadPreview(data, parent=self)
 
 
 def show(path=None):

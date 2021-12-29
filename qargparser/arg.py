@@ -1,13 +1,5 @@
-from .Qt import QtWidgets, QtCore
+from .Qt import QtCore
 from . import utils
-import re
-
-def to_label_string(text):
-    return re.sub(
-        r"((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))",
-        r" \1", text
-    ).title()
-
 
 def clear_layout(layout):
     """Delete all UI children recurcively
@@ -37,7 +29,7 @@ class Arg(QtCore.QObject):
         super(Arg, self).__init__(kwargs.pop('parent', None))
         
         kwargs['name'] = name
-        kwargs['label'] = kwargs.get('label') or to_label_string(name)
+        kwargs['type'] = self.__class__.__name__.lower()
         kwargs['default'] = default or self.default
         kwargs['description'] = kwargs.get('description', '')
 
@@ -59,20 +51,7 @@ class Arg(QtCore.QObject):
         return self._data.get(key, default)
 
     def create(self):
-        if self._data.get('items'):
-
-            from .argparser import ArgParser
-
-            wdg = ArgParser(description=self._data['description'])
-
-            for name, _data in self._data.get('items').items():
-                _data['name'] = name
-                wdg.add_arg(**_data)
-        else:
-            wdg = QtWidgets.QWidget()
-
-        self.wdg = wdg
-        return wdg
+        pass
         
     def set_data(self, name, value):
         self._data[name] = value
@@ -83,8 +62,10 @@ class Arg(QtCore.QObject):
         self._update()
 
     def _update(self):
-        self._data["label"] = to_label_string(self._data["name"])
-        self.label_ui.setText(self._data["label"])
+        self.label_ui.setText(self._data["name"])
+        desc = self._data.get('description')
+        if desc.strip():
+            self.wdg.setToolTip(desc)
         self.reset()
 
     def delete(self):
@@ -113,5 +94,4 @@ class Arg(QtCore.QObject):
 
     def to_data(self):
         data = self._data.copy()
-        data["type"] = self.__class__.__name__.lower()
         return data

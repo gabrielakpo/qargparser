@@ -5,27 +5,37 @@ class Enum(Arg):
     default = ""
 
     def create(self):
-        default = self._data['default']
-
-        descs = self._data.get('enumDescriptions', [])
-        enum = self._data['enum']
+        #Widget
         wdg = QtWidgets.QComboBox()
-        wdg.addItems(enum)
-        
-        if default is not None and default in enum:
-            idx = wdg.findText(default, QtCore.Qt.MatchExactly)
-            wdg.setCurrentIndex(idx)
-        else:
-            idx = wdg.currentIndex()
-            text = wdg.itemText(idx)
-            self._data['default'] = text
+        self.wdg = wdg
 
+        #Init
+        self._init()
+        
+        #Connections
         self._write = lambda x: wdg.setCurrentIndex(wdg.findText(x, QtCore.Qt.MatchExactly))
         self._read =  lambda: wdg.itemText(wdg.currentIndex())
         wdg.currentIndexChanged.connect(lambda x: self.on_changed(wdg.itemText(x)))
 
-        self.wdg = wdg
         return wdg
+
+    def _init(self):
+        self.wdg.addItems(self._data["enum"])
+        
+        if (self._data['default'] is not None 
+        and self._data['default'] in self._data["enum"]):
+            idx = self.wdg.findText(self._data['default'], QtCore.Qt.MatchExactly)
+            self.wdg.setCurrentIndex(idx)
+        else:
+            idx = self.wdg.currentIndex()
+            text = self.wdg.itemText(idx)
+            self._data['default'] = text
+
+        #Descriptions
+        descs = self._data.get('enumDescriptions', [])
+        for i in range(len(self._data["enum"])):
+            if i < len(descs):
+                self.wdg.setItemData(i, descs[i], QtCore.Qt.ToolTipRole)
 
     def reset(self):
         self._write(self._data['default'])
@@ -33,4 +43,7 @@ class Enum(Arg):
     def _update(self):
         super(Enum, self)._update()
         self.wdg.clear()
-        self.wdg.addItems(self._data["enum"])
+        self._init()
+
+
+        

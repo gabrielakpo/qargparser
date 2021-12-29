@@ -15,7 +15,7 @@
             "red"
         ], 
         "description": "I am a color enumeration", 
-        "enumDescriptions": []
+        "enumDescriptions": ["I am green", "I am blue"]
     }, 
     {
         "name": "asInfo", 

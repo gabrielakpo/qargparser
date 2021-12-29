@@ -35,3 +35,7 @@ def load_data_from_file(path):
 
 def to_dict(o_dict):
     return loads(dumps(o_dict)) 
+
+def write_json(data, path):
+    with open(path, 'w') as f:
+        json.dump(data, f, indent=4)

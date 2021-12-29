@@ -1,7 +1,7 @@
 from functools import partial
 from collections import OrderedDict
 from .Qt import QtWidgets, QtCore
-from .arg import Arg
+from .object import Object
 from .string import String, Info
 from .text import Text, Doc, Python, Mel
 from .array import Array
@@ -10,25 +10,31 @@ from .item import Item
 from .boolean import Boolean
 from .path import Path
 from .enum import Enum
+from . import utils
+import re
 
 TYPES = {
-        'object': Arg,
-        'enum': Enum,
-        'info': Info,
-        'string': String,
-        'text': Text,
-        'doc': Doc,
-        'path': Path,
-        'mel': Mel,
-        'python': Python,
-        'array': Array,
-        'item': Item,
-        'boolean': Boolean,
-        'bool': Boolean,
-        'float': Float,
-        'integer': Integer,
-        'int': Integer,
+    'object': Object,
+    'enum': Enum,
+    'info': Info,
+    'string': String,
+    'text': Text,
+    'doc': Doc,
+    'path': Path,
+    'mel': Mel,
+    'python': Python,
+    'array': Array,
+    'item': Item,
+    'boolean': Boolean,
+    'float': Float,
+    'integer': Integer,
 }
+
+_TYPES = TYPES.copy()
+_TYPES.update({
+    'bool': Boolean,
+    'int': Integer
+})
 
 def deleteChildWidgets(item):
     layout = item.layout()
@@ -39,7 +45,7 @@ def deleteChildWidgets(item):
         item.widget().deleteLater()
 
 def get_object_from_type(type):
-    return TYPES[type]
+    return _TYPES[type]
 
 class ResetButton(QtWidgets.QPushButton):
     def __init__(self, wdg, label = '<', *args, **kwargs):
@@ -49,6 +55,14 @@ class ResetButton(QtWidgets.QPushButton):
     def paintEvent(self, event):
         super(ResetButton, self).paintEvent(event)
         self.setFixedSize(35, self.wdg.sizeHint().height())
+
+def to_label_string(text):
+    if text is None:
+        text = ""
+    return re.sub(
+        r"((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))",
+        r" \1", text
+    ).title()
 
 class CustomLabel(QtWidgets.QLabel):
 
@@ -64,6 +78,7 @@ class CustomLabel(QtWidgets.QLabel):
         super(CustomLabel, self).setText(txt)
 
     def _new_text(self, txt):
+        txt = to_label_string(txt)
         if self.label_suffix:
             txt = "%s%s "%(txt, self.label_suffix)
         return txt
@@ -90,24 +105,22 @@ class ArgParser(QtWidgets.QGroupBox):
         layout.setContentsMargins(2, 2, 2, 2)
         layout.setFormAlignment(QtCore.Qt.AlignTop)
         layout.setLabelAlignment(QtCore.Qt.AlignRight)
-        # layout.setRowStretch(999, 1)
         layout.setVerticalSpacing(2)
-        # layout.setColumnStretch(0, 0)
 
-        # Construct from data
+        # build from data
         if data:
             self.build(data)
 
         self._write = lambda *args, **kwargs: (arg._write(*args, **kwargs) for arg in self._args)
-        self._read = lambda : {arg("name"): arg._read() for arg in self._args}
+        self._read = lambda : OrderedDict((arg("name"), arg._read()) for arg in self._args)
 
     def __repr__(self):
-        return '%s(%s)' %(self.__class__.__name__, 
+        return '<%s( %s )>' %(self.__class__.__name__, 
                           dict(self._args))
 
     @property
     def _row(self):
-        return len(self._args)# + self._nb_deleted
+        return len(self._args)
 
     def add_arg(self, 
                 name=None, 
@@ -123,9 +136,9 @@ class ArgParser(QtWidgets.QGroupBox):
         return arg
 
     def _add_arg(self, arg):
-        name = arg._data["name"]
-        if self.get_arg(name):
-            raise ValueError("Duplicate argument '%s'" %name)
+        # name = arg._data["name"]
+        # if self.get_arg(name):
+        #     raise ValueError("Duplicate argument '%s'" %name)
 
         #Create widget
         wdg = arg.create()
@@ -141,7 +154,7 @@ class ArgParser(QtWidgets.QGroupBox):
 
         #add widget to Layout
         layout = self.layout()
-        label = arg._data['label']
+        label = arg._data['name']
 
         label_ui = CustomLabel(label, label_suffix=self._label_suffix)
         arg.label_ui = label_ui
@@ -156,16 +169,6 @@ class ArgParser(QtWidgets.QGroupBox):
         layout.insertRow(self._row,
                         label_ui, 
                         row_wdg)
-
-        # layout.addWidget(label_ui, 
-        #                  self._row, 0, 
-        #                  QtCore.Qt.AlignTop | QtCore.Qt.AlignRight)
-        # layout.addWidget(wdg, 
-        #                  self._row, 1, 
-        #                  QtCore.Qt.AlignTop)
-        # layout.addWidget(reset_button, 
-        #                  self._row, 2, 
-        #                  QtCore.Qt.AlignTop)     
                          
         self._args.append(arg)
 
@@ -184,6 +187,7 @@ class ArgParser(QtWidgets.QGroupBox):
         deleteChildWidgets(lay_item)
         layout.removeItem(lay_item)
 
+        #widget
         lay_item = layout.itemAt(idx, QtWidgets.QFormLayout.FieldRole)
         deleteChildWidgets(lay_item)
         layout.removeItem(lay_item) 
@@ -198,15 +202,25 @@ class ArgParser(QtWidgets.QGroupBox):
 
         _idx, _ = layout.getWidgetPosition(key.wdg.parent())
 
-        label = layout.itemAt(_idx, QtWidgets.QFormLayout.LabelRole).widget()
-        wdg = layout.itemAt(_idx, QtWidgets.QFormLayout.FieldRole).widget()
-
+        lay_item =  layout.itemAt(_idx, QtWidgets.QFormLayout.LabelRole)
+        label = lay_item.widget()
         label.setParent(None)
+
+        lay_item =  layout.itemAt(_idx, QtWidgets.QFormLayout.FieldRole)
+        wdg = lay_item.widget()
         wdg.setParent(None)
-        layout.insertRow(idx+1, label, wdg)
 
         self._args.remove(key)
         self._args.insert(idx, key)
+
+        _idx = 0
+        if idx > 0:
+            if idx >= len(self._args) - 1:
+                _idx = layout.rowCount()
+            else:
+                _idx = layout.getWidgetPosition(self._args[idx+1].wdg.parent())[0] - 1
+
+        layout.insertRow(_idx+1, label, wdg)
 
     def build(self, data):
         for d in data:
@@ -225,3 +239,7 @@ class ArgParser(QtWidgets.QGroupBox):
 
     def to_data(self):
         return [arg.to_data() for arg in self._args]
+
+    def save_data(self, path):
+        data = self.to_data()
+        utils.write_json(data, path)

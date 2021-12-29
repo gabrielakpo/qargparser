@@ -1,29 +1,40 @@
-{
-	"digits": {
-        "type": "array",
-        "max": null,
-        "min": 1,
-        "default":[
-            {"prefix": "thumb", "nbDigits": 3}, 
-            {"prefix": "point"}, 
-            {"prefix": "middle"}, 
-            {"prefix": "ring"}, 
-            {"prefix": "pinky"}
-        ],
+[
+    {
+        "name": "digits", 
+        "type": "array", 
+        "max": null, 
+        "min": 1, 
+        "default": [
+            {
+                "prefix": "thumb", 
+                "nbDigits": 3
+            }, 
+            {
+                "prefix": "point"
+            }, 
+            {
+                "prefix": "middle"
+            }, 
+            {
+                "prefix": "ring"
+            }, 
+            {
+                "prefix": "pinky"
+            }
+        ], 
         "items": {
-            "type": "item",
-            "template":{
-                "prefix":{
-                        "type": "string",
-                        "default": "Digit"
-                },
-                "nbDigits":{
-                        "type": "interger",
-                        "min": 1,
-                        "default": 4
+            "type": "item", 
+            "template": {
+                "prefix": {
+                    "type": "string", 
+                    "default": "Digit"
+                }, 
+                "nbDigits": {
+                    "type": "integer", 
+                    "min": 1, 
+                    "default": 4
                 }
             }
         }
     }
-}
-	
+]

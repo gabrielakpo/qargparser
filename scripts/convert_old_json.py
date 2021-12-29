@@ -1,5 +1,5 @@
 from collections import OrderedDict as Od
-from maya import cmds
+import json 
 
 class OrderedDict(Od):
     def prepend(self, key, value, dict_setitem=dict.__setitem__):
@@ -48,15 +48,20 @@ def convert_data(data, first=False):
             
 if __name__ == '__main__':
     import os
-    dir_path = r"A:\packages\perso\qargparser\dev\qargparser\uiCreator\properties"
-    for n in os.listdir(dir_path):
-        path = os.path.join(dir_path, n)
-        dst_path = path
+    # dir_path = r"A:\packages\perso\qargparser\dev\examples"
+    # for n in os.listdir(dir_path):
+    #     path = os.path.join(dir_path, n)
+    #     if not path.endswith('.json'):
+    #         continue
+    #     print(path)
+    #     dst_path = path
         
-        with open(path, "r") as f:
-            data = json.load(f, object_pairs_hook=OrderedDict)
+    #     with open(path, "r") as f:
+    #         data = json.load(f, object_pairs_hook=OrderedDict)
             
-        data = convert_data(data, first=True)
+    #     data = convert_data(data, first=True)
         
-        with open(dst_path, "w") as f:
-            json.dump(data, f, indent=4)
+    #     with open(dst_path, "w") as f:
+    #         json.dump(data, f, indent=4)
+
+        

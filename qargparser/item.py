@@ -15,7 +15,7 @@ class Item(Arg):
             for i, d in enumerate(default):
                 _kwargs = kwargs[i].copy()
                 _kwargs['default'] = d
-                _kwargs['label'] = " "
+                _kwargs['name'] = ""
                 self.item_wdg.add_arg(**_kwargs)
 
             self._read = lambda : [arg.read() for arg in self.item_wdg._args] \
@@ -64,3 +64,12 @@ class Item(Arg):
 
     def get_children(self):
         return self.item_wdg._args
+
+    def to_data(self):
+        data = {
+            "type": self._data["type"],
+            "template": [],
+            "description": self._data["description"]
+        }
+        data["template"].append({"type": self.get_children()[0].to_data()["type"]})
+        return data 

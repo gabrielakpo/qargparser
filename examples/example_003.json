@@ -1,132 +1,156 @@
-{
-	"name": {
-		"type": "string",
-		"default": "",
-		"description": "name"
-	},
-	"version": {
-		"type": "string",
-		"default": "dev",
-		"description": "version(major.minor.patch e.g. 5.1.23)"
-	},
-	"description": {
-		"type": "string",
-		"default": "",
-		"description": "description"
-	},
-	"destination_directory": {
-		"type": "path",
-		"default": "",
-		"description": "Destination path (default: local_packages_path)"
-	},
-	"source_directory": {
-		"type": "path",
-		"default": "",
-		"description": "Source directory path"
-	},
-	"authors": {
-        "type": "array",
+[
+    {
+        "name": "name", 
+        "type": "string", 
+        "default": "", 
+        "description": "name"
+    }, 
+    {
+        "name": "version", 
+        "type": "string", 
+        "default": "dev", 
+        "description": "version(major.minor.patch e.g. 5.1.23)"
+    }, 
+    {
+        "name": "description", 
+        "type": "string", 
+        "default": "", 
+        "description": "description"
+    }, 
+    {
+        "name": "destination_directory", 
+        "type": "path", 
+        "default": "", 
+        "description": "Destination path (default: local_packages_path)"
+    }, 
+    {
+        "name": "source_directory", 
+        "type": "path", 
+        "default": "", 
+        "description": "Source directory path"
+    }, 
+    {
+        "name": "authors", 
+        "type": "array", 
         "default": [
-            ["Gabriel AKPO-ALLAVO"],
-            ["Christophe PETIT"],
-            ["Tristan CORDEBOEUF"]
-        ],
-        "description": "Developers names",
+            [
+                "Gabriel AKPO-ALLAVO"
+            ], 
+            [
+                "Christophe PETIT"
+            ], 
+            [
+                "Tristan CORDEBOEUF"
+            ]
+        ], 
+        "description": "Developers names", 
         "items": {
-            "type": "item",
+            "type": "item", 
             "template": [
                 {
-                    "type": "string",
+                    "type": "string", 
                     "description": "developper name"
                 }
             ]
         }
-    },
-	"requires": {
-        "type": "array",
-        "default": [],
-        "description": "requires(e.g. [python-2, maya-2020, nuke])",
+    }, 
+    {
+        "name": "requires", 
+        "type": "array", 
+        "default": [], 
+        "description": "requires(e.g. [python-2, maya-2020, nuke])", 
         "items": {
-            "type": "item",
+            "type": "item", 
             "template": [
                 {
-                    "type": "string",
+                    "type": "string", 
                     "description": "require(e.g. python-2)"
                 }
             ]
         }
-    },
-	"build_requires": {
-        "type": "array",
-        "default": [["python-2"]],
-        "description": "build requires(e.g. [python-2, rez])",
+    }, 
+    {
+        "name": "build_requires", 
+        "type": "array", 
+        "default": [
+            [
+                "python-2"
+            ]
+        ], 
+        "description": "build requires(e.g. [python-2, rez])", 
         "items": {
-            "type": "item",
+            "type": "item", 
             "template": [
                 {
-                    "type": "string",
+                    "type": "string", 
                     "description": "build require(e.g. python-2)"
                 }
             ]
         }
-    },
-	"tools": {
-        "type": "array",
-        "default": [],
-        "description": "tools names(e.g. [maya, mayapy])",
+    }, 
+    {
+        "name": "tools", 
+        "type": "array", 
+        "default": [], 
+        "description": "tools names(e.g. [maya, mayapy])", 
         "items": {
-            "type": "item",
+            "type": "item", 
             "template": [
                 {
-                    "type": "string",
+                    "type": "string", 
                     "description": "tool name(e.g. maya)"
                 }
             ]
         }
-    },
-	"variants": {
-        "type": "array",
-        "default": [],
-        "description": "variants(e.g. [platform-windows, arch-AMD64, os-windows-10] & [platform-macos])",
+    }, 
+    {
+        "name": "variants", 
+        "type": "array", 
+        "default": [], 
+        "description": "variants(e.g. [platform-windows, arch-AMD64, os-windows-10] & [platform-macos])", 
         "items": {
-            "type": "array",
-            "description": "variants(e.g. [platform-windows, arch-AMD64, os-windows-10])",
-            "default": [],
+            "type": "array", 
+            "description": "variants(e.g. [platform-windows, arch-AMD64, os-windows-10])", 
+            "default": [], 
             "items": {
-                "type": "item",
+                "type": "item", 
                 "template": [
                     {
-                        "type": "string",
+                        "type": "string", 
                         "description": "variant(e.g. platform-windows)"
                     }
                 ]
             }
         }
-    },
-	"build_command": {
-        "type": "python",
-        "default": "python {root}/build.py {install}",
+    }, 
+    {
+        "name": "build_command", 
+        "type": "python", 
+        "default": "python {root}/build.py {install}", 
         "description": "Python build command"
-    },
-	"pre_command": {
-        "type": "python",
-        "default": "def pre_command():\n\tpass",
+    }, 
+    {
+        "name": "pre_command", 
+        "type": "python", 
+        "default": "def pre_command():\n\tpass", 
         "description": "Python pre-command"
-    },
-	"command": {
-        "type": "python",
-        "default": "def command():\n\tglobal env\n\tenv.PATH.append('{this.root}')",
+    }, 
+    {
+        "name": "command", 
+        "type": "python", 
+        "default": "def command():\n\tglobal env\n\tenv.PATH.append('{this.root}')", 
         "description": "Python command"
-    },
-	"post_command": {
-        "type": "python",
-        "default": "def post_command():\n\tpass",
+    }, 
+    {
+        "name": "post_command", 
+        "type": "python", 
+        "default": "def post_command():\n\tpass", 
         "description": "Python post-command"
-    },
-	"make_root": {
-        "type": "python",
-        "default": "def make_root(variant, path):\n\timport os\n\tos.makedirs(os.path.join(path, '{name}'))",
+    }, 
+    {
+        "name": "make_root", 
+        "type": "python", 
+        "default": "def make_root(variant, path):\n\timport os\n\tos.makedirs(os.path.join(path, '{name}'))", 
         "description": "command makes root"
     }
-}
-	
+]

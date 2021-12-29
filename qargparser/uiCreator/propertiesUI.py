@@ -46,21 +46,25 @@ class Properties(QtWidgets.QGroupBox):
         self.arg = arg
         self.setDisabled(False)
 
-        _data = utils.get_properties(data["type"])
+        _data = utils.get_properties_data(data["type"])
         if data["type"] == 'array' and "template" in data.get("items", {}).keys():
-            data["default"] = data["items"]
+            pass
+            # _data["default"] = data["items"]
             # data["default"] = {}
 
         for d in _data:
             k = d["name"] 
-            if not k in data or k == "items":
+            if not k in data:
                 continue
             v = data[k]
             if k in ["enum", "enumDescriptions"]:
                 v = [[e] for e in v]
             d["default"] = v
+            if k == "default" and "items" in data:
+                d["items"] = data["items"]
 
-        # utils.write_json(_data, r"A:\packages\perso\qargparser\dev\examples\uiCreator\test.json")
+        utils.write_json(_data, r"A:\packages\perso\qargparser\dev\examples\uiCreator\test.json")
+
         self.ap.build(_data)
 
     def on_edit_cliked(self):
