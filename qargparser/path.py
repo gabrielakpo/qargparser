@@ -43,20 +43,19 @@ class FileFolderDialog(QtWidgets.QFileDialog):
 
 class Path(Arg):
 
-    default = ''
     def create(self):
         self.le = QtWidgets.QLineEdit()
         self.le.setText(self._data['default'])
-        folder_button = QtWidgets.QPushButton('...')
-        folder_button.clicked.connect(self.show_search_path_dialog)
-        folder_button.setFixedSize(self.le.sizeHint().height(),
+        self.folder_button = QtWidgets.QPushButton(self._data['buttonLabel'])
+        self.folder_button.clicked.connect(self.show_search_path_dialog)
+        self.folder_button.setFixedSize(self.le.sizeHint().height(),
                                    self.le.sizeHint().height())
         wdg = QtWidgets.QWidget()
         wdg.setContentsMargins(0, 0, 0, 0)
 
         layout = QtWidgets.QGridLayout(wdg)
         layout.addWidget(self.le, 0, 0)
-        layout.addWidget(folder_button, 0, 1)
+        layout.addWidget(self.folder_button, 0, 1)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(1)
 
@@ -70,7 +69,7 @@ class Path(Arg):
     def show_search_path_dialog(self):
         previous_path = self.le.text()
         dialog = FileFolderDialog(None,
-                                  'Choose path',
+                                  self._data['searchMessage'],
                                   previous_path)
         dialog.exec_()
         path = dialog.selected()
@@ -80,3 +79,7 @@ class Path(Arg):
 
     def reset(self):
         self._write(self._data['default'])
+
+    def _update(self):
+        super(Path, self)._update()
+        self.folder_button.setText(self._data['buttonLabel'])

@@ -1,18 +1,18 @@
 [
     {
         "name": "default", 
-        "type": "float", 
-        "default": 5.0
+        "type": "int", 
+        "default": 0
     }, 
     {
         "name": "min", 
         "type": "int", 
-        "default": -10
+        "default": null
     }, 
     {
         "name": "max", 
         "type": "int", 
-        "default": 10
+        "default": null
     }, 
     {
         "name": "step", 

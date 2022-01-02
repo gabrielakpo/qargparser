@@ -11,7 +11,7 @@ PROPERTIES_MAPPING_NAMES = {
     "mel": 'text', 
     "doc": 'text', 
     "python": 'text'
-}          
+}     
 
 #UI
 NAME_IDX = 0
@@ -25,7 +25,6 @@ READPREVIEW_WIN_WIDTH = 1500
 READPREVIEW_WIN_HEIGHT = 1500
 
 SPLITTER_RATIOS = [0.2, 0.5, 0.3]
-
 
 #Style
 STYLE_FILE = os.path.join(_root, "style", 'style.css')

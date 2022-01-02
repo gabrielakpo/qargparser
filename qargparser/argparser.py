@@ -1,16 +1,17 @@
 from functools import partial
 from collections import OrderedDict
-from .Qt import QtWidgets, QtCore
+from .Qt import QtWidgets, QtCore, QtGui
 from .object import Object
 from .string import String, Info
 from .text import Text, Doc, Python, Mel
-from .array import Array
+from .array import Array, ArrayObject
 from .number import Float, Integer
-from .item import Item
+from .item import Item, ItemObject
 from .boolean import Boolean
 from .path import Path
 from .enum import Enum
 from . import utils
+from . import constants as cons
 import re
 
 TYPES = {
@@ -24,7 +25,9 @@ TYPES = {
     'mel': Mel,
     'python': Python,
     'array': Array,
+    'arrayobject': ArrayObject,
     'item': Item,
+    'itemobject': ItemObject,
     'boolean': Boolean,
     'float': Float,
     'integer': Integer,
@@ -48,13 +51,19 @@ def get_object_from_type(type):
     return _TYPES[type]
 
 class ResetButton(QtWidgets.QPushButton):
-    def __init__(self, wdg, label = '<', *args, **kwargs):
-        super(ResetButton, self).__init__(label, *args, **kwargs)
+    def __init__(self, wdg, label = '*', *args, **kwargs):
+        super(ResetButton, self).__init__(QtGui.QIcon(cons.RELOAD_ICON), 
+                                          "", 
+                                          *args, **kwargs)
+        self.setIconSize(QtCore.QSize(25, 25))
         self.wdg = wdg
 
     def paintEvent(self, event):
         super(ResetButton, self).paintEvent(event)
-        self.setFixedSize(35, self.wdg.sizeHint().height())
+        height = self.wdg.sizeHint().height()
+        if height < 35:
+            height = 35
+        self.setFixedSize(35, height)
 
 def to_label_string(text):
     if text is None:
@@ -68,13 +77,16 @@ class CustomLabel(QtWidgets.QLabel):
 
     def __init__(self, *args, **kwargs):
         self.label_suffix = kwargs.pop("label_suffix", None)
-        if args:
+        if args:  
             args = [self._new_text(args[0])] + [e for e in args[1:]]
 
         super(CustomLabel, self).__init__(*args, **kwargs)
+
+        self.setMaximumWidth([0, 1000][bool(args[0])])
             
     def setText(self, txt):
         txt = self._new_text(txt)
+        self.setMaximumWidth([0, 1000][bool(txt)])
         super(CustomLabel, self).setText(txt)
 
     def _new_text(self, txt):
@@ -105,7 +117,7 @@ class ArgParser(QtWidgets.QGroupBox):
         layout.setContentsMargins(2, 2, 2, 2)
         layout.setFormAlignment(QtCore.Qt.AlignTop)
         layout.setLabelAlignment(QtCore.Qt.AlignRight)
-        layout.setVerticalSpacing(2)
+        layout.setVerticalSpacing(5)
 
         # build from data
         if data:
@@ -116,7 +128,7 @@ class ArgParser(QtWidgets.QGroupBox):
 
     def __repr__(self):
         return '<%s( %s )>' %(self.__class__.__name__, 
-                          dict(self._args))
+                              self._args)
 
     @property
     def _row(self):
@@ -157,14 +169,13 @@ class ArgParser(QtWidgets.QGroupBox):
         label = arg._data['name']
 
         label_ui = CustomLabel(label, label_suffix=self._label_suffix)
-        arg.label_ui = label_ui
 
         row_wdg = QtWidgets.QWidget()
         row_layout = QtWidgets.QHBoxLayout(row_wdg)
         row_layout.setContentsMargins(0, 0, 0, 0)
         row_layout.setSpacing(0)
-        row_layout.addWidget(wdg)
         row_layout.addWidget(reset_button)
+        row_layout.addWidget(wdg)
         
         layout.insertRow(self._row,
                         label_ui, 
@@ -198,20 +209,16 @@ class ArgParser(QtWidgets.QGroupBox):
         if isinstance(key, int):
             key = self._args[key]
 
-        layout = self.layout()
-
-        _idx, _ = layout.getWidgetPosition(key.wdg.parent())
-
-        lay_item =  layout.itemAt(_idx, QtWidgets.QFormLayout.LabelRole)
-        label = lay_item.widget()
+        label = self.get_label(key)
         label.setParent(None)
 
-        lay_item =  layout.itemAt(_idx, QtWidgets.QFormLayout.FieldRole)
-        wdg = lay_item.widget()
+        wdg = self.get_widget()
         wdg.setParent(None)
 
         self._args.remove(key)
         self._args.insert(idx, key)
+
+        layout = self.layout()
 
         _idx = 0
         if idx > 0:
@@ -224,6 +231,7 @@ class ArgParser(QtWidgets.QGroupBox):
 
     def build(self, data):
         for d in data:
+            print(d)
             self.add_arg(**d)
 
     def delete_children(self):
@@ -231,8 +239,28 @@ class ArgParser(QtWidgets.QGroupBox):
             self.pop_arg(arg)
 
     def on_changed(self, arg, button, *args, **kwargs):
+        #Set edit_button visibiliy
         button.setVisible(arg.is_edited())
+
+        #Edit label
+        label = self.get_label(arg)
+        label.setText(arg("name"))
+
         self.changed.emit()
+
+    def get_label(self, arg):
+        layout = self.layout()
+        _idx, _ = layout.getWidgetPosition(arg.wdg.parent())
+        lay_item =  layout.itemAt(_idx, QtWidgets.QFormLayout.LabelRole)
+        label = lay_item.widget()
+        return label
+
+    def get_widget(self, arg):
+        layout = self.layout()
+        _idx, _ = layout.getWidgetPosition(arg.wdg.parent())
+        lay_item =  layout.itemAt(_idx, QtWidgets.QFormLayout.FieldRole)
+        wdg = lay_item.widget()
+        return wdg
 
     def export_data(self):
         return self._read()

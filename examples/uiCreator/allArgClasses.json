@@ -9,13 +9,13 @@
         "name": "asEnum", 
         "type": "enum", 
         "default": "blue", 
-        "enum": [
+        "enums": [
             "green", 
             "blue", 
             "red"
         ], 
         "description": "I am a color enumeration", 
-        "enumDescriptions": ["I am green", "I am blue"]
+        "enumsDescriptions": ["I am green", "I am blue"]
     }, 
     {
         "name": "asInfo", 
@@ -63,58 +63,36 @@
         "name": "asArray", 
         "type": "array", 
         "default": [
-            [
-                "arrayItemA"
-            ], 
-            [
-                "arrayItemB"
-            ], 
-            [
-                "arrayItemC"
-            ]
-        ], 
-        "description": "I am a array", 
+            "arrayItemA", 
+            "arrayItemB", 
+            "arrayItemC"
+        ],
+        "description": "I am a array",
+        "buttonLabel": "+",
         "items": {
-            "type": "item", 
-            "template": [
-                {
-                    "type": "string", 
-                    "description": "I am a string array item"
-                }
-            ]
+            "type": "string", 
+            "description": "I am a string array item"
         }
     }, 
     {
         "name": "asNestedArray", 
         "type": "array", 
+        "min": 2,
         "default": [
-            [
-                0
-            ]
+            [16] 
         ], 
         "description": "I am a nested array", 
         "items": {
             "type": "array", 
             "description": "I am a array", 
             "default": [
-                [
-                    0
-                ], 
-                [
-                    5
-                ], 
-                [
-                    10
-                ]
+                0, 
+                5, 
+                10
             ], 
             "items": {
-                "type": "item", 
-                "template": [
-                    {
-                        "type": "int", 
-                        "description": "I am a int array item"
-                    }
-                ]
+                "type": "int", 
+                "description": "I am a int array item"
             }
         }
     }, 
@@ -132,24 +110,26 @@
                 "str": "I am the 2nd item string child"
             }
         ], 
-        "items": {
-            "type": "item", 
-            "template": {
-                "str": {
-                    "type": "string", 
-                    "default": "I am an item string child"
-                }, 
-                "int": {
-                    "type": "integer", 
-                    "min": 1, 
-                    "default": 4
-                }, 
-                "bool": {
-                    "type": "boolean", 
-                    "default": true
-                }
+        "items": [
+             {
+                "name": "str",
+                "type": "string", 
+                "default": "I am an item string child"
+            }, 
+            {
+                "name": "int",
+                "type": "integer", 
+                "min": 1, 
+                "default": 4,
+                "slider": true
+            }, 
+            {
+                "name": "bool",
+                "type": "boolean", 
+                "default": true
             }
-        }
+        
+        ]
     }, 
     {
         "name": "asFloat", 

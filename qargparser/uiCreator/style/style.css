@@ -5,12 +5,6 @@ QLabel {
   background-color: transparent;
 }   
 
-/* QPushButton */
-QPushButton[default_style="True"]
-{
-  color : default;
-}
-
 QPushButton{
   font: bold;
   color: black;
@@ -40,18 +34,19 @@ RoundPushButton {
   background-color: white;
   border-radius: 12%;
 }
-QGroupBox {
-  border: 2px solid gray;
+
+QGroupBox{
+  border: 2px solid rgba(167, 167, 173, 50);
   border-radius : 10%;   
-  font: bold black;
-  padding-top: 30%; /* leave space at the top for the title */
-  padding-bottom: 30%; /* leave space at the top for the title */
+  font: bold black; 
+  margin-top: 5%;
+  margin-bottom: 5%; 
 }
 
-QGroupBox:title {
+
+QGroupBox::title {
   subcontrol-origin: margin;
-  subcontrol-position: top center;
-  color: black;
+  subcontrol-position: top;
   top: -5%;
 }
 
@@ -116,16 +111,7 @@ QTabBar:tab:!selected:right{
 QTabBar:tab:disabled {
   background-color: disabled;
 }
-/* 
-QHeaderView::section{
-  border: 4px bold black;
-}
-QHeaderView::section:firt{
-  border-top-left-radius: 10%;
-}
-QHeaderView::section:end{
-  border-top-right-radius: 10%;
-} */
+
 
 QTreeView,
 QListView, 
@@ -266,7 +252,11 @@ QSlider::handle:horizontal {
   border: 1px solid black;
   margin: -24px -12px;
 }
-QSlider::groove:hotizontal {
+QSlider::groove:horizontal {
   height: 5px;
   margin: 0 12px;
+}
+
+QScrollArea{
+  border: none;
 }

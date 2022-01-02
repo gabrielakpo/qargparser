@@ -1,6 +1,5 @@
 import json
 from collections import OrderedDict as BaseOrderedDict, Mapping
-from json import loads, dumps
 
 class OrderedDict(BaseOrderedDict):
     def insert(self, idx, key, value):
@@ -34,8 +33,24 @@ def load_data_from_file(path):
         return data
 
 def to_dict(o_dict):
-    return loads(dumps(o_dict)) 
+    return json.loads(json.dumps(o_dict)) 
 
 def write_json(data, path):
     with open(path, 'w') as f:
         json.dump(data, f, indent=4)
+
+def clear_layout(layout):
+    """Delete all UI children recurcively
+
+    :param layout: layout parent, defaults to None
+    :type layout: QLayout, optional
+    """
+    while layout.count():
+        item = layout.takeAt(0)
+        if item:
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+            lay = item.layout()
+            if lay:
+                clear_layout(lay) 

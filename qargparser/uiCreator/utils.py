@@ -48,19 +48,3 @@ def load_style():
     #Replace icons path keys by valyes
     string = string.replace('<path>', cons.ICONS_PATH)
     return string
-
-def clear_layout(layout):
-    """Delete all UI children recurcively
-
-    :param layout: layout parent, defaults to None
-    :type layout: QLayout, optional
-    """
-    while layout.count():
-        item = layout.takeAt(0)
-        if item:
-            widget = item.widget()
-            if widget:
-                widget.deleteLater()
-            lay = item.layout()
-            if lay:
-                clear_layout(lay) 

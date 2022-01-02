@@ -98,27 +98,13 @@ class SliderDoubleSpinBox(AbstractSliderSpinBox):
     pass
 
 class Number(Arg):
-    default = 0
 
     def create(self):
         #Widget
         if isinstance(self, Float):
             _cls = SliderDoubleSpinBox
-            self._data["step"] = self._data.get("step", 0.1)
         else:
             _cls = SliderSpinBox
-            self._data["step"] = self._data.get("step", 1)
-
-        #Min
-        if self._data.get("min") is None:
-            self._data['min'] = -100000
-            
-        #Max
-        if self._data.get("max") is None:
-            self._data['max'] = 100000
-
-        #Slider
-        self._data["slider"] = self._data.get("slider", False)
 
         wdg = _cls(slider=self._data["slider"],
                    step=self._data["step"],

@@ -1,8 +1,8 @@
 from .Qt import QtWidgets
 from .arg import Arg
+from . import constants as cons
 
 class Boolean(Arg):
-    default = False
 
     def create(self):
         wdg = QtWidgets.QCheckBox()

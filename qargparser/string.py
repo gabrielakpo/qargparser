@@ -7,7 +7,6 @@ class String(Arg):
         default = self._data['default']
 
         if "enum" in self._data:
-            descs = self._data.get('enumDescriptions', [])
             enum = self._data['enum']
             wdg = QtWidgets.QComboBox()
             wdg.addItems(enum)
@@ -25,8 +24,6 @@ class String(Arg):
             wdg.currentIndexChanged.connect(lambda x: self.on_changed(wdg.itemText(x)))
 
         else:   
-            if self._data['default'] is None:
-                self._data['default'] = ''
             wdg = QtWidgets.QLineEdit()
             wdg.setText(self._data['default'])
 
@@ -43,6 +40,7 @@ class String(Arg):
 
     def reset(self):
         self._write(self._data['default'])
+        self.changed.emit(None)
 
     def on_editing_finished(self, wdg):
         text = wdg.text()

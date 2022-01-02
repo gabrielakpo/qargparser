@@ -5,29 +5,19 @@
         "default": ""
     }, 
     {
-        "name": "enum", 
+        "name": "enums", 
         "type": "array", 
         "default": [], 
         "items": {
-            "type": "item", 
-            "template": [
-                {
-                    "type": "string"
-                }
-            ]
+            "type": "string"
         }
     }, 
     {
-        "name": "enumDescriptions", 
+        "name": "enumsDescriptions", 
         "type": "array", 
         "default": [], 
         "items": {
-            "type": "item", 
-            "template": [
-                {
-                    "type": "string"
-                }
-            ]
+            "type": "string"
         }
     }
 ]

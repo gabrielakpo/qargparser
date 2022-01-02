@@ -33,6 +33,7 @@ class ReadPreview(QtWidgets.QWidget):
                     cons.READPREVIEW_WIN_HEIGHT)
 
         self.show()
+        self.move(self.parent().x(), self.parent().y())
 
 class MainUI(QtWidgets.QWidget):
     WINDOW_TITLE = "%s v-%s"%(__title__, __version__)

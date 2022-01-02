@@ -1,17 +1,41 @@
 [
     {
-        "name": "name", 
-        "type": "string", 
-        "default": "asString"
-    }, 
-    {
-        "name": "description", 
-        "type": "text", 
-        "default": "I am a string"
-    }, 
-    {
-        "name": "default", 
-        "type": "string", 
-        "default": "I am a string"
+        "name": "Settings", 
+        "type": "object", 
+        "description": "This is the settings for my program", 
+        "items": [
+            {
+                "name": "title", 
+                "type": "string", 
+                "description": "Write the title of your program", 
+                "default": "Default title"
+            }, 
+            {
+                "name": "nbJoints", 
+                "type": "integer", 
+                "description": "Choose the number of joints", 
+                "min": 0, 
+                "max": 10, 
+                "step": 1, 
+                "slider": true, 
+                "default": 1
+            }, 
+            {
+                "name": "Colors", 
+                "type": "enum", 
+                "description": "Choose your favorite color", 
+                "enums": [
+                    "red", 
+                    "blue", 
+                    "black"
+                ], 
+                "enumsDescriptions": [
+                    "I am red", 
+                    "I am blue", 
+                    "I am black"
+                ], 
+                "default": "blue"
+            }
+        ]
     }
 ]

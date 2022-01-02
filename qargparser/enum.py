@@ -2,7 +2,6 @@ from .Qt import QtWidgets, QtCore
 from .arg import Arg
 
 class Enum(Arg):
-    default = ""
 
     def create(self):
         #Widget
@@ -20,10 +19,10 @@ class Enum(Arg):
         return wdg
 
     def _init(self):
-        self.wdg.addItems(self._data["enum"])
+        self.wdg.addItems(self._data["enums"])
         
         if (self._data['default'] is not None 
-        and self._data['default'] in self._data["enum"]):
+        and self._data['default'] in self._data["enums"]):
             idx = self.wdg.findText(self._data['default'], QtCore.Qt.MatchExactly)
             self.wdg.setCurrentIndex(idx)
         else:
@@ -32,8 +31,8 @@ class Enum(Arg):
             self._data['default'] = text
 
         #Descriptions
-        descs = self._data.get('enumDescriptions', [])
-        for i in range(len(self._data["enum"])):
+        descs = self._data['enumsDescriptions']
+        for i in range(len(self._data["enums"])):
             if i < len(descs):
                 self.wdg.setItemData(i, descs[i], QtCore.Qt.ToolTipRole)
 

@@ -1,51 +1,43 @@
 from .Qt import QtCore
 from . import utils
+from . import constants as cons
 
-def clear_layout(layout):
-    """Delete all UI children recurcively
+class ArgData(dict):
 
-    :param layout: layout parent, defaults to None
-    :type layout: QLayout, optional
-    """
-    if not layout:
-        return 
+    def __init__(self, *args, **kwargs):
+        super(ArgData, self).__init__(*args, **kwargs)
+        ref = args[0]
+        if ref["type"] in cons.DEFAULT_DATA:
+            for key in cons.DEFAULT_DATA[ref["type"]]:
+                if not key in self or self[key] is None:
+                    super(ArgData, self).__setitem__(key, cons.DEFAULT_DATA[ref["type"]][key])
 
-    while layout.count():
-        item = layout.takeAt(0)
-        if item:
-            widget = item.widget()
-            if widget:
-                widget.deleteLater()
-            lay = item.layout()
-            if lay:
-                clear_layout(lay) 
+    def __repr__(self):
+        return "<%s %s>"%(self.__class__.__name__, super(ArgData, self).__repr__())
 
 class Arg(QtCore.QObject):
-    default = None
     changed = QtCore.Signal(tuple)
-    deleted = QtCore.Signal()
     
-    def __init__(self, name, default=None, **kwargs):
+    def __init__(self, name=None, default=None, **kwargs):
         super(Arg, self).__init__(kwargs.pop('parent', None))
-        
+
         kwargs['name'] = name
         kwargs['type'] = self.__class__.__name__.lower()
-        kwargs['default'] = default or self.default
-        kwargs['description'] = kwargs.get('description', '')
+        kwargs['default'] = default
+        kwargs['description'] = kwargs.get('description', "")
 
         self.wdg = None
-        self._data = kwargs
+        self._data = ArgData(kwargs)
         self._write = None
         self._read = None
 
     @property
     def name(self):
-        return self._data['name'] 
+        return self._data['name']  
 
     def __repr__(self):
-        import pprint
-        return '<\n\n[%s]\n%s>' %(self.__class__.__name__, 
-                          pprint.pformat(utils.clean_unicodes(utils.to_dict(self._data))))
+        return '<%s( %s )>' %(self.__class__.__name__, 
+                          self._data.items())
 
     def __call__(self, key, default=None):
         return self._data.get(key, default)
@@ -62,14 +54,13 @@ class Arg(QtCore.QObject):
         self._update()
 
     def _update(self):
-        self.label_ui.setText(self._data["name"])
-        desc = self._data.get('description')
+        desc = self._data['description']
         if desc.strip():
             self.wdg.setToolTip(desc)
         self.reset()
 
     def delete(self):
-        clear_layout(self.wdg.layout())
+        utils.clear_layout(self.wdg.layout())
         self.wdg.deleteLater()
 
     def get_children(self):
@@ -93,5 +84,8 @@ class Arg(QtCore.QObject):
         self.changed.emit(*args)
 
     def to_data(self):
-        data = self._data.copy()
+        data = utils.OrderedDict(
+            sorted([item for item in self._data.items() if item[1] is not None], 
+                   key=lambda x: cons.NAMES_ORDER.index(x[0]) 
+                                 if x[0] in cons.NAMES_ORDER else 0))
         return data

@@ -22,7 +22,7 @@ class Items(QtWidgets.QGroupBox):
         header.resizeSection(cons.ADD_IDX, 40)
 
         layout = QtWidgets.QVBoxLayout(self)
-        layout.setContentsMargins(2, 2, 2, 2)
+        # layout.setContentsMargins(2, 2, 2, 2)
         layout.addWidget(self.tree)
 
     def load(self):

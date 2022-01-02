@@ -1,90 +1,139 @@
 from .Qt import QtWidgets
 from .arg import Arg
-from functools import partial
+from .item import Item, ItemObject
+from . import constants as cons
 
-class Array(Arg):
-    default = []
-    CHILDREN_TYPES = ['array', "item"]
-    
+class ArrayBase(Arg):
+
     def create(self):
         from .argparser import ArgParser
-
         wdg = ArgParser(description=self._data['description'])
-        kwargs = self._data.get('items', {}).copy()
 
         self.wdg = wdg
+        if isinstance(self, ArrayObject):
+            kwargs = self._data["items"][:]
+            self._item = ItemObject(None, template=kwargs)
+        else:
+            kwargs = self._data["items"].copy()
+            self._item = Item(None, template=kwargs)
+
+        #Item template
+        self._item.create()
+
+        #Add items
+            #Check max
+        defaults = self._data['default']
+        if len(defaults)  > self._data["max"]:
+            defaults = defaults[:self._data["max"]]
+
+        for default in defaults:
+            self.add_item(default)
+
+            #Check min
+        remaining = self._data["min"] - len(defaults)
+        if remaining > 0:
+            for i in range(remaining):
+                self.add_item()
+
+        #Add item button
+        self.add_item_button = QtWidgets.QPushButton(self._data["buttonLabel"])
+        self.add_item_button.clicked.connect(self.add_item)
+        layout = self.wdg.layout()
+        layout.insertRow(layout.rowCount(), self.add_item_button)
 
         self._write = None
-        self._read = lambda : [arg.read() for arg in wdg._args]
+        self._read = lambda : [arg.read() for arg in wdg._args if arg.read() is not None]
         wdg.changed.connect(self.on_changed)
-
-        #Array
-        for default in self._data['default']:
-            kwargs['default'] = default
-            self.add_item(**kwargs)
-
-        self.child_data = kwargs
-        self._create_add_item_button()
 
         return wdg
 
     def is_edited(self):
-        return len(self.read()) != len(self._data["default"])
+        return (len(self.read()) != len(self._data["default"]) 
+                or any(child.is_edited() for child in self.wdg._args))
 
-    def add_item(self, **kwargs):
+    def add_item(self, default=None):
         idx = len(self.wdg._args)
 
         #Max
-        _max = self._data.get("max")
+        _max = self._data["max"]
         if _max and idx == _max:
             return
 
-        kwargs['name'] = ""
-        arg = self.wdg.add_arg(**kwargs)
-        arg.deleted.connect(partial(self.on_item_deleted, **kwargs))
-
+        data = {"type": self._item._data["type"], "template": self._item.to_data()}
+        if default:
+            data["default"] = default
+            
+        arg = self.wdg.add_arg(**data)
+        arg.delete_requested.connect(self.on_item_delete_resquested)
         self.changed.emit(None)
+        return arg
 
-    def on_item_deleted(self, **kwargs):
+    def on_item_delete_resquested(self, arg):
+        #Check min items
         idx = len(self.wdg._args)
         min = self._data.get("min")
-        if min and idx < min:
-            self.add_item(**kwargs)
+        if min and idx == min:
+            return
 
-    def _create_add_item_button(self):
-        button = QtWidgets.QPushButton('Add item')
-        button.clicked.connect(partial(self.add_item, **self.child_data))
-        layout = self.wdg.layout()
-        layout.insertRow(layout.rowCount(), button)
+        self.wdg.pop_arg(arg)
+        self.changed.emit(None)
+
+    def _init(self):
+        if isinstance(self, ArrayObject):
+            kwargs = self._data["items"][:]
+        else:
+            kwargs = self._data["items"].copy()
+
+        self._item.update_data({"template": kwargs})
 
     def reset(self):
         self.wdg.delete_children()
 
-        kwargs = self._data.get('items', {})
+        self._init()
 
-        #Array
-        for default in self._data['default']:
-            kwargs['default'] = default
-            self.add_item(**kwargs)
+        defaults = self._data['default']
+        if len(defaults)  > self._data["max"]:
+            defaults = defaults[:self._data["max"]]
+
+        for default in defaults:
+            self.add_item(default)
+
+            #Check min
+        remaining = self._data["min"] - len(defaults)
+        if remaining > 0:
+            for i in range(remaining):
+                self.add_item()
 
         self.changed.emit(None)
 
     def _update(self):
-        super(Array, self)._update()
+        super(ArrayBase, self)._update()
         self.reset()
 
+        #Add Item button
+        self.add_item_button.setText(self._data["buttonLabel"])
+
     def get_children(self):
-        return self.wdg._args
+        return self._item.get_children()
 
     def to_data(self):
-        data = super(Array, self).to_data()
+        data = super(ArrayBase, self).to_data()
         children = self.get_children()
         if children:
-            data["items"] = self.get_children()[0].to_data()
+            data["items"] = self._item.to_data()
+        
         return data
 
     def add_arg(self, *args, **kwargs):
-        if kwargs["type"] in self.CHILDREN_TYPES and not len(self.get_children()):
-            self.child_data = kwargs
-            if kwargs["type"] == "item":
-                return self.wdg.add_arg(*args, **kwargs)
+        if isinstance(self, Array):
+            if len(self._item.item_wdg._args):
+                return
+        arg = self._item.add_arg(*args, **kwargs)
+        self.reset()
+        return arg
+
+class Array(ArrayBase):
+    pass
+
+class ArrayObject(ArrayBase):
+    pass

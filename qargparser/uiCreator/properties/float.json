@@ -2,17 +2,17 @@
     {
         "name": "default", 
         "type": "float", 
-        "default": 5.0
+        "default": 0.0
     }, 
     {
         "name": "min", 
         "type": "float", 
-        "default": 0.0
+        "default": null
     }, 
     {
         "name": "max", 
         "type": "float", 
-        "default": 10.0
+        "default": null
     }, 
     {
         "name": "step", 

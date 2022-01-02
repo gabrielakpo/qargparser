@@ -18,3 +18,14 @@ class Object(Arg):
 
     def add_arg(self, *args, **kwargs):
         return self.wdg.add_arg(*args, **kwargs)
+
+    def get_children(self):
+        return self.wdg._args
+
+    def to_data(self):
+        data = super(Object, self).to_data()
+        children = self.get_children()
+        if children:
+            data["items"] = [child.to_data() for child in self.get_children()]
+        
+        return data

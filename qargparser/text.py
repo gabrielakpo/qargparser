@@ -2,8 +2,7 @@ from .Qt import QtWidgets
 from .arg import Arg
 
 class Text(Arg):
-    default = ''
-    
+
     def create(self):
         wdg = QtWidgets.QPlainTextEdit()
         wdg.setPlainText(self._data['default'])
@@ -22,13 +21,13 @@ class Text(Arg):
         self._write(self._data['default'])
 
 class Doc(Text):
-    default = ''
+    pass
 
 class Code(Text):
-    default = ''
+    pass
 
 class Python(Code):
-    default = '#Python'
+    pass
 
 class Mel(Code):
-    default = '//Mel'
+    pass

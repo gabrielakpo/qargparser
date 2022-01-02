@@ -1,0 +1,78 @@
+
+[
+    {
+        "name": "asArray", 
+        "type": "array", 
+        "default": [
+            "arrayItemA", 
+            "arrayItemB", 
+            "arrayItemC"
+        ],
+        "description": "I am a array",
+        "buttonLabel": "+",
+        "items": {
+            "type": "string", 
+            "default": "NewArrayItem",
+            "description": "I am a string array item"
+        }
+    }, 
+    {
+        "name": "asNestedArray", 
+        "type": "array", 
+        "min": 2,
+        "max": 3,
+        "default": [
+            0  
+        ], 
+        "description": "I am a nested array", 
+        "items": {
+            "type": "array", 
+            "min": 1,
+            "description": "I am a array", 
+            "default": [
+                0, 
+                5, 
+                10
+            ], 
+            "items": {
+                "type": "int", 
+                "description": "I am a int array item"
+            }
+        }
+    }, 
+    {
+        "name": "asItemArray", 
+        "type": "arrayobject", 
+        "max": null, 
+        "min": 1, 
+        "default": [
+            {
+                "str": "I am the 1st item string child", 
+                "int": 3
+            }, 
+            {
+                "str": "I am the 2nd item string child"
+            }
+        ], 
+        "items": [
+            {
+                "name": "str",
+                "type": "string", 
+                "default": "I am an item string child"
+            }, 
+            {
+                "name": "int",
+                "type": "integer", 
+                "min": 1, 
+                "default": 4,
+                "slider": true
+            }, 
+            {
+                "name": "bool",
+                "type": "boolean", 
+                "default": true
+            }
+        
+        ]
+    }
+]
