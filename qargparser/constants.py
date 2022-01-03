@@ -3,6 +3,8 @@ import os
 _root = os.path.dirname(__file__)
 RELOAD_ICON = os.path.join(_root, "icons", "reload.png")
 
+EXT = ".json"
+
 NAMES_ORDER = [
     "name", 
     "type", 
@@ -26,13 +28,6 @@ DEFAULT_DATA = {
         "buttonLabel" : "Add Item",
         "items" : {},
     },
-        "arrayobject":{
-        "default" : [],
-        "min" : 0,
-        "max" : 10000,
-        "buttonLabel" : "Add Item",
-        "items" : [],
-    },
     "integer":{
         "default" : 0,
         "step" : 1,
@@ -46,6 +41,10 @@ DEFAULT_DATA = {
         "min" : -10000.0,
         "max" : 10000.0,
         "slider" : False
+    },    
+    "object":{
+        "default" : {},
+        "items" : [],
     },
     "path":{
         "default" : "",

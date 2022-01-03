@@ -1,0 +1,36 @@
+[
+    {
+        "name": "array", 
+        "type": "array", 
+        "description": "", 
+        "min": 0, 
+        "max": 10000, 
+        "buttonLabel": "Add Item", 
+        "default": [], 
+        "items": {
+            "name": "object", 
+            "type": "object", 
+            "description": "", 
+            "items": [
+                {
+                    "name": "enum", 
+                    "type": "enum", 
+                    "description": "", 
+                    "enums": [], 
+                    "enumsDescriptions": [], 
+                    "default": ""
+                }, 
+                {
+                    "name": "float", 
+                    "type": "float", 
+                    "description": "", 
+                    "min": -10000.0, 
+                    "max": 10000.0, 
+                    "step": 0.1, 
+                    "slider": true, 
+                    "default": 0.0
+                }
+            ]
+        }
+    }
+]

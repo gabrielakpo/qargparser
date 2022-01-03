@@ -48,3 +48,8 @@ def load_style():
     #Replace icons path keys by valyes
     string = string.replace('<path>', cons.ICONS_PATH)
     return string
+
+def get_example_path(name):
+    dir_path = cons.EXAMPLES_DIR_PATH
+    path = os.path.join(dir_path, name+cons.EXT)
+    return path

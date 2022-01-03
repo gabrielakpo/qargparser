@@ -4,9 +4,9 @@ from .Qt import QtWidgets, QtCore, QtGui
 from .object import Object
 from .string import String, Info
 from .text import Text, Doc, Python, Mel
-from .array import Array, ArrayObject
+from .array import Array
 from .number import Float, Integer
-from .item import Item, ItemObject
+from .item import Item
 from .boolean import Boolean
 from .path import Path
 from .enum import Enum
@@ -25,9 +25,7 @@ TYPES = {
     'mel': Mel,
     'python': Python,
     'array': Array,
-    'arrayobject': ArrayObject,
     'item': Item,
-    'itemobject': ItemObject,
     'boolean': Boolean,
     'float': Float,
     'integer': Integer,
@@ -105,7 +103,6 @@ class ArgParser(QtWidgets.QGroupBox):
                  parent=None):
 
         #Init
-        self._nb_deleted = 0
         self._description = description
         self._label_suffix = label_suffix
         self._args = []
@@ -212,7 +209,7 @@ class ArgParser(QtWidgets.QGroupBox):
         label = self.get_label(key)
         label.setParent(None)
 
-        wdg = self.get_widget()
+        wdg = self.get_widget(key)
         wdg.setParent(None)
 
         self._args.remove(key)
@@ -231,7 +228,6 @@ class ArgParser(QtWidgets.QGroupBox):
 
     def build(self, data):
         for d in data:
-            print(d)
             self.add_arg(**d)
 
     def delete_children(self):

@@ -1,0 +1,97 @@
+[
+    {
+        "name": "asArray", 
+        "type": "array", 
+        "description": "I am a array", 
+        "min": 0, 
+        "max": 10000, 
+        "buttonLabel": "+", 
+        "default": [
+            "arrayItemA", 
+            "arrayItemB", 
+            "arrayItemC"
+        ], 
+        "items": {
+            "type": "string", 
+            "description": "I am a string array item", 
+            "default": "NewArrayItem"
+        }
+    }, 
+    {
+        "name": "asNestedArray", 
+        "type": "array", 
+        "description": "I am a nested array", 
+        "min": 2, 
+        "max": 3, 
+        "buttonLabel": "Add Item", 
+        "default": [
+            0
+        ], 
+        "items": {
+            "type": "array", 
+            "description": "I am a array", 
+            "min": 1, 
+            "max": 10000, 
+            "buttonLabel": "Add Item", 
+            "default": [
+                0, 
+                5, 
+                10
+            ], 
+            "items": {
+                "type": "integer", 
+                "description": "I am a int array item", 
+                "min": -10000, 
+                "max": 10000, 
+                "step": 1, 
+                "slider": false, 
+                "default": 0
+            }
+        }
+    }, 
+    {
+        "name": "asItemArray", 
+        "type": "array", 
+        "description": "", 
+        "min": 1, 
+        "max": 10000, 
+        "buttonLabel": "Add Item", 
+        "default": [
+            {
+                "str": "I am the 1st item string child", 
+                "int": 3
+            }, 
+            {
+                "str": "I am the 2nd item string child"
+            }
+        ], 
+        "items": {
+            "type": "object", 
+            "description": "", 
+            "items": [
+                {
+                    "name": "str", 
+                    "type": "string", 
+                    "description": "", 
+                    "default": "I am an item string child"
+                }, 
+                {
+                    "name": "int", 
+                    "type": "integer", 
+                    "description": "", 
+                    "min": 1, 
+                    "max": 10000, 
+                    "step": 1, 
+                    "slider": true, 
+                    "default": 4
+                }, 
+                {
+                    "name": "bool", 
+                    "type": "boolean", 
+                    "description": "", 
+                    "default": true
+                }
+            ]
+        }
+    }
+]

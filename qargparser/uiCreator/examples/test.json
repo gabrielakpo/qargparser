@@ -1,0 +1,31 @@
+{
+    "name": "controlShape", 
+    "type": "enum", 
+    "description": "", 
+    "enums": [
+        "main", 
+        "square", 
+        "pyramide", 
+        "cross", 
+        "star", 
+        "gear", 
+        "trangle", 
+        "arrow", 
+        "arrow_double", 
+        "aim", 
+        "cube", 
+        "sphere", 
+        "circle", 
+        "eye", 
+        "needle", 
+        "needle_circle", 
+        "needle_sphere", 
+        "needle_pyramide", 
+        "needle_triangle", 
+        "cube", 
+        "square", 
+        "cross"
+    ], 
+    "enumsDescriptions": [], 
+    "default": "needle_triangle"
+}

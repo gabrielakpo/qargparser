@@ -17,6 +17,7 @@ class ArgData(dict):
 
 class Arg(QtCore.QObject):
     changed = QtCore.Signal(tuple)
+    reset_requested = QtCore.Signal()
     
     def __init__(self, name=None, default=None, **kwargs):
         super(Arg, self).__init__(kwargs.pop('parent', None))

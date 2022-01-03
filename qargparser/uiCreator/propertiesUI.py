@@ -39,7 +39,7 @@ class Properties(QtWidgets.QGroupBox):
             return
         
         data = arg.to_data()
-        utils.write_json(data, r"A:\packages\perso\qargparser\dev\examples\uiCreator\test.json")
+        utils.write_json(data, r"A:\packages\perso\qargparser\dev\qargparser\uiCreator\examples\test.json")
 
         if arg("type") == "item":
             return 

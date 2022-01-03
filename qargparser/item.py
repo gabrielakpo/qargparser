@@ -25,28 +25,15 @@ class Item(Arg):
         tpls = self._data["template"] = self._data.get('template', {})
         default = self._data['default']
 
-        #Array Object
-        if isinstance(self, ItemObject):
-            for tpl in tpls:
-                _tpls = tpl.copy()
+        if tpls: 
+            _tpls = tpls.copy()
+            if default is not None:
+                _tpls["default"] = default
+            _tpls.pop("name", None)
+            arg = self.item_wdg.add_arg(**_tpls)
+            arg.reset_requested.connect(self.on_reset_request)
 
-                if default and tpl["name"] in default.keys():
-                    _tpls['default'] = default[tpl["name"]]
-
-                self.item_wdg.add_arg(**_tpls)
-
-            self._read = lambda : {arg._data["name"]: arg.read() for arg in self.item_wdg._args}
-
-        #Array
-        else:
-            if tpls: 
-                _tpls = tpls.copy()
-                if default is not None:
-                    _tpls["default"] = default
-                _tpls.pop("name", None)
-                self.item_wdg.add_arg(**_tpls)
-
-            self._read = lambda : self.item_wdg._args[0].read() if len(self.item_wdg._args) else None
+        self._read = lambda : self.item_wdg._args[0].read() if len(self.item_wdg._args) else None
 
         #Delete button
         del_button = DeleteButton(self.item_wdg)
@@ -77,15 +64,17 @@ class Item(Arg):
         return self.item_wdg._args
 
     def to_data(self):
-        if isinstance(self, ItemObject):
-            data = [child.to_data() for child in self.get_children()]
-        else:
-            data = self.item_wdg._args[0].to_data() if len(self.item_wdg._args) else {}
-
+        data = self.item_wdg._args[0].to_data() if len(self.item_wdg._args) else {}
         return data 
 
     def add_arg(self, *args, **kwargs):
         return self.item_wdg.add_arg(*args, **kwargs)
 
-class ItemObject(Item):
-    pass
+    def pop_arg(self, *args, **kwargs):
+        self.item_wdg.pop_arg(*args, **kwargs) 
+        self._data['default'] = None
+        self._update()
+
+    def on_reset_request(self):
+        self.reset()
+        self.reset_requested.emit()

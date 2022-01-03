@@ -1,24 +1,20 @@
 from .Qt import QtWidgets
 from .arg import Arg
-from .item import Item, ItemObject
-from . import constants as cons
+from .item import Item
 
-class ArrayBase(Arg):
+class Array(Arg):
 
     def create(self):
         from .argparser import ArgParser
         wdg = ArgParser(description=self._data['description'])
 
         self.wdg = wdg
-        if isinstance(self, ArrayObject):
-            kwargs = self._data["items"][:]
-            self._item = ItemObject(None, template=kwargs)
-        else:
-            kwargs = self._data["items"].copy()
-            self._item = Item(None, template=kwargs)
+        kwargs = self._data["items"].copy()
 
         #Item template
+        self._item = Item(None, template=kwargs)
         self._item.create()
+        self._item.reset_requested.connect(self.on_reset_request)
 
         #Add items
             #Check max
@@ -79,16 +75,11 @@ class ArrayBase(Arg):
         self.changed.emit(None)
 
     def _init(self):
-        if isinstance(self, ArrayObject):
-            kwargs = self._data["items"][:]
-        else:
-            kwargs = self._data["items"].copy()
-
+        kwargs = self._data["items"].copy()
         self._item.update_data({"template": kwargs})
 
     def reset(self):
         self.wdg.delete_children()
-
         self._init()
 
         defaults = self._data['default']
@@ -107,7 +98,7 @@ class ArrayBase(Arg):
         self.changed.emit(None)
 
     def _update(self):
-        super(ArrayBase, self)._update()
+        super(Array, self)._update()
         self.reset()
 
         #Add Item button
@@ -117,7 +108,7 @@ class ArrayBase(Arg):
         return self._item.get_children()
 
     def to_data(self):
-        data = super(ArrayBase, self).to_data()
+        data = super(Array, self).to_data()
         children = self.get_children()
         if children:
             data["items"] = self._item.to_data()
@@ -125,15 +116,20 @@ class ArrayBase(Arg):
         return data
 
     def add_arg(self, *args, **kwargs):
-        if isinstance(self, Array):
-            if len(self._item.item_wdg._args):
-                return
+        if len(self._item.item_wdg._args):
+            return
         arg = self._item.add_arg(*args, **kwargs)
         self.reset()
         return arg
 
-class Array(ArrayBase):
-    pass
+    def pop_arg(self, *args, **kwargs):
+        self._item.pop_arg(*args, **kwargs)
+        self._item.update_data({"template": {}})
+        self._data["default"] = []
+        self._data["items"] = {}
+        self._update()
 
-class ArrayObject(ArrayBase):
-    pass
+    def on_reset_request(self):
+        self.reset()
+        self.reset_requested.emit()
+

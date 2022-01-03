@@ -1,7 +1,9 @@
 import sys
+import os
 from qargparser import utils as qargp_utils, \
                        ArgParser
-
+                       
+from functools import partial
 from .Qt import QtWidgets, QtCore
 from . import utils
 from .__version__ import __title__, __version__
@@ -67,15 +69,19 @@ class MainUI(QtWidgets.QWidget):
         self.menuBar.setFixedHeight(50)
         menu = self.menuBar.addMenu("File")
         self.new_action = menu.addAction("New")
-        self.load_action = menu.addAction("Load")
+        self.open_action = menu.addAction("Open")
         self.save_action = menu.addAction("Save")
         self.saveAs_action = menu.addAction("Save as...")
+        self.clear_action = menu.addAction("Clear")
+        loadExamples_menu = menu.addMenu("Load examples...")
+        for name in cons.EXAMPLES_NAMES:
+            action = loadExamples_menu.addAction(name)
+            action.triggered.connect(partial(self.open_example, name))
         self.readPreview_action = self.menuBar.addAction("Read preview")
 
         #File
         self.file_le = QtWidgets.QLineEdit()
         self.file_le.setReadOnly(True)
-
 
         #Splitters
         self.h_splitter = QtWidgets.QSplitter()
@@ -105,8 +111,9 @@ class MainUI(QtWidgets.QWidget):
         main_layout.addWidget(self.h_splitter)
 
     def create_connections(self):
+        self.clear_action.triggered.connect(self.on_clear_file_clicked)
         self.new_action.triggered.connect(self.on_new_file_clicked)
-        self.load_action.triggered.connect(self.on_load_file_clicked)
+        self.open_action.triggered.connect(self.on_open_file_clicked)
         self.save_action.triggered.connect(self.save_file)
         self.saveAs_action.triggered.connect(self.save_as_file)
         self.readPreview_action.triggered.connect(self.readPreview_file_clicked)
@@ -134,18 +141,25 @@ class MainUI(QtWidgets.QWidget):
     def on_add_requested(self, name):
         self.hierarchy_wdg.add_item(name)
 
+    def on_clear_file_clicked(self):
+        self.ap.delete_children()
+        self.hierarchy_wdg.load()
+        self.properties_wdg.load()
+
     def on_new_file_clicked(self):
         self.ap.delete_children()
         self.file_le.setText("")
         self.hierarchy_wdg.load()
         self.properties_wdg.load()
 
-    def on_load_file_clicked(self):
-        path = QtWidgets.QFileDialog.getOpenFileName(self, "Load", "", filter="JSON (**.json)")[0]
-        
+    def on_open_file_clicked(self):
+        path = self.file_le.text()
+        dir_path = ""
+        if os.path.isfile(path):
+            dir_path = os.path.dirname(path)
+        path = QtWidgets.QFileDialog.getOpenFileName(self, "Open file", dir_path, filter="JSON (**.json)")[0]
         if not path:
             return 
-
         #Update path test
         self.load_file(path)
 
@@ -161,19 +175,38 @@ class MainUI(QtWidgets.QWidget):
         self.hierarchy_wdg.load()
 
         self.file_le.setText(path)
+    
+    def open_example(self, name):
+        path = utils.get_example_path(name)
+        self.load_file(path)
 
     def save_file(self):
-        data = self.ap.to_data()
-        path = r"A:\packages\perso\qargparser\dev\examples\uiCreator\test.json"
-        utils.write_json(data, path)
+        path =  self.file_le.text()
+
+        if os.path.isfile(path):
+            awns = QtWidgets.QMessageBox.question(None,
+                                           "This file already exists.", 
+                                           "Do you want to save your changes?",
+                                           QtWidgets.QMessageBox.Save | 
+                                           QtWidgets.QMessageBox.Cancel)
+            if awns == QtWidgets.QMessageBox.Cancel:
+                return
+
+        self.ap.save_data(path)
 
     def save_as_file(self):
-        print('TODO: Save as file')
+        path = self.file_le.text()
+        if os.path.isfile(path):
+            path = os.path.dirname(path)
+        path = QtWidgets.QFileDialog.getSaveFileName(self, "Save as...", path, filter="JSON (**.json)")[0]
+        if not path:
+            return 
+        self.file_le.setText(path)
+        self.ap.save_data(path)
 
     def readPreview_file_clicked(self):
         data = self.ap.export_data()
         ReadPreview(data, parent=self)
-
 
 def show(path=None):
     app = QtWidgets.QApplication(sys.argv)

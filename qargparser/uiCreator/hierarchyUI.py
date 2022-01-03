@@ -50,7 +50,6 @@ class HierarchyParentItem(HierarchyItem):
         super(HierarchyParentItem, self).__init__(*args, **kwargs)
         flags = self.flags()
         flags |= QtCore.Qt.ItemIsDropEnabled
-        flags ^= QtCore.Qt.ItemIsDragEnabled
         self.setFlags(flags)
 
 class HierarchyTree(QtWidgets.QTreeWidget):
@@ -61,6 +60,7 @@ class HierarchyTree(QtWidgets.QTreeWidget):
         self.setHeaderLabels(["name", "type"])
         self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
+        self.itemSelectionChanged.connect(self.on_item_changed)
 
         #Header
         header = self.header()
@@ -117,25 +117,25 @@ class HierarchyTree(QtWidgets.QTreeWidget):
 
             item = self.itemAt(event.pos())
             type = source_item.text(cons.NAME_IDX)
-            new_item = self.add_item(type, item)
+            new_item = self.add_item(type, target=item)
 
             self.setCurrentItem(new_item)
 
-    def add_item(self, type, parent=None):
+    def add_item(self, type, target=None):
         data = utils.get_properties_data(type)
         data = {d["name"]: d["default"] for d in data}
         data["type"] = type
 
         #Find unique name
         n = type
-        n = self.search_name(n, parent=parent)
+        n = self.search_name(n, target=target)
         data["name"] = n
         
-        if parent:
-            if parent.arg("type") in ["array", "object", "arrayobject"]:
-                arg = parent.arg.add_arg(**data)
-            else:
-                return
+        if target and target.arg("type") not in ["array", "object"]:
+            target = target.parent()
+
+        if target:
+            arg = target.arg.add_arg(**data)
         else:
             arg = self.ap.add_arg(**data)
 
@@ -143,24 +143,48 @@ class HierarchyTree(QtWidgets.QTreeWidget):
             return 
 
         item = HierarchyItem(n, arg=arg)
-        if parent:
-            parent.addChild(item)
+        if target:
+            target.addChild(item)
         else:
             self.addTopLevelItem(item)
         return item
 
-    def search_name(self, name, parent=None):
+    def search_name(self, name, target=None):
         #In top level
-        if not parent:
+        if not target:
             while(self.findItems(name, QtCore.Qt.MatchExactly, cons.NAME_IDX)):
                 name = utils.get_next_name(name)
         #In parent item children
         else:
-            children = [parent.child(i) for i in range(parent.childCount())]
+            children = [target.child(i) for i in range(target.childCount())]
             while(name in [c.text(cons.NAME_IDX) for c in children]):
                 name = utils.get_next_name(name)
 
         return name
+
+    def on_item_changed(self):
+        item = self.currentItem()
+
+        if item:
+            parent_item = item.parent()
+
+            if not parent_item:
+                #Item dropped
+                idx = self.indexOfTopLevelItem(item)
+                if  (item.arg in self.ap._args 
+                    and idx != -1 
+                    and idx != self.ap._args.index(item.arg)):
+                    self.ap.move_arg(item.arg, idx)
+            else:
+                #Item dropped
+                idx = parent_item.indexOfChild(item)
+                children = parent_item.arg.get_children()
+                if  (item.arg in children
+                    and idx != -1 
+                    and idx != children.index(item.arg)):
+                    parent_item.arg.move_arg(item.arg, idx)
+
+            self.parent().item_changed.emit(item.arg)
 
 class Hierarchy(QtWidgets.QGroupBox):
     to_delete = QtCore.Signal(object, object)
@@ -178,7 +202,6 @@ class Hierarchy(QtWidgets.QGroupBox):
         layout.addWidget(self.tree)
 
         self.tree.customContextMenuRequested.connect(self.show_context_menu)
-        self.tree.itemSelectionChanged.connect(self.on_item_changed)
 
     def load(self):
         self.tree.clear()
@@ -206,37 +229,6 @@ class Hierarchy(QtWidgets.QGroupBox):
         
         found_item.setText(cons.NAME_IDX, arg("name"))
 
-    def on_item_changed(self):
-        item = self.tree.currentItem()
-        if item:
-            parent_item = item.parent()
-            if not parent_item:
-                #Item dropped
-                idx = self.tree.indexOfTopLevelItem(item)
-                if  (item.arg in self.ap._args 
-                    and idx != -1 
-                    and idx != self.ap._args.index(item.arg)):
-                    self.ap.move_arg(item.arg, idx)
-            else:
-                # print(parent_item)
-                pass
-
-            self.item_changed.emit(item.arg)
-
-    # def delete_item(self, item):
-        # parent = item.parent()
-
-        # for idx in range(item.childCount()):
-        #     child = item.child(idx)
-        #     self.delete_item(child)
-
-        # if parent:
-        #     index = parent.indexOfChild(item)
-        #     parent.takeChild(index)
-        # else:
-        #     index = self.tree.indexOfTopLevelItem(item)
-        #     self.tree.takeTopLevelItem(index)
-        
     def show_context_menu(self, point):
         item = self.tree.itemAt(point)
         if not item:
@@ -244,13 +236,17 @@ class Hierarchy(QtWidgets.QGroupBox):
 
         menu = QtWidgets.QMenu()
         delete_action = menu.addAction("delete")
-        delete_action.triggered.connect(partial(self.on_delete_item, item, item.parent()))
+        delete_action.triggered.connect(partial(self.on_delete_item, item))
         menu.exec_(self.mapToGlobal(point))
 
-    def on_delete_item(self, item, parent):
+    def on_delete_item(self, item):
+        parent = item.parent()
         if not parent:
             self.ap.pop_arg(item.arg)
             self.tree.takeTopLevelItem(self.tree.indexOfTopLevelItem(item))
+        else:
+            parent.arg.pop_arg(item.arg)
+            parent.takeChild(parent.indexOfChild(item))
 
     def add_item(self, *args, **kwargs):
         return self.tree.add_item(*args, **kwargs)
