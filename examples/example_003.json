@@ -33,25 +33,14 @@
         "name": "authors", 
         "type": "array", 
         "default": [
-            [
-                "Gabriel AKPO-ALLAVO"
-            ], 
-            [
-                "Christophe PETIT"
-            ], 
-            [
-                "Tristan CORDEBOEUF"
-            ]
+            "Gabriel AKPO-ALLAVO", 
+            "Christophe PETIT", 
+            "Tristan CORDEBOEUF"
         ], 
         "description": "Developers names", 
         "items": {
-            "type": "item", 
-            "template": [
-                {
-                    "type": "string", 
-                    "description": "developper name"
-                }
-            ]
+            "type": "string", 
+            "description": "developper name"
         }
     }, 
     {
@@ -60,32 +49,20 @@
         "default": [], 
         "description": "requires(e.g. [python-2, maya-2020, nuke])", 
         "items": {
-            "type": "item", 
-            "template": [
-                {
-                    "type": "string", 
-                    "description": "require(e.g. python-2)"
-                }
-            ]
+            "type": "string", 
+            "description": "require(e.g. python-2)"
         }
     }, 
     {
         "name": "build_requires", 
         "type": "array", 
         "default": [
-            [
-                "python-2"
-            ]
+            "python-2"
         ], 
         "description": "build requires(e.g. [python-2, rez])", 
         "items": {
-            "type": "item", 
-            "template": [
-                {
-                    "type": "string", 
-                    "description": "build require(e.g. python-2)"
-                }
-            ]
+            "type": "string", 
+            "description": "build require(e.g. python-2)"
         }
     }, 
     {
@@ -94,13 +71,8 @@
         "default": [], 
         "description": "tools names(e.g. [maya, mayapy])", 
         "items": {
-            "type": "item", 
-            "template": [
-                {
-                    "type": "string", 
-                    "description": "tool name(e.g. maya)"
-                }
-            ]
+            "type": "string", 
+            "description": "tool name(e.g. maya)"
         }
     }, 
     {
@@ -113,13 +85,8 @@
             "description": "variants(e.g. [platform-windows, arch-AMD64, os-windows-10])", 
             "default": [], 
             "items": {
-                "type": "item", 
-                "template": [
-                    {
-                        "type": "string", 
-                        "description": "variant(e.g. platform-windows)"
-                    }
-                ]
+                "type": "string", 
+                "description": "variant(e.g. platform-windows)"
             }
         }
     }, 

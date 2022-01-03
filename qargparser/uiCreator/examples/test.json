@@ -1,31 +1,32 @@
 {
-    "name": "controlShape", 
-    "type": "enum", 
+    "name": "array", 
+    "type": "array", 
     "description": "", 
-    "enums": [
-        "main", 
-        "square", 
-        "pyramide", 
-        "cross", 
-        "star", 
-        "gear", 
-        "trangle", 
-        "arrow", 
-        "arrow_double", 
-        "aim", 
-        "cube", 
-        "sphere", 
-        "circle", 
-        "eye", 
-        "needle", 
-        "needle_circle", 
-        "needle_sphere", 
-        "needle_pyramide", 
-        "needle_triangle", 
-        "cube", 
-        "square", 
-        "cross"
-    ], 
-    "enumsDescriptions": [], 
-    "default": "needle_triangle"
+    "min": 0, 
+    "max": 10000, 
+    "buttonLabel": "Add Item", 
+    "default": [], 
+    "items": {
+        "name": "object", 
+        "type": "object", 
+        "description": "", 
+        "items": [
+            {
+                "name": "name", 
+                "type": "string", 
+                "description": "The name", 
+                "default": ""
+            }, 
+            {
+                "name": "nbJoints", 
+                "type": "integer", 
+                "description": "The number of joints", 
+                "min": 0, 
+                "max": 10, 
+                "step": 1, 
+                "slider": true, 
+                "default": 5
+            }
+        ]
+    }
 }
