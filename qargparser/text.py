@@ -2,7 +2,14 @@ from .Qt import QtWidgets
 from .arg import Arg
 
 class Text(Arg):
+    """ Text argument widget. 
 
+        :param default: The default value, defaults to ""
+        :type default: str, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.text.Text` instance
+    """
     def create(self):
         wdg = QtWidgets.QPlainTextEdit()
         wdg.setPlainText(self._data['default'])
@@ -21,13 +28,35 @@ class Text(Arg):
         self._write(self._data['default'])
 
 class Doc(Text):
-    pass
+    """ Doc argument widget. 
+        The value is on read-only mode.
+
+        :param default: The default value, defaults to ""
+        :type default: str, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.text.Doc` instance
+    """
 
 class Code(Text):
     pass
 
 class Python(Code):
-    pass
+    """ Python argument widget. 
+
+        :param default: The default value, defaults to ""
+        :type default: str, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.text.Python` instance
+    """
 
 class Mel(Code):
-    pass
+    """ Mel argument widget. 
+
+        :param default: The default value, defaults to ""
+        :type default: str, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.text.Mel` instance
+    """

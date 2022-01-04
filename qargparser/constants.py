@@ -28,6 +28,9 @@ DEFAULT_DATA = {
         "buttonLabel" : "Add Item",
         "items" : {},
     },
+    "boolean":{
+        "default" : False
+    },
     "integer":{
         "default" : 0,
         "step" : 1,
@@ -49,7 +52,7 @@ DEFAULT_DATA = {
     "path":{
         "default" : "",
         "buttonLabel" : "...",
-        "searchMessage" : "Choose path"
+        "searchMessage" : "Choose a path"
     },
     "enum":{
         "default" : "",

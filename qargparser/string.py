@@ -2,7 +2,14 @@ from .Qt import QtWidgets, QtCore
 from .arg import Arg
 
 class String(Arg):
+    """ String argument widget. 
 
+        :param default: The default value, defaults to ""
+        :type default: str, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.string.String` instance
+    """
     def create(self):
         default = self._data['default']
 
@@ -47,4 +54,12 @@ class String(Arg):
         self.on_changed(text)
 
 class Info(String):
-    pass
+    """ Info argument widget. 
+        The value is on read-only mode.
+
+        :param default: The default value, defaults to ""
+        :type default: str, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.string.Info` instance
+    """

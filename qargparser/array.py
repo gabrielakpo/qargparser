@@ -3,7 +3,23 @@ from .arg import Arg
 from .item import Item
 
 class Array(Arg):
+    """ Array argument widget. It creates a list of deletables items.
+        You an can add a sub-argument that will be the items template.
 
+        :param default: The default value, defaults to []
+        :type default: list of type, optional
+        :param min: The minimal number of items, defaults to 0
+        :type min: int, optional
+        :param max: The maximal number of items, defaults to 10000
+        :type max: int, optional
+        :param buttonLabel: The label of the add item button , defaults to "Add Items"
+        :type buttonLabel: str, optional
+        :param items: The item template, defaults to {}
+        :type items: {}, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.array.Array` instance
+    """
     def create(self):
         from .argparser import ArgParser
         wdg = ArgParser(description=self._data['description'])

@@ -16,6 +16,31 @@ class ArgData(dict):
         return "<%s %s>"%(self.__class__.__name__, super(ArgData, self).__repr__())
 
 class Arg(QtCore.QObject):
+    """ Base of argument widgets.
+
+        :param name: The name of the widget, defaults to None
+        :type name: str, optional
+        :param default: The widget default value. Depends widget type, defaults to None
+        :type default: type, optional
+        :param description: The description of the widget, defaults to ""
+        :type description: str, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.array.Array` ,
+                :class:`~qargparser.boolean.Boolean`,
+                :class:`~qargparser.enum.Enum` ,
+                :class:`~qargparser.number.Integer`,
+                :class:`~qargparser.number.Float`,
+                :class:`~qargparser.object.Object`,
+                :class:`~qargparser.path.Path`,
+                :class:`~qargparser.string.String`,
+                :class:`~qargparser.string.Info`,
+                :class:`~qargparser.text.Text`,
+                :class:`~qargparser.text.Doc`,
+                :class:`~qargparser.text.Python`
+                or
+                :class:`~qargparser.text.Mel` instance
+    """
     changed = QtCore.Signal(tuple)
     reset_requested = QtCore.Signal()
     
@@ -47,10 +72,22 @@ class Arg(QtCore.QObject):
         pass
         
     def set_data(self, name, value):
+        """Sets its data with new from a name and a value.
+
+        :param name: The data key
+        :type name: str
+        :param value: The data value
+        :type value: type
+        """
         self._data[name] = value
         self._update()
 
     def update_data(self, data):
+        """Updates its data
+
+        :param data: The new data
+        :type data: dict
+        """
         self._data.update(data)
         self._update()
 
@@ -61,19 +98,51 @@ class Arg(QtCore.QObject):
         self.reset()
 
     def delete(self):
+        """Deletes itself.
+        """
         utils.clear_layout(self.wdg.layout())
         self.wdg.deleteLater()
 
     def get_children(self):
+        """Gets all its children.
+
+        :return: The list of its children
+        :rtype: list of :class:`~qargparser.array.Array` ,
+                :class:`~qargparser.boolean.Boolean`,
+                :class:`~qargparser.enum.Enum` ,
+                :class:`~qargparser.number.Integer`,
+                :class:`~qargparser.number.Float`,
+                :class:`~qargparser.object.Object`,
+                :class:`~qargparser.path.Path`,
+                :class:`~qargparser.string.String`,
+                :class:`~qargparser.string.Info`,
+                :class:`~qargparser.text.Text`,
+                :class:`~qargparser.text.Doc`,
+                :class:`~qargparser.text.Python`
+                or
+                :class:`~qargparser.text.Mel` instance
+        """
         return []
 
     def write(self, value):
+        """Writes the value
+
+        :param value: The value
+        :type value: type
+        """
         return self._write(value)
 
     def read(self):
+        """Reads the value.
+
+        :return: The value
+        :rtype: type
+        """
         return self._read()
 
     def reset(self):
+        """Resets itself
+        """
         self.changed.emit(None)
 
     def is_edited(self):
@@ -85,6 +154,11 @@ class Arg(QtCore.QObject):
         self.changed.emit(*args)
 
     def to_data(self):
+        """Gets its data.
+
+        :return: The data
+        :rtype: dict
+        """
         data = utils.OrderedDict(
             sorted([item for item in self._data.items() if item[1] is not None], 
                    key=lambda x: cons.NAMES_ORDER.index(x[0]) 

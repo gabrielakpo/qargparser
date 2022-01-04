@@ -42,7 +42,19 @@ class FileFolderDialog(QtWidgets.QFileDialog):
         self.hide()
 
 class Path(Arg):
+    """ Path argument widget. 
+        A button open an explorer window to choose a path.
 
+        :param default: The default value, defaults to ""
+        :type default: str, optional
+        :param buttonLabel: The label of the button, defaults to "..."
+        :type buttonLabel: str, optional
+        :param searchMessage: The title message of the explorer window, defaults to "choose a path"
+        :type searchMessage: str, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.path.Path` instance
+    """
     def create(self):
         self.le = QtWidgets.QLineEdit()
         self.le.setText(self._data['default'])

@@ -1,6 +1,18 @@
 from .arg import Arg
 
 class Object(Arg):
+    """ Object argument widget. 
+        You an can add all sub-argument types.
+
+        :param default: The default value, defaults to {}
+        :type default: dict, optional
+        :param items: the list of child data, defaults to False
+        :type items: list of dict, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.object.Object` instance
+    """
+
     def create(self):
         from .argparser import ArgParser
         wdg = ArgParser(description=self._data['description'])

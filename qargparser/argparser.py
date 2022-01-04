@@ -15,26 +15,26 @@ from . import constants as cons
 import re
 
 TYPES = {
-    'object': Object,
-    'enum': Enum,
-    'info': Info,
-    'string': String,
-    'text': Text,
-    'doc': Doc,
-    'path': Path,
-    'mel': Mel,
-    'python': Python,
-    'array': Array,
-    'item': Item,
-    'boolean': Boolean,
-    'float': Float,
-    'integer': Integer,
+    "object": Object,
+    "enum": Enum,
+    "info": Info,
+    "string": String,
+    "text": Text,
+    "doc": Doc,
+    "path": Path,
+    "mel": Mel,
+    "python": Python,
+    "array": Array,
+    "item": Item,
+    "boolean": Boolean,
+    "float": Float,
+    "integer": Integer,
 }
 
 _TYPES = TYPES.copy()
 _TYPES.update({
-    'bool': Boolean,
-    'int': Integer
+    "bool": Boolean,
+    "int": Integer
 })
 
 def deleteChildWidgets(item):
@@ -49,7 +49,7 @@ def get_object_from_type(type):
     return _TYPES[type]
 
 class ResetButton(QtWidgets.QPushButton):
-    def __init__(self, wdg, label = '*', *args, **kwargs):
+    def __init__(self, wdg, label = "*", *args, **kwargs):
         super(ResetButton, self).__init__(QtGui.QIcon(cons.RELOAD_ICON), 
                                           "", 
                                           *args, **kwargs)
@@ -94,12 +94,43 @@ class CustomLabel(QtWidgets.QLabel):
         return txt
 
 class ArgParser(QtWidgets.QGroupBox):
+    """ Generates argument widgets instances in parented in its layout.
+        You can read its values or save its build data in a .json file
+        and use it to recreate this widget.
+        There are the different argument widget types :
+        
+        :class:`~qargparser.array.Array` 
+        :class:`~qargparser.boolean.Boolean`
+        :class:`~qargparser.enum.Enum` 
+        :class:`~qargparser.number.Integer`
+        :class:`~qargparser.number.Float`
+        :class:`~qargparser.object.Object`
+        :class:`~qargparser.path.Path`
+        :class:`~qargparser.string.String`
+        :class:`~qargparser.string.Info`
+        :class:`~qargparser.text.Text`
+        :class:`~qargparser.text.Doc`
+        :class:`~qargparser.text.Python`
+        :class:`~qargparser.text.Mel`
+
+        :param data: The build data, defaults to None
+        :type data: dict, optional
+        :param label_suffix: The suffix for sub_widgets labels, defaults to None
+        :type label_suffix: str, optional
+        :param description: The description of the widget, defaults to ""
+        :type description: str, optional
+        :param parent: The description of the widget, defaults to None
+        :type parent: QWidget instance, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.argparser.ArgParser` instance
+    """
     changed = QtCore.Signal()
 
     def __init__(self, 
                  data=None,
                  label_suffix=None,
-                 description='',
+                 description="",
                  parent=None):
 
         #Init
@@ -124,7 +155,7 @@ class ArgParser(QtWidgets.QGroupBox):
         self._read = lambda : OrderedDict((arg("name"), arg._read()) for arg in self._args)
 
     def __repr__(self):
-        return '<%s( %s )>' %(self.__class__.__name__, 
+        return "<%s( %s )>" %(self.__class__.__name__, 
                               self._args)
 
     @property
@@ -136,6 +167,34 @@ class ArgParser(QtWidgets.QGroupBox):
                 type=None, 
                 default=None, 
                 **kwargs):
+        """Adds an argument.
+
+        :param name: The argument name, defaults to None
+        :type name: str, optional
+        :param type: The type of the argument 
+                     ["object", "enum", "info", "string", 
+                     "text", "doc","path", "mel", 
+                     "python", "array", "item", "boolean", 
+                     "float, "integer"], defaults to None
+        :type type: str, optional
+        :param default: The default value, defaults to None
+        :type default: type, optional
+        :return: The new argument instance
+        :rtype: :class:`~qargparser.array.Array` ,
+                :class:`~qargparser.boolean.Boolean`,
+                :class:`~qargparser.enum.Enum` ,
+                :class:`~qargparser.number.Integer`,
+                :class:`~qargparser.number.Float`,
+                :class:`~qargparser.object.Object`,
+                :class:`~qargparser.path.Path`,
+                :class:`~qargparser.string.String`,
+                :class:`~qargparser.string.Info`,
+                :class:`~qargparser.text.Text`,
+                :class:`~qargparser.text.Doc`,
+                :class:`~qargparser.text.Python`
+                or
+                :class:`~qargparser.text.Mel` instance
+        """
 
         arg = get_object_from_type(type)(name, 
                                          default,
@@ -147,11 +206,11 @@ class ArgParser(QtWidgets.QGroupBox):
     def _add_arg(self, arg):
         # name = arg._data["name"]
         # if self.get_arg(name):
-        #     raise ValueError("Duplicate argument '%s'" %name)
+        #     raise ValueError("Duplicate argument "%s"" %name)
 
         #Create widget
         wdg = arg.create()
-        desc = arg._data.get('description')
+        desc = arg._data.get("description")
         if desc.strip():
             wdg.setToolTip(desc)
 
@@ -163,7 +222,7 @@ class ArgParser(QtWidgets.QGroupBox):
 
         #add widget to Layout
         layout = self.layout()
-        label = arg._data['name']
+        label = arg._data["name"]
 
         label_ui = CustomLabel(label, label_suffix=self._label_suffix)
 
@@ -181,12 +240,50 @@ class ArgParser(QtWidgets.QGroupBox):
         self._args.append(arg)
 
     def get_arg(self, key):
+        """Gets an argument from a name or an index.
+
+        :param key: The argument name or its index
+        :type key: str, int
+        :return: The argument
+        :rtype: :class:`~qargparser.array.Array` ,
+                :class:`~qargparser.boolean.Boolean`,
+                :class:`~qargparser.enum.Enum` ,
+                :class:`~qargparser.number.Integer`,
+                :class:`~qargparser.number.Float`,
+                :class:`~qargparser.object.Object`,
+                :class:`~qargparser.path.Path`,
+                :class:`~qargparser.string.String`,
+                :class:`~qargparser.string.Info`,
+                :class:`~qargparser.text.Text`,
+                :class:`~qargparser.text.Doc`,
+                :class:`~qargparser.text.Python`
+                or
+                :class:`~qargparser.text.Mel` instance
+        """
         for i, arg in enumerate(self._args):
             if ((isinstance(key, int) and i == key) 
             or (isinstance(key, str) and arg("name") == key)):
                 return arg
 
     def pop_arg(self, arg):
+        """Removes an argument.
+
+        :param arg: The argument
+        :type arg:  :class:`~qargparser.array.Array` ,
+                    :class:`~qargparser.boolean.Boolean`,
+                    :class:`~qargparser.enum.Enum` ,
+                    :class:`~qargparser.number.Integer`,
+                    :class:`~qargparser.number.Float`,
+                    :class:`~qargparser.object.Object`,
+                    :class:`~qargparser.path.Path`,
+                    :class:`~qargparser.string.String`,
+                    :class:`~qargparser.string.Info`,
+                    :class:`~qargparser.text.Text`,
+                    :class:`~qargparser.text.Doc`,
+                    :class:`~qargparser.text.Python`
+                    or
+                    :class:`~qargparser.text.Mel` instance
+        """
         layout = self.layout()
         idx, _ = layout.getWidgetPosition(arg.wdg.parent())
 
@@ -203,6 +300,26 @@ class ArgParser(QtWidgets.QGroupBox):
         self._args.remove(arg)
 
     def move_arg(self, key, idx):
+        """Move an argument from itself or its index to a target index.
+
+        :param key: The argument or its index
+        :type key:  :class:`~qargparser.array.Array` ,
+                    :class:`~qargparser.boolean.Boolean`,
+                    :class:`~qargparser.enum.Enum` ,
+                    :class:`~qargparser.number.Integer`,
+                    :class:`~qargparser.number.Float`,
+                    :class:`~qargparser.object.Object`,
+                    :class:`~qargparser.path.Path`,
+                    :class:`~qargparser.string.String`,
+                    :class:`~qargparser.string.Info`,
+                    :class:`~qargparser.text.Text`,
+                    :class:`~qargparser.text.Doc`,
+                    :class:`~qargparser.text.Python`
+                    :class:`~qargparser.text.Mel` instance,
+                    int
+        :param idx: The target index
+        :type idx: int
+        """
         if isinstance(key, int):
             key = self._args[key]
 
@@ -227,10 +344,17 @@ class ArgParser(QtWidgets.QGroupBox):
         layout.insertRow(_idx+1, label, wdg)
 
     def build(self, data):
+        """Build itself from data.
+
+        :param data: The data
+        :type data: dict
+        """
         for d in data:
             self.add_arg(**d)
 
     def delete_children(self):
+        """Deletes all children arguments.
+        """
         for arg in self._args[:]:
             self.pop_arg(arg)
 
@@ -261,9 +385,27 @@ class ArgParser(QtWidgets.QGroupBox):
     def export_data(self):
         return self._read()
 
+    def read(self):
+        """Read all arguments values.
+
+        :return: The values read
+        :rtype: dict
+        """
+        return self._read()
+
     def to_data(self):
+        """Gets its data.
+
+        :return: The data
+        :rtype: dict
+        """
         return [arg.to_data() for arg in self._args]
 
     def save_data(self, path):
+        """Saves its data to a path.
+
+        :param path: The path
+        :type path: str
+        """
         data = self.to_data()
         utils.write_json(data, path)

@@ -130,8 +130,40 @@ class Number(Arg):
         self.wdg.setSingleStep(self._data["step"])
         self.wdg.set_slider_visible(self._data["slider"])
 
-class Float(Number):
+class Integer(Number):
+    """ Integer argument widget.
+
+        :param default: The default value, defaults to 0
+        :type default: int, optional
+        :param step: The step, defaults to 0
+        :type step: int, optional
+        :param min: The minimum value, defaults to -10000
+        :type min: int, optional
+        :param max: The maximum value, defaults to 10000
+        :type max: int, optional
+        :param slider: Add a slider if True, defaults to False
+        :type slider: bool, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.number.Integer` instance
+    """
     pass
 
-class Integer(Number):
+class Float(Number):
+    """ Float argument widget.
+
+        :param default: The default value, defaults to 0.0
+        :type default: float, optional
+        :param step: The step, defaults to 0.1
+        :type step: float, optional
+        :param min: The minimum value, defaults to -10000.0
+        :type min: float, optional
+        :param max: The maximum value, defaults to 10000.0
+        :type max: float, optional
+        :param slider: Add a slider if True, defaults to False
+        :type slider: bool, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.number.Float` instance
+    """
     pass

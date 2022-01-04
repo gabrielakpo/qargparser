@@ -2,7 +2,18 @@ from .Qt import QtWidgets, QtCore
 from .arg import Arg
 
 class Enum(Arg):
+    """ Enum argument widget. Enumerates choices.
 
+        :param default: The default value, defaults to ""
+        :type default: list of str, optional
+        :param enums: The list of choices, defaults to []
+        :type enums: list of str, optional
+        :param enumsDescriptions: The list of choices descriptions, defaults to []
+        :type enumsDescriptions: int, optional
+
+        :return: The new instance
+        :rtype: :class:`~qargparser.enum.Enum` instance
+    """
     def create(self):
         #Widget
         wdg = QtWidgets.QComboBox()
