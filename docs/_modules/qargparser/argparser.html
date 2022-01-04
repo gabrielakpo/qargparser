@@ -1,0 +1,624 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>qargparser.argparser &mdash; qargparser 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'1.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> qargparser
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../qargparser.html">qargparser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../uiCreator.html">UI Creator</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">qargparser</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>qargparser.argparser</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for qargparser.argparser</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">functools</span> <span class="kn">import</span> <span class="n">partial</span>
+<span class="kn">from</span> <span class="nn">collections</span> <span class="kn">import</span> <span class="n">OrderedDict</span>
+<span class="kn">from</span> <span class="nn">.Qt</span> <span class="kn">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span><span class="p">,</span> <span class="n">QtGui</span>
+<span class="kn">from</span> <span class="nn">.object</span> <span class="kn">import</span> <span class="n">Object</span>
+<span class="kn">from</span> <span class="nn">.string</span> <span class="kn">import</span> <span class="n">String</span><span class="p">,</span> <span class="n">Info</span>
+<span class="kn">from</span> <span class="nn">.text</span> <span class="kn">import</span> <span class="n">Text</span><span class="p">,</span> <span class="n">Doc</span><span class="p">,</span> <span class="n">Python</span><span class="p">,</span> <span class="n">Mel</span>
+<span class="kn">from</span> <span class="nn">.array</span> <span class="kn">import</span> <span class="n">Array</span>
+<span class="kn">from</span> <span class="nn">.number</span> <span class="kn">import</span> <span class="n">Float</span><span class="p">,</span> <span class="n">Integer</span>
+<span class="kn">from</span> <span class="nn">.item</span> <span class="kn">import</span> <span class="n">Item</span>
+<span class="kn">from</span> <span class="nn">.boolean</span> <span class="kn">import</span> <span class="n">Boolean</span>
+<span class="kn">from</span> <span class="nn">.path</span> <span class="kn">import</span> <span class="n">Path</span>
+<span class="kn">from</span> <span class="nn">.enum</span> <span class="kn">import</span> <span class="n">Enum</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">utils</span>
+<span class="kn">from</span> <span class="nn">.</span> <span class="kn">import</span> <span class="n">constants</span> <span class="k">as</span> <span class="n">cons</span>
+<span class="kn">import</span> <span class="nn">re</span>
+
+<span class="n">TYPES</span> <span class="o">=</span> <span class="p">{</span>
+    <span class="s2">&quot;object&quot;</span><span class="p">:</span> <span class="n">Object</span><span class="p">,</span>
+    <span class="s2">&quot;enum&quot;</span><span class="p">:</span> <span class="n">Enum</span><span class="p">,</span>
+    <span class="s2">&quot;info&quot;</span><span class="p">:</span> <span class="n">Info</span><span class="p">,</span>
+    <span class="s2">&quot;string&quot;</span><span class="p">:</span> <span class="n">String</span><span class="p">,</span>
+    <span class="s2">&quot;text&quot;</span><span class="p">:</span> <span class="n">Text</span><span class="p">,</span>
+    <span class="s2">&quot;doc&quot;</span><span class="p">:</span> <span class="n">Doc</span><span class="p">,</span>
+    <span class="s2">&quot;path&quot;</span><span class="p">:</span> <span class="n">Path</span><span class="p">,</span>
+    <span class="s2">&quot;mel&quot;</span><span class="p">:</span> <span class="n">Mel</span><span class="p">,</span>
+    <span class="s2">&quot;python&quot;</span><span class="p">:</span> <span class="n">Python</span><span class="p">,</span>
+    <span class="s2">&quot;array&quot;</span><span class="p">:</span> <span class="n">Array</span><span class="p">,</span>
+    <span class="s2">&quot;item&quot;</span><span class="p">:</span> <span class="n">Item</span><span class="p">,</span>
+    <span class="s2">&quot;boolean&quot;</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">,</span>
+    <span class="s2">&quot;float&quot;</span><span class="p">:</span> <span class="n">Float</span><span class="p">,</span>
+    <span class="s2">&quot;integer&quot;</span><span class="p">:</span> <span class="n">Integer</span><span class="p">,</span>
+<span class="p">}</span>
+
+<span class="n">_TYPES</span> <span class="o">=</span> <span class="n">TYPES</span><span class="o">.</span><span class="n">copy</span><span class="p">()</span>
+<span class="n">_TYPES</span><span class="o">.</span><span class="n">update</span><span class="p">({</span>
+    <span class="s2">&quot;bool&quot;</span><span class="p">:</span> <span class="n">Boolean</span><span class="p">,</span>
+    <span class="s2">&quot;int&quot;</span><span class="p">:</span> <span class="n">Integer</span>
+<span class="p">})</span>
+
+<span class="k">def</span> <span class="nf">deleteChildWidgets</span><span class="p">(</span><span class="n">item</span><span class="p">):</span>
+    <span class="n">layout</span> <span class="o">=</span> <span class="n">item</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+    <span class="k">if</span> <span class="n">layout</span><span class="p">:</span>
+        <span class="k">for</span> <span class="n">i</span> <span class="ow">in</span> <span class="nb">range</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">count</span><span class="p">()):</span>
+            <span class="n">deleteChildWidgets</span><span class="p">(</span><span class="n">layout</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">i</span><span class="p">))</span>
+    <span class="k">if</span> <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">():</span>
+        <span class="n">item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span><span class="o">.</span><span class="n">deleteLater</span><span class="p">()</span>
+
+<span class="k">def</span> <span class="nf">get_object_from_type</span><span class="p">(</span><span class="nb">type</span><span class="p">):</span>
+    <span class="k">return</span> <span class="n">_TYPES</span><span class="p">[</span><span class="nb">type</span><span class="p">]</span>
+
+<span class="k">class</span> <span class="nc">ResetButton</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QPushButton</span><span class="p">):</span>
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wdg</span><span class="p">,</span> <span class="n">label</span> <span class="o">=</span> <span class="s2">&quot;*&quot;</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ResetButton</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">QtGui</span><span class="o">.</span><span class="n">QIcon</span><span class="p">(</span><span class="n">cons</span><span class="o">.</span><span class="n">RELOAD_ICON</span><span class="p">),</span> 
+                                          <span class="s2">&quot;&quot;</span><span class="p">,</span> 
+                                          <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setIconSize</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">QSize</span><span class="p">(</span><span class="mi">25</span><span class="p">,</span> <span class="mi">25</span><span class="p">))</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wdg</span> <span class="o">=</span> <span class="n">wdg</span>
+
+    <span class="k">def</span> <span class="nf">paintEvent</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">event</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">ResetButton</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">paintEvent</span><span class="p">(</span><span class="n">event</span><span class="p">)</span>
+        <span class="n">height</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">sizeHint</span><span class="p">()</span><span class="o">.</span><span class="n">height</span><span class="p">()</span>
+        <span class="k">if</span> <span class="n">height</span> <span class="o">&lt;</span> <span class="mi">35</span><span class="p">:</span>
+            <span class="n">height</span> <span class="o">=</span> <span class="mi">35</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setFixedSize</span><span class="p">(</span><span class="mi">35</span><span class="p">,</span> <span class="n">height</span><span class="p">)</span>
+
+<span class="k">def</span> <span class="nf">to_label_string</span><span class="p">(</span><span class="n">text</span><span class="p">):</span>
+    <span class="k">if</span> <span class="n">text</span> <span class="ow">is</span> <span class="kc">None</span><span class="p">:</span>
+        <span class="n">text</span> <span class="o">=</span> <span class="s2">&quot;&quot;</span>
+    <span class="k">return</span> <span class="n">re</span><span class="o">.</span><span class="n">sub</span><span class="p">(</span>
+        <span class="sa">r</span><span class="s2">&quot;((?&lt;=[a-z])[A-Z]|(?&lt;!\A)[A-Z](?=[a-z]))&quot;</span><span class="p">,</span>
+        <span class="sa">r</span><span class="s2">&quot; \1&quot;</span><span class="p">,</span> <span class="n">text</span>
+    <span class="p">)</span><span class="o">.</span><span class="n">title</span><span class="p">()</span>
+
+<span class="k">class</span> <span class="nc">CustomLabel</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QLabel</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">label_suffix</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;label_suffix&quot;</span><span class="p">,</span> <span class="kc">None</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">args</span><span class="p">:</span>  
+            <span class="n">args</span> <span class="o">=</span> <span class="p">[</span><span class="bp">self</span><span class="o">.</span><span class="n">_new_text</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])]</span> <span class="o">+</span> <span class="p">[</span><span class="n">e</span> <span class="k">for</span> <span class="n">e</span> <span class="ow">in</span> <span class="n">args</span><span class="p">[</span><span class="mi">1</span><span class="p">:]]</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">CustomLabel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMaximumWidth</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">][</span><span class="nb">bool</span><span class="p">(</span><span class="n">args</span><span class="p">[</span><span class="mi">0</span><span class="p">])])</span>
+            
+    <span class="k">def</span> <span class="nf">setText</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_new_text</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMaximumWidth</span><span class="p">([</span><span class="mi">0</span><span class="p">,</span> <span class="mi">1000</span><span class="p">][</span><span class="nb">bool</span><span class="p">(</span><span class="n">txt</span><span class="p">)])</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">CustomLabel</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">_new_text</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">txt</span><span class="p">):</span>
+        <span class="n">txt</span> <span class="o">=</span> <span class="n">to_label_string</span><span class="p">(</span><span class="n">txt</span><span class="p">)</span>
+        <span class="k">if</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_suffix</span><span class="p">:</span>
+            <span class="n">txt</span> <span class="o">=</span> <span class="s2">&quot;</span><span class="si">%s%s</span><span class="s2"> &quot;</span><span class="o">%</span><span class="p">(</span><span class="n">txt</span><span class="p">,</span> <span class="bp">self</span><span class="o">.</span><span class="n">label_suffix</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">txt</span>
+
+<div class="viewcode-block" id="ArgParser"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser">[docs]</a><span class="k">class</span> <span class="nc">ArgParser</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QGroupBox</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Generates argument widgets instances in parented in its layout.</span>
+<span class="sd">        You can read its values or save its build data in a .json file</span>
+<span class="sd">        and use it to recreate this widget.</span>
+<span class="sd">        There are the different argument widget types :</span>
+<span class="sd">        </span>
+<span class="sd">        :class:`~qargparser.array.Array` </span>
+<span class="sd">        :class:`~qargparser.boolean.Boolean`</span>
+<span class="sd">        :class:`~qargparser.enum.Enum` </span>
+<span class="sd">        :class:`~qargparser.number.Integer`</span>
+<span class="sd">        :class:`~qargparser.number.Float`</span>
+<span class="sd">        :class:`~qargparser.object.Object`</span>
+<span class="sd">        :class:`~qargparser.path.Path`</span>
+<span class="sd">        :class:`~qargparser.string.String`</span>
+<span class="sd">        :class:`~qargparser.string.Info`</span>
+<span class="sd">        :class:`~qargparser.text.Text`</span>
+<span class="sd">        :class:`~qargparser.text.Doc`</span>
+<span class="sd">        :class:`~qargparser.text.Python`</span>
+<span class="sd">        :class:`~qargparser.text.Mel`</span>
+
+<span class="sd">        :param data: The build data, defaults to None</span>
+<span class="sd">        :type data: dict, optional</span>
+<span class="sd">        :param label_suffix: The suffix for sub_widgets labels, defaults to None</span>
+<span class="sd">        :type label_suffix: str, optional</span>
+<span class="sd">        :param description: The description of the widget, defaults to &quot;&quot;</span>
+<span class="sd">        :type description: str, optional</span>
+<span class="sd">        :param parent: The description of the widget, defaults to None</span>
+<span class="sd">        :type parent: QWidget instance, optional</span>
+
+<span class="sd">        :return: The new instance</span>
+<span class="sd">        :rtype: :class:`~qargparser.argparser.ArgParser` instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="n">changed</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                 <span class="n">data</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">label_suffix</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span>
+                 <span class="n">description</span><span class="o">=</span><span class="s2">&quot;&quot;</span><span class="p">,</span>
+                 <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">):</span>
+
+        <span class="c1">#Init</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_description</span> <span class="o">=</span> <span class="n">description</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_label_suffix</span> <span class="o">=</span> <span class="n">label_suffix</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span> <span class="o">=</span> <span class="p">[]</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">ArgParser</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">parent</span><span class="p">)</span>
+
+        <span class="c1">#Layout</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFormLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">,</span> <span class="mi">2</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setFormAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignTop</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setLabelAlignment</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">AlignRight</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">setVerticalSpacing</span><span class="p">(</span><span class="mi">5</span><span class="p">)</span>
+
+        <span class="c1"># build from data</span>
+        <span class="k">if</span> <span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">build</span><span class="p">(</span><span class="n">data</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write</span> <span class="o">=</span> <span class="k">lambda</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">:</span> <span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">=</span> <span class="k">lambda</span> <span class="p">:</span> <span class="n">OrderedDict</span><span class="p">((</span><span class="n">arg</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">),</span> <span class="n">arg</span><span class="o">.</span><span class="n">_read</span><span class="p">())</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__repr__</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="s2">&quot;&lt;</span><span class="si">%s</span><span class="s2">( </span><span class="si">%s</span><span class="s2"> )&gt;&quot;</span> <span class="o">%</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="vm">__class__</span><span class="o">.</span><span class="vm">__name__</span><span class="p">,</span> 
+                              <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">)</span>
+
+    <span class="nd">@property</span>
+    <span class="k">def</span> <span class="nf">_row</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ArgParser.add_arg"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.add_arg">[docs]</a>    <span class="k">def</span> <span class="nf">add_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> 
+                <span class="n">name</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                <span class="nb">type</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                <span class="n">default</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> 
+                <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Adds an argument.</span>
+
+<span class="sd">        :param name: The argument name, defaults to None</span>
+<span class="sd">        :type name: str, optional</span>
+<span class="sd">        :param type: The type of the argument </span>
+<span class="sd">                     [&quot;object&quot;, &quot;enum&quot;, &quot;info&quot;, &quot;string&quot;, </span>
+<span class="sd">                     &quot;text&quot;, &quot;doc&quot;,&quot;path&quot;, &quot;mel&quot;, </span>
+<span class="sd">                     &quot;python&quot;, &quot;array&quot;, &quot;item&quot;, &quot;boolean&quot;, </span>
+<span class="sd">                     &quot;float, &quot;integer&quot;], defaults to None</span>
+<span class="sd">        :type type: str, optional</span>
+<span class="sd">        :param default: The default value, defaults to None</span>
+<span class="sd">        :type default: type, optional</span>
+<span class="sd">        :return: The new argument instance</span>
+<span class="sd">        :rtype: :class:`~qargparser.array.Array` ,</span>
+<span class="sd">                :class:`~qargparser.boolean.Boolean`,</span>
+<span class="sd">                :class:`~qargparser.enum.Enum` ,</span>
+<span class="sd">                :class:`~qargparser.number.Integer`,</span>
+<span class="sd">                :class:`~qargparser.number.Float`,</span>
+<span class="sd">                :class:`~qargparser.object.Object`,</span>
+<span class="sd">                :class:`~qargparser.path.Path`,</span>
+<span class="sd">                :class:`~qargparser.string.String`,</span>
+<span class="sd">                :class:`~qargparser.string.Info`,</span>
+<span class="sd">                :class:`~qargparser.text.Text`,</span>
+<span class="sd">                :class:`~qargparser.text.Doc`,</span>
+<span class="sd">                :class:`~qargparser.text.Python`</span>
+<span class="sd">                or</span>
+<span class="sd">                :class:`~qargparser.text.Mel` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+
+        <span class="n">arg</span> <span class="o">=</span> <span class="n">get_object_from_type</span><span class="p">(</span><span class="nb">type</span><span class="p">)(</span><span class="n">name</span><span class="p">,</span> 
+                                         <span class="n">default</span><span class="p">,</span>
+                                         <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_add_arg</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="k">return</span> <span class="n">arg</span></div>
+
+    <span class="k">def</span> <span class="nf">_add_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="c1"># name = arg._data[&quot;name&quot;]</span>
+        <span class="c1"># if self.get_arg(name):</span>
+        <span class="c1">#     raise ValueError(&quot;Duplicate argument &quot;%s&quot;&quot; %name)</span>
+
+        <span class="c1">#Create widget</span>
+        <span class="n">wdg</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">create</span><span class="p">()</span>
+        <span class="n">desc</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">_data</span><span class="o">.</span><span class="n">get</span><span class="p">(</span><span class="s2">&quot;description&quot;</span><span class="p">)</span>
+        <span class="k">if</span> <span class="n">desc</span><span class="o">.</span><span class="n">strip</span><span class="p">():</span>
+            <span class="n">wdg</span><span class="o">.</span><span class="n">setToolTip</span><span class="p">(</span><span class="n">desc</span><span class="p">)</span>
+
+        <span class="c1">#Reset</span>
+        <span class="n">reset_button</span> <span class="o">=</span> <span class="n">ResetButton</span><span class="p">(</span><span class="n">wdg</span><span class="p">)</span>
+        <span class="n">reset_button</span><span class="o">.</span><span class="n">clicked</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">reset</span><span class="p">)</span>
+        <span class="n">arg</span><span class="o">.</span><span class="n">changed</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="n">partial</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_changed</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">reset_button</span><span class="p">))</span>
+        <span class="n">reset_button</span><span class="o">.</span><span class="n">hide</span><span class="p">()</span>
+
+        <span class="c1">#add widget to Layout</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">arg</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;name&quot;</span><span class="p">]</span>
+
+        <span class="n">label_ui</span> <span class="o">=</span> <span class="n">CustomLabel</span><span class="p">(</span><span class="n">label</span><span class="p">,</span> <span class="n">label_suffix</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_label_suffix</span><span class="p">)</span>
+
+        <span class="n">row_wdg</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">()</span>
+        <span class="n">row_layout</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">(</span><span class="n">row_wdg</span><span class="p">)</span>
+        <span class="n">row_layout</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">row_layout</span><span class="o">.</span><span class="n">setSpacing</span><span class="p">(</span><span class="mi">0</span><span class="p">)</span>
+        <span class="n">row_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">reset_button</span><span class="p">)</span>
+        <span class="n">row_layout</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="n">wdg</span><span class="p">)</span>
+        
+        <span class="n">layout</span><span class="o">.</span><span class="n">insertRow</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_row</span><span class="p">,</span>
+                        <span class="n">label_ui</span><span class="p">,</span> 
+                        <span class="n">row_wdg</span><span class="p">)</span>
+                         
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="o">.</span><span class="n">append</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+
+<div class="viewcode-block" id="ArgParser.get_arg"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.get_arg">[docs]</a>    <span class="k">def</span> <span class="nf">get_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets an argument from a name or an index.</span>
+
+<span class="sd">        :param key: The argument name or its index</span>
+<span class="sd">        :type key: str, int</span>
+<span class="sd">        :return: The argument</span>
+<span class="sd">        :rtype: :class:`~qargparser.array.Array` ,</span>
+<span class="sd">                :class:`~qargparser.boolean.Boolean`,</span>
+<span class="sd">                :class:`~qargparser.enum.Enum` ,</span>
+<span class="sd">                :class:`~qargparser.number.Integer`,</span>
+<span class="sd">                :class:`~qargparser.number.Float`,</span>
+<span class="sd">                :class:`~qargparser.object.Object`,</span>
+<span class="sd">                :class:`~qargparser.path.Path`,</span>
+<span class="sd">                :class:`~qargparser.string.String`,</span>
+<span class="sd">                :class:`~qargparser.string.Info`,</span>
+<span class="sd">                :class:`~qargparser.text.Text`,</span>
+<span class="sd">                :class:`~qargparser.text.Doc`,</span>
+<span class="sd">                :class:`~qargparser.text.Python`</span>
+<span class="sd">                or</span>
+<span class="sd">                :class:`~qargparser.text.Mel` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">i</span><span class="p">,</span> <span class="n">arg</span> <span class="ow">in</span> <span class="nb">enumerate</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">):</span>
+            <span class="k">if</span> <span class="p">((</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">)</span> <span class="ow">and</span> <span class="n">i</span> <span class="o">==</span> <span class="n">key</span><span class="p">)</span> 
+            <span class="ow">or</span> <span class="p">(</span><span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">str</span><span class="p">)</span> <span class="ow">and</span> <span class="n">arg</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">)</span> <span class="o">==</span> <span class="n">key</span><span class="p">)):</span>
+                <span class="k">return</span> <span class="n">arg</span></div>
+
+<div class="viewcode-block" id="ArgParser.pop_arg"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.pop_arg">[docs]</a>    <span class="k">def</span> <span class="nf">pop_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Removes an argument.</span>
+
+<span class="sd">        :param arg: The argument</span>
+<span class="sd">        :type arg:  :class:`~qargparser.array.Array` ,</span>
+<span class="sd">                    :class:`~qargparser.boolean.Boolean`,</span>
+<span class="sd">                    :class:`~qargparser.enum.Enum` ,</span>
+<span class="sd">                    :class:`~qargparser.number.Integer`,</span>
+<span class="sd">                    :class:`~qargparser.number.Float`,</span>
+<span class="sd">                    :class:`~qargparser.object.Object`,</span>
+<span class="sd">                    :class:`~qargparser.path.Path`,</span>
+<span class="sd">                    :class:`~qargparser.string.String`,</span>
+<span class="sd">                    :class:`~qargparser.string.Info`,</span>
+<span class="sd">                    :class:`~qargparser.text.Text`,</span>
+<span class="sd">                    :class:`~qargparser.text.Doc`,</span>
+<span class="sd">                    :class:`~qargparser.text.Python`</span>
+<span class="sd">                    or</span>
+<span class="sd">                    :class:`~qargparser.text.Mel` instance</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+        <span class="n">idx</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">getWidgetPosition</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+
+        <span class="c1">#Label</span>
+        <span class="n">lay_item</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFormLayout</span><span class="o">.</span><span class="n">LabelRole</span><span class="p">)</span>
+        <span class="n">deleteChildWidgets</span><span class="p">(</span><span class="n">lay_item</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">lay_item</span><span class="p">)</span>
+
+        <span class="c1">#widget</span>
+        <span class="n">lay_item</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFormLayout</span><span class="o">.</span><span class="n">FieldRole</span><span class="p">)</span>
+        <span class="n">deleteChildWidgets</span><span class="p">(</span><span class="n">lay_item</span><span class="p">)</span>
+        <span class="n">layout</span><span class="o">.</span><span class="n">removeItem</span><span class="p">(</span><span class="n">lay_item</span><span class="p">)</span> 
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArgParser.move_arg"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.move_arg">[docs]</a>    <span class="k">def</span> <span class="nf">move_arg</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">key</span><span class="p">,</span> <span class="n">idx</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Move an argument from itself or its index to a target index.</span>
+
+<span class="sd">        :param key: The argument or its index</span>
+<span class="sd">        :type key:  :class:`~qargparser.array.Array` ,</span>
+<span class="sd">                    :class:`~qargparser.boolean.Boolean`,</span>
+<span class="sd">                    :class:`~qargparser.enum.Enum` ,</span>
+<span class="sd">                    :class:`~qargparser.number.Integer`,</span>
+<span class="sd">                    :class:`~qargparser.number.Float`,</span>
+<span class="sd">                    :class:`~qargparser.object.Object`,</span>
+<span class="sd">                    :class:`~qargparser.path.Path`,</span>
+<span class="sd">                    :class:`~qargparser.string.String`,</span>
+<span class="sd">                    :class:`~qargparser.string.Info`,</span>
+<span class="sd">                    :class:`~qargparser.text.Text`,</span>
+<span class="sd">                    :class:`~qargparser.text.Doc`,</span>
+<span class="sd">                    :class:`~qargparser.text.Python`</span>
+<span class="sd">                    :class:`~qargparser.text.Mel` instance,</span>
+<span class="sd">                    int</span>
+<span class="sd">        :param idx: The target index</span>
+<span class="sd">        :type idx: int</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="n">key</span><span class="p">,</span> <span class="nb">int</span><span class="p">):</span>
+            <span class="n">key</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">[</span><span class="n">key</span><span class="p">]</span>
+
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_label</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="n">wdg</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_widget</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="n">wdg</span><span class="o">.</span><span class="n">setParent</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="o">.</span><span class="n">remove</span><span class="p">(</span><span class="n">key</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="o">.</span><span class="n">insert</span><span class="p">(</span><span class="n">idx</span><span class="p">,</span> <span class="n">key</span><span class="p">)</span>
+
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+
+        <span class="n">_idx</span> <span class="o">=</span> <span class="mi">0</span>
+        <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;</span> <span class="mi">0</span><span class="p">:</span>
+            <span class="k">if</span> <span class="n">idx</span> <span class="o">&gt;=</span> <span class="nb">len</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">)</span> <span class="o">-</span> <span class="mi">1</span><span class="p">:</span>
+                <span class="n">_idx</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">rowCount</span><span class="p">()</span>
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">_idx</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">getWidgetPosition</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">[</span><span class="n">idx</span><span class="o">+</span><span class="mi">1</span><span class="p">]</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">parent</span><span class="p">())[</span><span class="mi">0</span><span class="p">]</span> <span class="o">-</span> <span class="mi">1</span>
+
+        <span class="n">layout</span><span class="o">.</span><span class="n">insertRow</span><span class="p">(</span><span class="n">_idx</span><span class="o">+</span><span class="mi">1</span><span class="p">,</span> <span class="n">label</span><span class="p">,</span> <span class="n">wdg</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArgParser.build"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.build">[docs]</a>    <span class="k">def</span> <span class="nf">build</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">data</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Build itself from data.</span>
+
+<span class="sd">        :param data: The data</span>
+<span class="sd">        :type data: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">d</span> <span class="ow">in</span> <span class="n">data</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">add_arg</span><span class="p">(</span><span class="o">**</span><span class="n">d</span><span class="p">)</span></div>
+
+<div class="viewcode-block" id="ArgParser.delete_children"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.delete_children">[docs]</a>    <span class="k">def</span> <span class="nf">delete_children</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Deletes all children arguments.</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">[:]:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">pop_arg</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span></div>
+
+    <span class="k">def</span> <span class="nf">on_changed</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">,</span> <span class="n">button</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="c1">#Set edit_button visibiliy</span>
+        <span class="n">button</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">is_edited</span><span class="p">())</span>
+
+        <span class="c1">#Edit label</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">get_label</span><span class="p">(</span><span class="n">arg</span><span class="p">)</span>
+        <span class="n">label</span><span class="o">.</span><span class="n">setText</span><span class="p">(</span><span class="n">arg</span><span class="p">(</span><span class="s2">&quot;name&quot;</span><span class="p">))</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="o">.</span><span class="n">emit</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">get_label</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+        <span class="n">_idx</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">getWidgetPosition</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+        <span class="n">lay_item</span> <span class="o">=</span>  <span class="n">layout</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">_idx</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFormLayout</span><span class="o">.</span><span class="n">LabelRole</span><span class="p">)</span>
+        <span class="n">label</span> <span class="o">=</span> <span class="n">lay_item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">label</span>
+
+    <span class="k">def</span> <span class="nf">get_widget</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">arg</span><span class="p">):</span>
+        <span class="n">layout</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">layout</span><span class="p">()</span>
+        <span class="n">_idx</span><span class="p">,</span> <span class="n">_</span> <span class="o">=</span> <span class="n">layout</span><span class="o">.</span><span class="n">getWidgetPosition</span><span class="p">(</span><span class="n">arg</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">parent</span><span class="p">())</span>
+        <span class="n">lay_item</span> <span class="o">=</span>  <span class="n">layout</span><span class="o">.</span><span class="n">itemAt</span><span class="p">(</span><span class="n">_idx</span><span class="p">,</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QFormLayout</span><span class="o">.</span><span class="n">FieldRole</span><span class="p">)</span>
+        <span class="n">wdg</span> <span class="o">=</span> <span class="n">lay_item</span><span class="o">.</span><span class="n">widget</span><span class="p">()</span>
+        <span class="k">return</span> <span class="n">wdg</span>
+
+    <span class="k">def</span> <span class="nf">export_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">()</span>
+
+<div class="viewcode-block" id="ArgParser.read"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.read">[docs]</a>    <span class="k">def</span> <span class="nf">read</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Read all arguments values.</span>
+
+<span class="sd">        :return: The values read</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">_read</span><span class="p">()</span></div>
+
+<div class="viewcode-block" id="ArgParser.to_data"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.to_data">[docs]</a>    <span class="k">def</span> <span class="nf">to_data</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Gets its data.</span>
+
+<span class="sd">        :return: The data</span>
+<span class="sd">        :rtype: dict</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="k">return</span> <span class="p">[</span><span class="n">arg</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span> <span class="k">for</span> <span class="n">arg</span> <span class="ow">in</span> <span class="bp">self</span><span class="o">.</span><span class="n">_args</span><span class="p">]</span></div>
+
+<div class="viewcode-block" id="ArgParser.save_data"><a class="viewcode-back" href="../../qargparser.html#qargparser.argparser.ArgParser.save_data">[docs]</a>    <span class="k">def</span> <span class="nf">save_data</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">path</span><span class="p">):</span>
+        <span class="sd">&quot;&quot;&quot;Saves its data to a path.</span>
+
+<span class="sd">        :param path: The path</span>
+<span class="sd">        :type path: str</span>
+<span class="sd">        &quot;&quot;&quot;</span>
+        <span class="n">data</span> <span class="o">=</span> <span class="bp">self</span><span class="o">.</span><span class="n">to_data</span><span class="p">()</span>
+        <span class="n">utils</span><span class="o">.</span><span class="n">write_json</span><span class="p">(</span><span class="n">data</span><span class="p">,</span> <span class="n">path</span><span class="p">)</span></div></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2022, Gabriel AKPO-ALLAVO.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>

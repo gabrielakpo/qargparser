@@ -1,0 +1,382 @@
+
+
+<!DOCTYPE html>
+<html class="writer-html4" lang="en" >
+<head>
+  <meta charset="utf-8" />
+  
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  
+  <title>qargparser.number &mdash; qargparser 1.0 documentation</title>
+  
+
+  
+  <link rel="stylesheet" href="../../_static/css/theme.css" type="text/css" />
+  <link rel="stylesheet" href="../../_static/pygments.css" type="text/css" />
+
+  
+  
+
+  
+  
+
+  
+
+  
+  <!--[if lt IE 9]>
+    <script src="../../_static/js/html5shiv.min.js"></script>
+  <![endif]-->
+  
+    
+      <script type="text/javascript">
+          var DOCUMENTATION_OPTIONS = {
+              URL_ROOT:'../../',
+              VERSION:'1.0',
+              LANGUAGE:'None',
+              COLLAPSE_INDEX:false,
+              FILE_SUFFIX:'.html',
+              HAS_SOURCE:  true,
+              SOURCELINK_SUFFIX: ''
+          };
+      </script>
+        <script type="text/javascript" src="../../_static/jquery.js"></script>
+        <script type="text/javascript" src="../../_static/underscore.js"></script>
+        <script type="text/javascript" src="../../_static/doctools.js"></script>
+    
+    <script type="text/javascript" src="../../_static/js/theme.js"></script>
+
+    
+    <link rel="index" title="Index" href="../../genindex.html" />
+    <link rel="search" title="Search" href="../../search.html" /> 
+</head>
+
+<body class="wy-body-for-nav">
+
+   
+  <div class="wy-grid-for-nav">
+    
+    <nav data-toggle="wy-nav-shift" class="wy-nav-side">
+      <div class="wy-side-scroll">
+        <div class="wy-side-nav-search" >
+          
+
+          
+            <a href="../../index.html" class="icon icon-home"> qargparser
+          
+
+          
+          </a>
+
+          
+            
+            
+              <div class="version">
+                1.0
+              </div>
+            
+          
+
+          
+<div role="search">
+  <form id="rtd-search-form" class="wy-form" action="../../search.html" method="get">
+    <input type="text" name="q" placeholder="Search docs" />
+    <input type="hidden" name="check_keywords" value="yes" />
+    <input type="hidden" name="area" value="default" />
+  </form>
+</div>
+
+          
+        </div>
+
+        
+        <div class="wy-menu wy-menu-vertical" data-spy="affix" role="navigation" aria-label="main navigation">
+          
+            
+            
+              
+            
+            
+              <ul>
+<li class="toctree-l1"><a class="reference internal" href="../../qargparser.html">qargparser</a></li>
+<li class="toctree-l1"><a class="reference internal" href="../../uiCreator.html">UI Creator</a></li>
+</ul>
+
+            
+          
+        </div>
+        
+      </div>
+    </nav>
+
+    <section data-toggle="wy-nav-shift" class="wy-nav-content-wrap">
+
+      
+      <nav class="wy-nav-top" aria-label="top navigation">
+        
+          <i data-toggle="wy-nav-top" class="fa fa-bars"></i>
+          <a href="../../index.html">qargparser</a>
+        
+      </nav>
+
+
+      <div class="wy-nav-content">
+        
+        <div class="rst-content">
+        
+          
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+<div role="navigation" aria-label="breadcrumbs navigation">
+
+  <ul class="wy-breadcrumbs">
+    
+      <li><a href="../../index.html" class="icon icon-home"></a> &raquo;</li>
+        
+          <li><a href="../index.html">Module code</a> &raquo;</li>
+        
+      <li>qargparser.number</li>
+    
+    
+      <li class="wy-breadcrumbs-aside">
+        
+      </li>
+    
+  </ul>
+
+  
+  <hr/>
+</div>
+          <div role="main" class="document" itemscope="itemscope" itemtype="http://schema.org/Article">
+           <div itemprop="articleBody">
+            
+  <h1>Source code for qargparser.number</h1><div class="highlight"><pre>
+<span></span><span class="kn">from</span> <span class="nn">.arg</span> <span class="kn">import</span> <span class="n">Arg</span>
+<span class="kn">from</span> <span class="nn">.Qt</span> <span class="kn">import</span> <span class="n">QtWidgets</span><span class="p">,</span> <span class="n">QtCore</span>
+
+<span class="k">class</span> <span class="nc">DoubleSlider</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSlider</span><span class="p">):</span>
+
+    <span class="n">doubleValueChanged</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">float</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">orient</span><span class="o">=</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span> <span class="p">,</span> <span class="n">parent</span><span class="o">=</span><span class="kc">None</span><span class="p">,</span> <span class="n">decimals</span><span class="o">=</span><span class="mi">3</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DoubleSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="n">orient</span><span class="p">,</span> <span class="n">parent</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span> <span class="o">=</span> <span class="mi">10</span> <span class="o">**</span> <span class="n">decimals</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">emitDoubleValueChanged</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">emitDoubleValueChanged</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="n">value</span> <span class="o">=</span> <span class="nb">float</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">DoubleSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">doubleValueChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">DoubleSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">value</span><span class="p">())</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span>
+
+    <span class="k">def</span> <span class="nf">setMinimum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DoubleSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setMaximum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">super</span><span class="p">(</span><span class="n">DoubleSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setSingleStep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DoubleSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">singleStep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="nb">float</span><span class="p">(</span><span class="nb">super</span><span class="p">(</span><span class="n">DoubleSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">singleStep</span><span class="p">())</span> <span class="o">/</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span>
+
+    <span class="k">def</span> <span class="nf">setValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">DoubleSlider</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="nb">int</span><span class="p">(</span><span class="n">value</span> <span class="o">*</span> <span class="bp">self</span><span class="o">.</span><span class="n">_multi</span><span class="p">))</span>
+
+<span class="k">class</span> <span class="nc">AbstractSliderSpinBox</span><span class="p">(</span><span class="n">QtWidgets</span><span class="o">.</span><span class="n">QWidget</span><span class="p">):</span>
+    <span class="n">valueChanged</span> <span class="o">=</span> <span class="n">QtCore</span><span class="o">.</span><span class="n">Signal</span><span class="p">(</span><span class="nb">int</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="fm">__init__</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="nb">min</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="nb">max</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">step</span><span class="o">=</span><span class="mf">1.0</span><span class="p">,</span> <span class="n">default</span><span class="o">=</span><span class="mf">0.0</span><span class="p">,</span> <span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">):</span>
+        <span class="n">use_slider</span> <span class="o">=</span> <span class="n">kwargs</span><span class="o">.</span><span class="n">pop</span><span class="p">(</span><span class="s2">&quot;slider&quot;</span><span class="p">,</span> <span class="kc">False</span><span class="p">)</span>
+
+        <span class="nb">super</span><span class="p">(</span><span class="n">AbstractSliderSpinBox</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="fm">__init__</span><span class="p">(</span><span class="o">*</span><span class="n">args</span><span class="p">,</span> <span class="o">**</span><span class="n">kwargs</span><span class="p">)</span>
+
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">SliderSpinBox</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSpinBox</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slider</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QSlider</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">setValue</span><span class="p">)</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QDoubleSpinBox</span><span class="p">()</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slider</span> <span class="o">=</span> <span class="n">DoubleSlider</span><span class="p">(</span><span class="n">QtCore</span><span class="o">.</span><span class="n">Qt</span><span class="o">.</span><span class="n">Horizontal</span><span class="p">)</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">doubleValueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">setValue</span><span class="p">)</span>
+            
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="nb">min</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="nb">max</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="n">step</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">default</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">emit</span><span class="p">)</span>
+
+        <span class="n">lay</span> <span class="o">=</span> <span class="n">QtWidgets</span><span class="o">.</span><span class="n">QHBoxLayout</span><span class="p">(</span><span class="bp">self</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">setContentsMargins</span><span class="p">(</span><span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">,</span> <span class="mi">0</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="p">)</span>
+        <span class="n">lay</span><span class="o">.</span><span class="n">addWidget</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">set_slider_visible</span><span class="p">(</span><span class="n">use_slider</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">value</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">value</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">singleStep</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="k">return</span> <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">singleStep</span><span class="p">()</span>
+
+    <span class="k">def</span> <span class="nf">setValue</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setValue</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setMinimum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setMaximum</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">setSingleStep</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">value</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">spin_box</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setTickInterval</span><span class="p">(</span><span class="n">value</span><span class="p">)</span>
+
+    <span class="k">def</span> <span class="nf">set_slider_visible</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">show</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">slider</span><span class="o">.</span><span class="n">setVisible</span><span class="p">(</span><span class="n">show</span><span class="p">)</span>
+
+<span class="k">class</span> <span class="nc">SliderSpinBox</span><span class="p">(</span><span class="n">AbstractSliderSpinBox</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">SliderDoubleSpinBox</span><span class="p">(</span><span class="n">AbstractSliderSpinBox</span><span class="p">):</span>
+    <span class="k">pass</span>
+
+<span class="k">class</span> <span class="nc">Number</span><span class="p">(</span><span class="n">Arg</span><span class="p">):</span>
+
+    <span class="k">def</span> <span class="nf">create</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="c1">#Widget</span>
+        <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Float</span><span class="p">):</span>
+            <span class="n">_cls</span> <span class="o">=</span> <span class="n">SliderDoubleSpinBox</span>
+        <span class="k">else</span><span class="p">:</span>
+            <span class="n">_cls</span> <span class="o">=</span> <span class="n">SliderSpinBox</span>
+
+        <span class="n">wdg</span> <span class="o">=</span> <span class="n">_cls</span><span class="p">(</span><span class="n">slider</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;slider&quot;</span><span class="p">],</span>
+                   <span class="n">step</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;step&quot;</span><span class="p">],</span>
+                   <span class="nb">min</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;min&#39;</span><span class="p">],</span>
+                   <span class="nb">max</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;max&#39;</span><span class="p">],</span>
+                   <span class="n">default</span><span class="o">=</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">])</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write</span> <span class="o">=</span> <span class="n">wdg</span><span class="o">.</span><span class="n">setValue</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">=</span> <span class="n">wdg</span><span class="o">.</span><span class="n">value</span>
+
+        <span class="n">wdg</span><span class="o">.</span><span class="n">valueChanged</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">on_changed</span><span class="p">)</span>
+
+        <span class="bp">self</span><span class="o">.</span><span class="n">wdg</span> <span class="o">=</span> <span class="n">wdg</span>
+        <span class="k">return</span> <span class="n">wdg</span>
+
+    <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">])</span>
+
+    <span class="k">def</span> <span class="nf">_update</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
+        <span class="nb">super</span><span class="p">(</span><span class="n">Number</span><span class="p">,</span> <span class="bp">self</span><span class="p">)</span><span class="o">.</span><span class="n">_update</span><span class="p">()</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">setMaximum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;max&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">setMinimum</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;min&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">setSingleStep</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;step&quot;</span><span class="p">])</span>
+        <span class="bp">self</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">set_slider_visible</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s2">&quot;slider&quot;</span><span class="p">])</span>
+
+<div class="viewcode-block" id="Integer"><a class="viewcode-back" href="../../qargparser.html#qargparser.number.Integer">[docs]</a><span class="k">class</span> <span class="nc">Integer</span><span class="p">(</span><span class="n">Number</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Integer argument widget.</span>
+
+<span class="sd">        :param default: The default value, defaults to 0</span>
+<span class="sd">        :type default: int, optional</span>
+<span class="sd">        :param step: The step, defaults to 0</span>
+<span class="sd">        :type step: int, optional</span>
+<span class="sd">        :param min: The minimum value, defaults to -10000</span>
+<span class="sd">        :type min: int, optional</span>
+<span class="sd">        :param max: The maximum value, defaults to 10000</span>
+<span class="sd">        :type max: int, optional</span>
+<span class="sd">        :param slider: Add a slider if True, defaults to False</span>
+<span class="sd">        :type slider: bool, optional</span>
+
+<span class="sd">        :return: The new instance</span>
+<span class="sd">        :rtype: :class:`~qargparser.number.Integer` instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+
+<div class="viewcode-block" id="Float"><a class="viewcode-back" href="../../qargparser.html#qargparser.number.Float">[docs]</a><span class="k">class</span> <span class="nc">Float</span><span class="p">(</span><span class="n">Number</span><span class="p">):</span>
+    <span class="sd">&quot;&quot;&quot; Float argument widget.</span>
+
+<span class="sd">        :param default: The default value, defaults to 0.0</span>
+<span class="sd">        :type default: float, optional</span>
+<span class="sd">        :param step: The step, defaults to 0.1</span>
+<span class="sd">        :type step: float, optional</span>
+<span class="sd">        :param min: The minimum value, defaults to -10000.0</span>
+<span class="sd">        :type min: float, optional</span>
+<span class="sd">        :param max: The maximum value, defaults to 10000.0</span>
+<span class="sd">        :type max: float, optional</span>
+<span class="sd">        :param slider: Add a slider if True, defaults to False</span>
+<span class="sd">        :type slider: bool, optional</span>
+
+<span class="sd">        :return: The new instance</span>
+<span class="sd">        :rtype: :class:`~qargparser.number.Float` instance</span>
+<span class="sd">    &quot;&quot;&quot;</span>
+    <span class="k">pass</span></div>
+</pre></div>
+
+           </div>
+           
+          </div>
+          <footer>
+
+  <hr/>
+
+  <div role="contentinfo">
+    <p>
+        &#169; Copyright 2022, Gabriel AKPO-ALLAVO.
+
+    </p>
+  </div>
+    
+    
+    
+    Built with <a href="https://www.sphinx-doc.org/">Sphinx</a> using a
+    
+    <a href="https://github.com/readthedocs/sphinx_rtd_theme">theme</a>
+    
+    provided by <a href="https://readthedocs.org">Read the Docs</a>. 
+
+</footer>
+        </div>
+      </div>
+
+    </section>
+
+  </div>
+  
+
+  <script type="text/javascript">
+      jQuery(function () {
+          SphinxRtdTheme.Navigation.enable(true);
+      });
+  </script>
+
+  
+  
+    
+   
+
+</body>
+</html>
