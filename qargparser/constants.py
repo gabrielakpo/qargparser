@@ -82,6 +82,10 @@ DEFAULT_DATA = {
         "template" : {}
     },
     "string":{
+        "default" : "",
+        "placeHolder" : "",
+    },
+    "info":{
         "default" : ""
     }
 }

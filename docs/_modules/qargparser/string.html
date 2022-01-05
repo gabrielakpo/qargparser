@@ -173,6 +173,8 @@
 
 <span class="sd">        :param default: The default value, defaults to &quot;&quot;</span>
 <span class="sd">        :type default: str, optional</span>
+<span class="sd">        :param placeHolder: The place holder text, defaults to &quot;&quot;</span>
+<span class="sd">        :type placeHolder: str, optional</span>
 
 <span class="sd">        :return: The new instance</span>
 <span class="sd">        :rtype: :class:`~qargparser.string.String` instance</span>
@@ -205,6 +207,9 @@
             <span class="k">if</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Info</span><span class="p">):</span>
                 <span class="n">wdg</span><span class="o">.</span><span class="n">setReadOnly</span><span class="p">(</span><span class="kc">True</span><span class="p">)</span>
 
+            <span class="k">else</span><span class="p">:</span>
+                <span class="n">wdg</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;placeHolder&#39;</span><span class="p">])</span>
+
             <span class="bp">self</span><span class="o">.</span><span class="n">_write</span> <span class="o">=</span> <span class="n">wdg</span><span class="o">.</span><span class="n">setText</span>
             <span class="bp">self</span><span class="o">.</span><span class="n">_read</span> <span class="o">=</span> <span class="n">wdg</span><span class="o">.</span><span class="n">text</span>
             <span class="n">wdg</span><span class="o">.</span><span class="n">editingFinished</span><span class="o">.</span><span class="n">connect</span><span class="p">(</span><span class="k">lambda</span><span class="p">:</span> <span class="bp">self</span><span class="o">.</span><span class="n">on_editing_finished</span><span class="p">(</span><span class="n">wdg</span><span class="p">))</span>
@@ -214,6 +219,8 @@
 
     <span class="k">def</span> <span class="nf">reset</span><span class="p">(</span><span class="bp">self</span><span class="p">):</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">_write</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;default&#39;</span><span class="p">])</span>
+        <span class="k">if</span> <span class="ow">not</span> <span class="nb">isinstance</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">Info</span><span class="p">):</span>
+            <span class="bp">self</span><span class="o">.</span><span class="n">wdg</span><span class="o">.</span><span class="n">setPlaceholderText</span><span class="p">(</span><span class="bp">self</span><span class="o">.</span><span class="n">_data</span><span class="p">[</span><span class="s1">&#39;placeHolder&#39;</span><span class="p">])</span>
         <span class="bp">self</span><span class="o">.</span><span class="n">changed</span><span class="o">.</span><span class="n">emit</span><span class="p">(</span><span class="kc">None</span><span class="p">)</span>
 
     <span class="k">def</span> <span class="nf">on_editing_finished</span><span class="p">(</span><span class="bp">self</span><span class="p">,</span> <span class="n">wdg</span><span class="p">):</span>

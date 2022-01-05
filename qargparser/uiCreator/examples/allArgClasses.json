@@ -2,6 +2,7 @@
     {
         "name": "asString", 
         "type": "string", 
+        "placeHolder": "Enter something", 
         "default": "I am a string", 
         "description": "I am a string"
     }, 

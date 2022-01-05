@@ -167,8 +167,6 @@
       <li class="wy-breadcrumbs-aside">
         
           
-            <a href="_sources/qargparser.txt" rel="nofollow"> View page source</a>
-          
         
       </li>
     
@@ -187,9 +185,9 @@
 <h2>argparser<a class="headerlink" href="#argparser" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.argparser.ArgParser">
-<em class="property">class </em><code class="descname">ArgParser</code><span class="sig-paren">(</span><em>data=None</em>, <em>label_suffix=None</em>, <em>description=''</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">ArgParser</code><span class="sig-paren">(</span><em>data=None</em>, <em>label_suffix=None</em>, <em>description=''</em>, <em>parent=None</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PySide.QtGui.QGroupBox</span></code></p>
-<p>Generates argument widgets instances in parented in its layout.
+<p>Generates argument widget instances parented in its layout.
 You can read its values or save its build data in a .json file
 and use it to recreate this widget.
 There are the different argument widget types :</p>
@@ -228,7 +226,7 @@ There are the different argument widget types :</p>
 </table>
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.add_arg">
-<code class="descname">add_arg</code><span class="sig-paren">(</span><em>name=None</em>, <em>type=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.add_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.add_arg" title="Permalink to this definition">¶</a></dt>
+<code class="descname">add_arg</code><span class="sig-paren">(</span><em>name=None</em>, <em>type=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.add_arg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Adds an argument.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -270,7 +268,7 @@ or
 
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.get_arg">
-<code class="descname">get_arg</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.get_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.get_arg" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_arg</code><span class="sig-paren">(</span><em>key</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.get_arg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets an argument from a name or an index.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -301,7 +299,7 @@ or
 
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.pop_arg">
-<code class="descname">pop_arg</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.pop_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.pop_arg" title="Permalink to this definition">¶</a></dt>
+<code class="descname">pop_arg</code><span class="sig-paren">(</span><em>arg</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.pop_arg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Removes an argument.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -328,7 +326,7 @@ or
 
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.move_arg">
-<code class="descname">move_arg</code><span class="sig-paren">(</span><em>key</em>, <em>idx</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.move_arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.move_arg" title="Permalink to this definition">¶</a></dt>
+<code class="descname">move_arg</code><span class="sig-paren">(</span><em>key</em>, <em>idx</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.move_arg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Move an argument from itself or its index to a target index.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -359,7 +357,7 @@ int) &#8211; The argument or its index</li>
 
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.build">
-<code class="descname">build</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.build"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.build" title="Permalink to this definition">¶</a></dt>
+<code class="descname">build</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.build" title="Permalink to this definition">¶</a></dt>
 <dd><p>Build itself from data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -373,13 +371,13 @@ int) &#8211; The argument or its index</li>
 
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.delete_children">
-<code class="descname">delete_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.delete_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.delete_children" title="Permalink to this definition">¶</a></dt>
+<code class="descname">delete_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.delete_children" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes all children arguments.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.read">
-<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.read" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Read all arguments values.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -395,7 +393,7 @@ int) &#8211; The argument or its index</li>
 
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.to_data">
-<code class="descname">to_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.to_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.to_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">to_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.to_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets its data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -411,7 +409,7 @@ int) &#8211; The argument or its index</li>
 
 <dl class="method">
 <dt id="qargparser.argparser.ArgParser.save_data">
-<code class="descname">save_data</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/argparser.html#ArgParser.save_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.argparser.ArgParser.save_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">save_data</code><span class="sig-paren">(</span><em>path</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.argparser.ArgParser.save_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Saves its data to a path.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -430,7 +428,7 @@ int) &#8211; The argument or its index</li>
 <h2>arg<a class="headerlink" href="#arg" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.arg.Arg">
-<em class="property">class </em><code class="descname">Arg</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Arg</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">PySide.QtCore.QObject</span></code></p>
 <p>Base of argument widgets.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -467,7 +465,7 @@ or
 </table>
 <dl class="method">
 <dt id="qargparser.arg.Arg.set_data">
-<code class="descname">set_data</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg.set_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg.set_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">set_data</code><span class="sig-paren">(</span><em>name</em>, <em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg.set_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Sets its data with new from a name and a value.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -485,7 +483,7 @@ or
 
 <dl class="method">
 <dt id="qargparser.arg.Arg.update_data">
-<code class="descname">update_data</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg.update_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg.update_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">update_data</code><span class="sig-paren">(</span><em>data</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg.update_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Updates its data</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -499,13 +497,13 @@ or
 
 <dl class="method">
 <dt id="qargparser.arg.Arg.delete">
-<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg.delete"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg.delete" title="Permalink to this definition">¶</a></dt>
+<code class="descname">delete</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg.delete" title="Permalink to this definition">¶</a></dt>
 <dd><p>Deletes itself.</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="qargparser.arg.Arg.get_children">
-<code class="descname">get_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg.get_children"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg.get_children" title="Permalink to this definition">¶</a></dt>
+<code class="descname">get_children</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg.get_children" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets all its children.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -534,7 +532,7 @@ or
 
 <dl class="method">
 <dt id="qargparser.arg.Arg.write">
-<code class="descname">write</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg.write"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg.write" title="Permalink to this definition">¶</a></dt>
+<code class="descname">write</code><span class="sig-paren">(</span><em>value</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg.write" title="Permalink to this definition">¶</a></dt>
 <dd><p>Writes the value</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -548,7 +546,7 @@ or
 
 <dl class="method">
 <dt id="qargparser.arg.Arg.read">
-<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg.read"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg.read" title="Permalink to this definition">¶</a></dt>
+<code class="descname">read</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg.read" title="Permalink to this definition">¶</a></dt>
 <dd><p>Reads the value.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -564,13 +562,13 @@ or
 
 <dl class="method">
 <dt id="qargparser.arg.Arg.reset">
-<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg.reset"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg.reset" title="Permalink to this definition">¶</a></dt>
+<code class="descname">reset</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg.reset" title="Permalink to this definition">¶</a></dt>
 <dd><p>Resets itself</p>
 </dd></dl>
 
 <dl class="method">
 <dt id="qargparser.arg.Arg.to_data">
-<code class="descname">to_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/arg.html#Arg.to_data"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.arg.Arg.to_data" title="Permalink to this definition">¶</a></dt>
+<code class="descname">to_data</code><span class="sig-paren">(</span><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.arg.Arg.to_data" title="Permalink to this definition">¶</a></dt>
 <dd><p>Gets its data.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
@@ -591,7 +589,7 @@ or
 <h2>array<a class="headerlink" href="#array" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.array.Array">
-<em class="property">class </em><code class="descname">Array</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/array.html#Array"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.array.Array" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Array</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.array.Array" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.arg.Arg" title="qargparser.arg.Arg"><code class="xref py py-class docutils literal"><span class="pre">qargparser.arg.Arg</span></code></a></p>
 <p>Array argument widget. It creates a list of deletables items.
 You an can add a sub-argument that will be the items template.</p>
@@ -623,7 +621,7 @@ You an can add a sub-argument that will be the items template.</p>
 <h2>boolean<a class="headerlink" href="#boolean" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.boolean.Boolean">
-<em class="property">class </em><code class="descname">Boolean</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/boolean.html#Boolean"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.boolean.Boolean" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Boolean</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.boolean.Boolean" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.arg.Arg" title="qargparser.arg.Arg"><code class="xref py py-class docutils literal"><span class="pre">qargparser.arg.Arg</span></code></a></p>
 <p>Boolean argument widget.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -645,7 +643,7 @@ You an can add a sub-argument that will be the items template.</p>
 <h2>enum<a class="headerlink" href="#enum" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.enum.Enum">
-<em class="property">class </em><code class="descname">Enum</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/enum.html#Enum"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.enum.Enum" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Enum</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.enum.Enum" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.arg.Arg" title="qargparser.arg.Arg"><code class="xref py py-class docutils literal"><span class="pre">qargparser.arg.Arg</span></code></a></p>
 <p>Enum argument widget. Enumerates choices.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -674,7 +672,7 @@ You an can add a sub-argument that will be the items template.</p>
 <h2>number<a class="headerlink" href="#number" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.number.Integer">
-<em class="property">class </em><code class="descname">Integer</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/number.html#Integer"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.number.Integer" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Integer</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.number.Integer" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">qargparser.number.Number</span></code></p>
 <p>Integer argument widget.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -702,7 +700,7 @@ You an can add a sub-argument that will be the items template.</p>
 
 <dl class="class">
 <dt id="qargparser.number.Float">
-<em class="property">class </em><code class="descname">Float</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/number.html#Float"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.number.Float" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Float</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.number.Float" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">qargparser.number.Number</span></code></p>
 <p>Float argument widget.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -733,7 +731,7 @@ You an can add a sub-argument that will be the items template.</p>
 <h2>object<a class="headerlink" href="#object" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.object.Object">
-<em class="property">class </em><code class="descname">Object</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/object.html#Object"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.object.Object" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Object</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.object.Object" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.arg.Arg" title="qargparser.arg.Arg"><code class="xref py py-class docutils literal"><span class="pre">qargparser.arg.Arg</span></code></a></p>
 <p>Object argument widget. 
 You an can add all sub-argument types.</p>
@@ -762,7 +760,7 @@ You an can add all sub-argument types.</p>
 <h2>path<a class="headerlink" href="#path" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.path.Path">
-<em class="property">class </em><code class="descname">Path</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/path.html#Path"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.path.Path" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Path</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.path.Path" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.arg.Arg" title="qargparser.arg.Arg"><code class="xref py py-class docutils literal"><span class="pre">qargparser.arg.Arg</span></code></a></p>
 <p>Path argument widget. 
 A button open an explorer window to choose a path.</p>
@@ -792,18 +790,24 @@ A button open an explorer window to choose a path.</p>
 <h2>string<a class="headerlink" href="#string" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.string.String">
-<em class="property">class </em><code class="descname">String</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/string.html#String"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.string.String" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">String</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.string.String" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.arg.Arg" title="qargparser.arg.Arg"><code class="xref py py-class docutils literal"><span class="pre">qargparser.arg.Arg</span></code></a></p>
 <p>String argument widget.</p>
 <table class="docutils field-list" frame="void" rules="none">
 <col class="field-name" />
 <col class="field-body" />
 <tbody valign="top">
-<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><strong>default</strong> (<em>str, optional</em>) &#8211; The default value, defaults to &#8220;&#8221;</td>
+<tr class="field-odd field"><th class="field-name">Parameters:</th><td class="field-body"><ul class="first simple">
+<li><strong>default</strong> (<em>str, optional</em>) &#8211; The default value, defaults to &#8220;&#8221;</li>
+<li><strong>placeHolder</strong> (<em>str, optional</em>) &#8211; The place holder text, defaults to &#8220;&#8221;</li>
+</ul>
+</td>
 </tr>
-<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body">The new instance</td>
+<tr class="field-even field"><th class="field-name">Returns:</th><td class="field-body"><p class="first">The new instance</p>
+</td>
 </tr>
-<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><a class="reference internal" href="#qargparser.string.String" title="qargparser.string.String"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a> instance</td>
+<tr class="field-odd field"><th class="field-name">Return type:</th><td class="field-body"><p class="first last"><a class="reference internal" href="#qargparser.string.String" title="qargparser.string.String"><code class="xref py py-class docutils literal"><span class="pre">String</span></code></a> instance</p>
+</td>
 </tr>
 </tbody>
 </table>
@@ -811,7 +815,7 @@ A button open an explorer window to choose a path.</p>
 
 <dl class="class">
 <dt id="qargparser.string.Info">
-<em class="property">class </em><code class="descname">Info</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/string.html#Info"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.string.Info" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Info</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.string.Info" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.string.String" title="qargparser.string.String"><code class="xref py py-class docutils literal"><span class="pre">qargparser.string.String</span></code></a></p>
 <p>Info argument widget. 
 The value is on read-only mode.</p>
@@ -834,7 +838,7 @@ The value is on read-only mode.</p>
 <h2>text<a class="headerlink" href="#text" title="Permalink to this headline">¶</a></h2>
 <dl class="class">
 <dt id="qargparser.text.Text">
-<em class="property">class </em><code class="descname">Text</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/text.html#Text"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.text.Text" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Text</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.text.Text" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.arg.Arg" title="qargparser.arg.Arg"><code class="xref py py-class docutils literal"><span class="pre">qargparser.arg.Arg</span></code></a></p>
 <p>Text argument widget.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -853,7 +857,7 @@ The value is on read-only mode.</p>
 
 <dl class="class">
 <dt id="qargparser.text.Doc">
-<em class="property">class </em><code class="descname">Doc</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/text.html#Doc"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.text.Doc" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Doc</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.text.Doc" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <a class="reference internal" href="#qargparser.text.Text" title="qargparser.text.Text"><code class="xref py py-class docutils literal"><span class="pre">qargparser.text.Text</span></code></a></p>
 <p>Doc argument widget. 
 The value is on read-only mode.</p>
@@ -873,7 +877,7 @@ The value is on read-only mode.</p>
 
 <dl class="class">
 <dt id="qargparser.text.Python">
-<em class="property">class </em><code class="descname">Python</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/text.html#Python"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.text.Python" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Python</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.text.Python" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">qargparser.text.Code</span></code></p>
 <p>Python argument widget.</p>
 <table class="docutils field-list" frame="void" rules="none">
@@ -892,7 +896,7 @@ The value is on read-only mode.</p>
 
 <dl class="class">
 <dt id="qargparser.text.Mel">
-<em class="property">class </em><code class="descname">Mel</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="reference internal" href="_modules/qargparser/text.html#Mel"><span class="viewcode-link">[source]</span></a><a class="headerlink" href="#qargparser.text.Mel" title="Permalink to this definition">¶</a></dt>
+<em class="property">class </em><code class="descname">Mel</code><span class="sig-paren">(</span><em>name=None</em>, <em>default=None</em>, <em>**kwargs</em><span class="sig-paren">)</span><a class="headerlink" href="#qargparser.text.Mel" title="Permalink to this definition">¶</a></dt>
 <dd><p>Bases: <code class="xref py py-class docutils literal"><span class="pre">qargparser.text.Code</span></code></p>
 <p>Mel argument widget.</p>
 <table class="docutils field-list" frame="void" rules="none">

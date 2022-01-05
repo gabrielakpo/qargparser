@@ -94,7 +94,7 @@ class CustomLabel(QtWidgets.QLabel):
         return txt
 
 class ArgParser(QtWidgets.QGroupBox):
-    """ Generates argument widgets instances in parented in its layout.
+    """ Generates argument widget instances parented in its layout.
         You can read its values or save its build data in a .json file
         and use it to recreate this widget.
         There are the different argument widget types :

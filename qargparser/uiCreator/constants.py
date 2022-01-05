@@ -9,7 +9,6 @@ BASE_PROPERTIES_FILE = os.path.join(PROPERTIES_PATH, "base.json")
 PROPERTIES_MAPPING_NAMES = {
     "int": "integer",
     "bool": 'boolean',
-    "info": 'string',
     "python": 'text',
     "mel": 'text', 
     "doc": 'text', 

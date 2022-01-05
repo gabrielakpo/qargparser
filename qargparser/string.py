@@ -6,6 +6,8 @@ class String(Arg):
 
         :param default: The default value, defaults to ""
         :type default: str, optional
+        :param placeHolder: The place holder text, defaults to ""
+        :type placeHolder: str, optional
 
         :return: The new instance
         :rtype: :class:`~qargparser.string.String` instance
@@ -38,6 +40,9 @@ class String(Arg):
             if isinstance(self, Info):
                 wdg.setReadOnly(True)
 
+            else:
+                wdg.setPlaceholderText(self._data['placeHolder'])
+
             self._write = wdg.setText
             self._read = wdg.text
             wdg.editingFinished.connect(lambda: self.on_editing_finished(wdg))
@@ -47,6 +52,8 @@ class String(Arg):
 
     def reset(self):
         self._write(self._data['default'])
+        if not isinstance(self, Info):
+            self.wdg.setPlaceholderText(self._data['placeHolder'])
         self.changed.emit(None)
 
     def on_editing_finished(self, wdg):
