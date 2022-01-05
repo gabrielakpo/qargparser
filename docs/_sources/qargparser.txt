@@ -1,6 +1,9 @@
 qargparser
 ================
 
+.. image:: images/qarparser.png
+   :width: 600
+
 argparser
 ------------------------
 .. autoclass:: qargparser.argparser.ArgParser
