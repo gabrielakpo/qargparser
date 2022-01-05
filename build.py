@@ -18,9 +18,9 @@ class Build(utils.Build):
                                 ext=ext,
                                 icon=None)
 
-        # #Package info file
-        # self.create_package_info(
-        #     os.path.join(self.build_path, "qargparser", '__version__.py'))
+        #Package info file
+        self.create_package_info(
+            os.path.join(self.build_path, "qargparser", '__version__.py'))
 
 if __name__ == "__main__":
     Build(exclude_patterns=["*.py", "__pycache__"], 
