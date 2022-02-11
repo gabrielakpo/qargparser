@@ -1,5 +1,7 @@
 from collections import OrderedDict as Od
 import json 
+import os
+import fnmatch
 
 class OrderedDict(Od):
     def prepend(self, key, value, dict_setitem=dict.__setitem__):
@@ -76,12 +78,38 @@ def convert_array(data):
             data["items"] = convert_array(data["items"])
 
     return data
-                
+
+def get_files(path, patterns=[], depth=None):
+    """Gets all files from a root path and patterns. 
+       Can be limited by a depth value.
+
+    :param path: The root path
+    :type path: str
+    :param patterns: The patterns, defaults to []
+    :type patterns: list of str, optional
+    :param depth: The depth limitation, if None, no limitation, defaults to None
+    :type depth: int, optional
+    :return: The files found
+    :rtype: list of str
+    """
+    
+    matches = []
+    for root, dirnames, filenames in os.walk(path):
+        if depth is None or root[len(path):].count(os.sep) < depth:
+            names = dirnames + filenames
+            for name in set(name for pattern in patterns
+                                for name in fnmatch.filter(names, pattern)):
+                matches.append(os.path.join(root, name))
+    return list(set(matches))
+
 if __name__ == '__main__':
-    import os
+
     # dir_path = r"A:\packages\perso\qargparser\dev\examples"
     # paths = [os.path.join(dir_path, name) for name in os.listdir(dir_path)]
-    paths = []
+
+    path = r'A:\packages\tbm\TBM_MayaRig\dev\TBM_MayaRig\Modules'
+    paths = get_files(path, ["prescript_args.json"])
+
     for path in paths:
         if not path.endswith('.json'):
             continue
