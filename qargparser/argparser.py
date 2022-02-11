@@ -34,7 +34,8 @@ TYPES = {
 _TYPES = TYPES.copy()
 _TYPES.update({
     "bool": Boolean,
-    "int": Integer
+    "int": Integer,
+    "str": String
 })
 
 def deleteChildWidgets(item):
@@ -44,6 +45,23 @@ def deleteChildWidgets(item):
             deleteChildWidgets(layout.itemAt(i))
     if item.widget():
         item.widget().deleteLater()
+
+def clear_layout(layout):
+    """Delete all UI children recurcively
+
+    :param layout: layout parent, defaults to None
+    :type layout: QLayout, optional
+    """
+    
+    while layout.count():
+        item = layout.takeAt(0)
+        if item:
+            widget = item.widget()
+            if widget:
+                widget.deleteLater()
+            lay = item.layout()
+            if lay:
+                clear_layout(lay) 
 
 def get_object_from_type(type):
     return _TYPES[type]
@@ -265,6 +283,26 @@ class ArgParser(QtWidgets.QGroupBox):
             or (isinstance(key, str) and arg("name") == key)):
                 return arg
 
+    def get_args(self):
+        """Gets all arguments.
+        :return: The arguments
+        :rtype: list of :class:`~qargparser.array.Array` ,
+                :class:`~qargparser.boolean.Boolean`,
+                :class:`~qargparser.enum.Enum` ,
+                :class:`~qargparser.number.Integer`,
+                :class:`~qargparser.number.Float`,
+                :class:`~qargparser.object.Object`,
+                :class:`~qargparser.path.Path`,
+                :class:`~qargparser.string.String`,
+                :class:`~qargparser.string.Info`,
+                :class:`~qargparser.text.Text`,
+                :class:`~qargparser.text.Doc`,
+                :class:`~qargparser.text.Python`
+                or
+                :class:`~qargparser.text.Mel` instance
+        """
+        return self._args
+
     def pop_arg(self, arg):
         """Removes an argument.
 
@@ -355,8 +393,8 @@ class ArgParser(QtWidgets.QGroupBox):
     def delete_children(self):
         """Deletes all children arguments.
         """
-        for arg in self._args[:]:
-            self.pop_arg(arg)
+        clear_layout(self.layout())
+        self._args = []
 
     def on_changed(self, arg, button, *args, **kwargs):
         #Set edit_button visibiliy

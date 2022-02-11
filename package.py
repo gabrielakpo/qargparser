@@ -12,7 +12,7 @@ tools = ["qargparser_creator"]
 
 requires = ["python-2", "PySide"]
 
-build_requires = ["python-2", "TBM_RezManager"]
+private_build_requires = ["python-2", "TBM_RezManager"]
 
 _data = {
     "files": {
