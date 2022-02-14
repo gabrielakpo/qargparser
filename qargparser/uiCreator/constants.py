@@ -1,6 +1,5 @@
 import os
 
-import qargparser
 from ..constants import EXT 
 
 _root = os.path.dirname(__file__)
@@ -21,18 +20,19 @@ NAME_IDX = 0
 TYPE_IDX = 1
 ADD_IDX = 1
 
-WIN_WIDTH = 2500
-WIN_HEIGHT = 1800
+WIN_WIDTH = 1250
+WIN_HEIGHT = 900
 
-READPREVIEW_WIN_WIDTH = 1500
-READPREVIEW_WIN_HEIGHT = 1500
+READPREVIEW_WIN_WIDTH = 750
+READPREVIEW_WIN_HEIGHT = 750
 
 SPLITTER_RATIOS = [0.2, 0.5, 0.3]
 
 #Style
-STYLE_FILE = os.path.join(_root, "style", 'style.css')
-STYLEVARS_FILE = os.path.join(_root, "style", 'styleVars.json')
-ICONS_PATH = os.path.join(_root, "style", "icons").replace("\\", "/")
+STYLE_ROOT = os.path.join(_root, "style").replace('\\', '/')
+STYLE_FILE = os.path.join(STYLE_ROOT, 'style.qss')
+STYLEVARS_FILE = os.path.join(STYLE_ROOT, 'styleVars.json')
+ICONS_PATH = os.path.join(STYLE_ROOT, "icons").replace("\\", "/")
 
 EXAMPLES_DIR_PATH = os.path.join(_root, "examples")
 EXAMPLES_NAMES = ["allArgClasses"]

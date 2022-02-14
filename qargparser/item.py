@@ -6,14 +6,14 @@ class DeleteButton(QtWidgets.QPushButton):
     def __init__(self, wdg,  label="x", *args, **kwargs):
         super(DeleteButton, self).__init__(label, *args, **kwargs)
         self.wdg = wdg
-        self.setFixedWidth(35)
+        self.setFixedWidth(25)
 
     def paintEvent(self, event):
         super(DeleteButton, self).paintEvent(event)
         height = self.wdg.sizeHint().height()
-        if height < 35:
-            height = 35
-        self.setFixedSize(35, height)
+        if height < 25:
+            height = 25
+        self.setFixedSize(25, height)
         
 class Item(Arg):
     delete_requested = QtCore.Signal(object)
@@ -52,13 +52,13 @@ class Item(Arg):
         return self.wdg
 
     def reset(self):
-        for child in self.get_children():
+        for child in self.item_wdg._args:
             child.reset()
             child.changed.emit(None)
         self.changed.emit(None)
 
     def is_edited(self):
-        return any(child.is_edited() for child in self.get_children())
+        return any(child.is_edited() for child in self.item_wdg._args)
 
     def get_children(self):
         return self.item_wdg._args

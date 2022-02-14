@@ -70,7 +70,7 @@ class HierarchyTree(QtWidgets.QTreeWidget):
             header.setSectionResizeMode(cons.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
         except:
             header.setResizeMode(cons.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
-        header.resizeSection(cons.TYPE_IDX, 200)
+        header.resizeSection(cons.TYPE_IDX, 100)
 
     @property
     def ap(self):
@@ -184,6 +184,8 @@ class HierarchyTree(QtWidgets.QTreeWidget):
                     and idx != children.index(item.arg)):
                     parent_item.arg.move_arg(item.arg, idx)
 
+                parent_item.arg.reset()
+
             self.parent().item_changed.emit(item.arg)
 
 class Hierarchy(QtWidgets.QGroupBox):
@@ -198,7 +200,7 @@ class Hierarchy(QtWidgets.QGroupBox):
 
         self.tree = HierarchyTree()
         layout = QtWidgets.QVBoxLayout(self)
-        # layout.setContentsMargins(2, 2, 2, 2)
+        self.setContentsMargins(2, 2, 2, 2)
         layout.addWidget(self.tree)
 
         self.tree.customContextMenuRequested.connect(self.show_context_menu)

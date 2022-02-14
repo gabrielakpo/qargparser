@@ -71,15 +71,15 @@ class ResetButton(QtWidgets.QPushButton):
         super(ResetButton, self).__init__(QtGui.QIcon(cons.RELOAD_ICON), 
                                           "", 
                                           *args, **kwargs)
-        self.setIconSize(QtCore.QSize(25, 25))
+        self.setIconSize(QtCore.QSize(10, 10))
         self.wdg = wdg
 
     def paintEvent(self, event):
         super(ResetButton, self).paintEvent(event)
         height = self.wdg.sizeHint().height()
-        if height < 35:
-            height = 35
-        self.setFixedSize(35, height)
+        if height < 25:
+            height = 25
+        self.setFixedSize(25, height)
 
 def to_label_string(text):
     if text is None:

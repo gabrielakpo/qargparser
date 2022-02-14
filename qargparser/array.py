@@ -48,10 +48,7 @@ class Array(Arg):
                 self.add_item()
 
         #Add item button
-        self.add_item_button = QtWidgets.QPushButton(self._data["buttonLabel"])
-        self.add_item_button.clicked.connect(self.add_item)
-        layout = self.wdg.layout()
-        layout.insertRow(layout.rowCount(), self.add_item_button)
+        self._create_add_item_button()
 
         self._write = None
         self._read = lambda : [arg.read() for arg in wdg._args if arg.read() is not None]
@@ -60,7 +57,7 @@ class Array(Arg):
         return wdg
 
     def is_edited(self):
-        return (len(self.read()) != len(self._data["default"]) 
+        return (len(self.wdg._args) != len(self._data["default"]) and len(self.wdg._args) > self._data["min"]
                 or any(child.is_edited() for child in self.wdg._args))
 
     def add_item(self, default=None):
@@ -94,8 +91,15 @@ class Array(Arg):
         kwargs = self._data["items"].copy()
         self._item.update_data({"template": kwargs})
 
+    def _create_add_item_button(self):
+        self.add_item_button = QtWidgets.QPushButton(self._data["buttonLabel"])
+        self.add_item_button.clicked.connect(self.add_item)
+        layout = self.wdg.layout()
+        layout.insertRow(layout.rowCount(), self.add_item_button)
+        
     def reset(self):
         self.wdg.delete_children()
+        self._create_add_item_button()
         self._init()
 
         defaults = self._data['default']

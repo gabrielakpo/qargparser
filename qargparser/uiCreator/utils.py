@@ -3,6 +3,7 @@ import json
 import re
 import json
 from ..utils import load_data_from_file, write_json
+from .Qt import QtWidgets
 from . import constants as cons
 
 def get_properties_data(name):
@@ -35,19 +36,38 @@ def get_next_name(string):
     idx = str(int(idx) + 1)
     return  n + idx
 
-def load_style():
-    #Get style string
-    vars_dct = load_data_from_file(cons.STYLEVARS_FILE)
-    with open(cons.STYLE_FILE, "r") as f:
-        string = f.read()
+def _load_style():
+    path = cons.STYLE_FILE
+    with open(path, "r") as f:
+        data = f.read()
+        data = data.replace('<rootpath>', cons.STYLE_ROOT)
+    return _scaled_stylesheet(data)
 
-    #Replaceskeys by vars values
-    for name in vars_dct.keys():
-        string = string.replace('<'+str(name)+'>', vars_dct[name])
+def _px(value):
+    #Get screen resolution
+    rec = QtWidgets.QApplication.desktop().screenGeometry()
+    h = rec.height()
+    factor = h / 2160.0
+    return factor * value
 
-    #Replace icons path keys by valyes
-    string = string.replace('<path>', cons.ICONS_PATH)
-    return string
+def _scaled_stylesheet(ss):
+    """Replace any mention of <num>px with scaled version
+    This way, you can still use px without worrying about what
+    it will look like at HDPI resolution.
+    """
+
+    output = []
+    for line in ss.splitlines():
+        line = line.rstrip()
+        if line.endswith("px;"):
+            key, value = line.rsplit(" ", 1)
+            try:
+                value = _px(int(value[:-3]))
+                line = "%s %dpx;" % (key, value)
+            except:
+                pass
+        output += [line]
+    return "\n".join(output)
 
 def get_example_path(name):
     dir_path = cons.EXAMPLES_DIR_PATH

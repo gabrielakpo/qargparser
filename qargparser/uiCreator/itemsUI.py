@@ -19,7 +19,7 @@ class Items(QtWidgets.QGroupBox):
             header.setSectionResizeMode(cons.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
         except:
             header.setResizeMode(cons.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
-        header.resizeSection(cons.ADD_IDX, 40)
+        header.resizeSection(cons.ADD_IDX, 20)
 
         layout = QtWidgets.QVBoxLayout(self)
         # layout.setContentsMargins(2, 2, 2, 2)
@@ -33,6 +33,6 @@ class Items(QtWidgets.QGroupBox):
             item = QtWidgets.QTreeWidgetItem([name])
             self.tree.addTopLevelItem(item)
             add_button = QtWidgets.QPushButton("+", parent=self)
-            add_button.setFixedSize(40, 40)
+            add_button.setFixedSize(20, 20)
             add_button.clicked.connect(partial(self.add_requested.emit, name))
             self.tree.setItemWidget(item, cons.ADD_IDX, add_button)

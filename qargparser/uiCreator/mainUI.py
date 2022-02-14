@@ -25,7 +25,7 @@ class ReadPreview(QtWidgets.QWidget):
         wdg.setReadOnly(True)
 
         layout = QtWidgets.QVBoxLayout(self)
-        layout.setContentsMargins(0, 0, 0, 0)
+        # layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(wdg)
 
         data = utils.format_json(data)
@@ -61,12 +61,12 @@ class MainUI(QtWidgets.QWidget):
         self.resize(cons.WIN_WIDTH, cons.WIN_HEIGHT)
         self.h_splitter.setSizes([self.width()*v for v in cons.SPLITTER_RATIOS])
 
-        self.setStyleSheet(utils.load_style())
+        self.setStyleSheet(utils._load_style())
 
     def create_widgets(self):
         #Menu 
         self.menuBar = QtWidgets.QMenuBar()
-        self.menuBar.setFixedHeight(50)
+        self.menuBar.setFixedHeight(25)
         menu = self.menuBar.addMenu("File")
         self.new_action = menu.addAction("New")
         self.open_action = menu.addAction("Open")
@@ -83,29 +83,36 @@ class MainUI(QtWidgets.QWidget):
         self.file_le = QtWidgets.QLineEdit()
         self.file_le.setReadOnly(True)
 
-        #Splitters
-        self.h_splitter = QtWidgets.QSplitter()
-        self.v_splitter = QtWidgets.QSplitter(self.h_splitter)
-        self.v_splitter.setOrientation(QtCore.Qt.Vertical)
-
         #Sections
-        self.items_wdg = Items("Items", parent=self.v_splitter)
-        self.hierarchy_wdg = Hierarchy(self.ap, "Hierarchy", parent=self.v_splitter)
-        self.preview_wdg = Preview(self.ap, "Preview", parent=self.h_splitter)
-        self.properties_wdg = Properties("Properties", parent=self.h_splitter)
+        self.items_wdg = Items("Items")
+        self.hierarchy_wdg = Hierarchy(self.ap, "Hierarchy")
+        self.preview_wdg = Preview(self.ap, "Preview")
+        self.properties_wdg = Properties("Properties")
 
+        #Splitters
+        self.v_splitter = QtWidgets.QSplitter()
+        self.v_splitter.setOrientation(QtCore.Qt.Vertical)
+        self.v_splitter.addWidget(self.items_wdg)
+        self.v_splitter.addWidget(self.hierarchy_wdg)
+
+        self.h_splitter = QtWidgets.QSplitter()
+        self.h_splitter.addWidget(self.v_splitter)
+        self.h_splitter.addWidget(self.preview_wdg)
+        self.h_splitter.addWidget(self.properties_wdg)
         self.h_splitter.setStretchFactor(0, 0)
         self.h_splitter.setStretchFactor(1, 1)
         self.h_splitter.setStretchFactor(2, 0)
+        self.h_splitter.setContentsMargins(10, 10, 10, 10)
 
     def create_layouts(self):
         file_layout = QtWidgets.QHBoxLayout()
-        file_layout.setContentsMargins(0, 0, 0, 0)
+        file_layout.setContentsMargins(2, 2, 2, 2)
         file_layout.setSpacing(2)
         file_layout.addWidget(QtWidgets.QLabel("Path: "))
         file_layout.addWidget(self.file_le)
 
         main_layout = QtWidgets.QVBoxLayout(self)
+        main_layout.setContentsMargins(5, 5, 5, 5)
         main_layout.addWidget(self.menuBar)
         main_layout.addLayout(file_layout)
         main_layout.addWidget(self.h_splitter)
