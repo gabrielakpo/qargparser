@@ -13,7 +13,7 @@ from .hierarchyUI import Hierarchy
 from .previewUI import Preview
 from .itemsUI import Items
 
-from . import constants as cons
+from . import envs 
 
 class ReadPreview(QtWidgets.QWidget):
     def __init__(self, data, *args, **kwargs):
@@ -31,8 +31,8 @@ class ReadPreview(QtWidgets.QWidget):
         data = utils.format_json(data)
         wdg.appendPlainText(data)
 
-        self.resize(cons.READPREVIEW_WIN_WIDTH, 
-                    cons.READPREVIEW_WIN_HEIGHT)
+        self.resize(envs.READPREVIEW_WIN_WIDTH, 
+                    envs.READPREVIEW_WIN_HEIGHT)
 
         self.show()
         self.move(self.parent().x(), self.parent().y())
@@ -58,8 +58,8 @@ class MainUI(QtWidgets.QWidget):
         if path:
             self.load_file(path)
 
-        self.resize(cons.WIN_WIDTH, cons.WIN_HEIGHT)
-        self.h_splitter.setSizes([self.width()*v for v in cons.SPLITTER_RATIOS])
+        self.resize(envs.WIN_WIDTH, envs.WIN_HEIGHT)
+        self.h_splitter.setSizes([self.width()*v for v in envs.SPLITTER_RATIOS])
 
         self.setStyleSheet(utils._load_style())
 
@@ -74,7 +74,7 @@ class MainUI(QtWidgets.QWidget):
         self.saveAs_action = menu.addAction("Save as...")
         self.clear_action = menu.addAction("Clear")
         loadExamples_menu = menu.addMenu("Load examples...")
-        for name in cons.EXAMPLES_NAMES:
+        for name in envs.EXAMPLES_NAMES:
             action = loadExamples_menu.addAction(name)
             action.triggered.connect(partial(self.open_example, name))
         self.readPreview_action = self.menuBar.addAction("Read preview")
@@ -125,7 +125,6 @@ class MainUI(QtWidgets.QWidget):
         self.saveAs_action.triggered.connect(self.save_as_file)
         self.readPreview_action.triggered.connect(self.readPreview_file_clicked)
         self.hierarchy_wdg.item_changed.connect(self.on_hierarchy_item_changed)
-        self.hierarchy_wdg.item_added.connect(self.on_hierarchy_item_added)
         self.items_wdg.add_requested.connect(self.on_add_requested)
         self.properties_wdg.edited.connect(self.on_properties_edited)
 
@@ -133,17 +132,14 @@ class MainUI(QtWidgets.QWidget):
         self.items_wdg.load()
         self.hierarchy_wdg.load()
 
-    def on_properties_edited(self, arg):
-        self.hierarchy_wdg.edit_item(arg)
+    def on_properties_edited(self):
+        self.hierarchy_wdg.edit_current_item()
 
     def add_arg(self, **data):
         self.ap.add_arg(**data)
 
     def on_hierarchy_item_changed(self, arg):
         self.properties_wdg.load(arg)
-
-    def on_hierarchy_item_added(self, arg):
-        self.ap.add_arg(**data)
 
     def on_add_requested(self, name):
         self.hierarchy_wdg.add_item(name)

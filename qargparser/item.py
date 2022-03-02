@@ -1,19 +1,19 @@
 from .Qt import QtWidgets, QtCore
 from functools import partial
 from .arg import Arg
+from . import envs
 
 class DeleteButton(QtWidgets.QPushButton):
     def __init__(self, wdg,  label="x", *args, **kwargs):
         super(DeleteButton, self).__init__(label, *args, **kwargs)
         self.wdg = wdg
-        self.setFixedWidth(25)
 
     def paintEvent(self, event):
         super(DeleteButton, self).paintEvent(event)
         height = self.wdg.sizeHint().height()
-        if height < 25:
-            height = 25
-        self.setFixedSize(25, height)
+        if height < envs.ITEM_DEL_BUTTON_MIN_HEIGHT: 
+            height = envs.ITEM_DEL_BUTTON_MIN_HEIGHT
+        self.setFixedSize(envs.ITEM_DEL_BUTTON_WIDTH, height)
         
 class Item(Arg):
     delete_requested = QtCore.Signal(object)
@@ -21,6 +21,8 @@ class Item(Arg):
     def create(self):
         from .argparser import ArgParser
         self.item_wdg = ArgParser(description=self._data["description"])
+        self.item_wdg.layout().setContentsMargins(0, 0, 0, 0)
+        self.item_wdg.layout().setVerticalSpacing(0)
 
         tpls = self._data["template"] = self._data.get('template', {})
         default = self._data['default']

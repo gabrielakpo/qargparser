@@ -1,10 +1,9 @@
 from .Qt import QtWidgets, QtCore
 from . import utils
 from qargparser import ArgParser
-from . import constants as cons
 
 class Properties(QtWidgets.QGroupBox):
-    edited = QtCore.Signal(object)
+    edited = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         self.ap = ArgParser(label_suffix=':')
@@ -64,7 +63,7 @@ class Properties(QtWidgets.QGroupBox):
     def on_edit_cliked(self):
         data = self.ap.export_data()
         self.arg.update_data(data)
-        self.edited.emit(self.arg)
+        self.edited.emit()
 
     def on_reset_cliked(self):
         self.load(self.arg)

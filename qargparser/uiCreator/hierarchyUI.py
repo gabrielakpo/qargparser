@@ -2,7 +2,7 @@ import os
 from qargparser import Array, ArgParser, Object
 from .Qt import QtWidgets, QtCore
 from . import utils
-from . import constants as cons
+from . import envs 
 from functools import partial
 
 class HierarchyItem(QtWidgets.QTreeWidgetItem):
@@ -22,8 +22,8 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
 
     def __repr__(self):
         return "<%s( %s, %s)>"%(self.__class__.__name__, 
-                                self.text(cons.TYPE_IDX), 
-                                self.text(cons.NAME_IDX))
+                                self.text(envs.TYPE_IDX), 
+                                self.text(envs.NAME_IDX))
 
     @property
     def path(self):
@@ -33,17 +33,9 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
         return path
 
     def add_children(self, name, arg):
-        item = HierarchyItem(arg("type"), arg=arg, parent=self)
+        item = HierarchyItem(arg("name"), arg=arg, parent=self)
         for c_arg in arg.get_children():
             item.add_children(name, c_arg)
-
-    def search_from_arg(self, arg):
-        if self.arg is arg:
-            return self
-
-        for j in range(self.childCount()):
-            item = self.child(j)
-            return item.search_from_arg(arg)
 
 class HierarchyParentItem(HierarchyItem):
     def __init__(self, *args, **kwargs):
@@ -67,10 +59,10 @@ class HierarchyTree(QtWidgets.QTreeWidget):
         header.setDefaultAlignment(QtCore.Qt.AlignCenter)
         header.setStretchLastSection(False)
         try:
-            header.setSectionResizeMode(cons.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
+            header.setSectionResizeMode(envs.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
         except:
-            header.setResizeMode(cons.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
-        header.resizeSection(cons.TYPE_IDX, 100)
+            header.setResizeMode(envs.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
+        header.resizeSection(envs.TYPE_IDX, 100)
 
     @property
     def ap(self):
@@ -116,7 +108,7 @@ class HierarchyTree(QtWidgets.QTreeWidget):
             source_item = source_tree.currentItem()
 
             item = self.itemAt(event.pos())
-            type = source_item.text(cons.NAME_IDX)
+            type = source_item.text(envs.NAME_IDX)
             new_item = self.add_item(type, target=item)
 
             self.setCurrentItem(new_item)
@@ -131,7 +123,7 @@ class HierarchyTree(QtWidgets.QTreeWidget):
         n = self.search_name(n, target=target)
         data["name"] = n
         
-        if target and target.arg("type") not in ["array", "object"]:
+        if target and target.arg("type") not in ["array", "object", "tab"]:
             target = target.parent()
 
         if target:
@@ -152,12 +144,12 @@ class HierarchyTree(QtWidgets.QTreeWidget):
     def search_name(self, name, target=None):
         #In top level
         if not target:
-            while(self.findItems(name, QtCore.Qt.MatchExactly, cons.NAME_IDX)):
+            while(self.findItems(name, QtCore.Qt.MatchExactly, envs.NAME_IDX)):
                 name = utils.get_next_name(name)
         #In parent item children
         else:
             children = [target.child(i) for i in range(target.childCount())]
-            while(name in [c.text(cons.NAME_IDX) for c in children]):
+            while(name in [c.text(envs.NAME_IDX) for c in children]):
                 name = utils.get_next_name(name)
 
         return name
@@ -191,7 +183,6 @@ class HierarchyTree(QtWidgets.QTreeWidget):
 class Hierarchy(QtWidgets.QGroupBox):
     to_delete = QtCore.Signal(object, object)
     item_changed = QtCore.Signal(object)
-    item_added = QtCore.Signal(object)
 
     def __init__(self, ap, *args, **kwargs):
         self.ap = ap
@@ -222,14 +213,9 @@ class Hierarchy(QtWidgets.QGroupBox):
         if self.tree.topLevelItemCount():
             self.tree.setCurrentItem(self.tree.topLevelItem(0))
 
-    def edit_item(self, arg):
-        for i in range(self.tree.topLevelItemCount()):
-            item = self.tree.topLevelItem(i)
-            found_item = item.search_from_arg(arg)
-            if found_item:
-                break
-        
-        found_item.setText(cons.NAME_IDX, arg("name"))
+    def edit_current_item(self):
+        item = self.tree.selectedItems()[0]
+        item.setText(envs.NAME_IDX, item.arg("name"))
 
     def show_context_menu(self, point):
         item = self.tree.itemAt(point)

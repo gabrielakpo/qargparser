@@ -1,4 +1,44 @@
-[
+[    
+    {
+        "name": "asTab", 
+        "type": "tab", 
+        "default": "I am a string", 
+        "description": "I am a tab",
+        "items": [
+            {
+                "name": "first tab",
+                "type": "object", 
+                "default": [],
+                "description": "I am a tab object",
+                "items": [
+                    {
+                        "name": "str",
+                        "type": "string", 
+                        "default": "I am an item string child"
+                    }, 
+                    {
+                        "name": "int",
+                        "type": "integer", 
+                        "min": 1, 
+                        "default": 4,
+                        "slider": true
+                    }, 
+                    {
+                        "name": "bool",
+                        "type": "boolean", 
+                        "default": true
+                    }
+                ]
+            },
+            {
+                "name": "second tab",
+                "type": "object", 
+                "default": [],
+                "description": "I am a tab object",
+                "items": []
+            }
+        ]
+    }, 
     {
         "name": "asString", 
         "type": "string", 

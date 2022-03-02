@@ -1,16 +1,16 @@
 from .Qt import QtCore
 from . import utils
-from . import constants as cons
+from . import envs 
 
 class ArgData(dict):
 
     def __init__(self, *args, **kwargs):
         super(ArgData, self).__init__(*args, **kwargs)
         ref = args[0]
-        if ref["type"] in cons.DEFAULT_DATA:
-            for key in cons.DEFAULT_DATA[ref["type"]]:
+        if ref["type"] in envs.DEFAULT_DATA:
+            for key in envs.DEFAULT_DATA[ref["type"]]:
                 if not key in self or self[key] is None:
-                    super(ArgData, self).__setitem__(key, cons.DEFAULT_DATA[ref["type"]][key])
+                    super(ArgData, self).__setitem__(key, envs.DEFAULT_DATA[ref["type"]][key])
 
     def __repr__(self):
         return "<%s %s>"%(self.__class__.__name__, super(ArgData, self).__repr__())
@@ -161,6 +161,6 @@ class Arg(QtCore.QObject):
         """
         data = utils.OrderedDict(
             sorted([item for item in self._data.items() if item[1] is not None], 
-                   key=lambda x: cons.NAMES_ORDER.index(x[0]) 
-                                 if x[0] in cons.NAMES_ORDER else 0))
+                   key=lambda x: envs.NAMES_ORDER.index(x[0]) 
+                                 if x[0] in envs.NAMES_ORDER else 0))
         return data

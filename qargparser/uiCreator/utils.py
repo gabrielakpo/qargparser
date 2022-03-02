@@ -4,15 +4,15 @@ import re
 import json
 from ..utils import load_data_from_file, write_json
 from .Qt import QtWidgets
-from . import constants as cons
+from . import envs 
 
 def get_properties_data(name):
     #Get true file name
-    name = cons.PROPERTIES_MAPPING_NAMES.get(name, name)
+    name = envs.PROPERTIES_MAPPING_NAMES.get(name, name)
     #Get base data
-    data = load_data_from_file(cons.BASE_PROPERTIES_FILE)
+    data = load_data_from_file(envs.BASE_PROPERTIES_FILE)
     #Update data
-    path = os.path.join(cons.PROPERTIES_PATH, name+".json")
+    path = os.path.join(envs.PROPERTIES_PATH, name+".json")
     if os.path.isfile(path):
         data.extend(load_data_from_file(path) or {})
 
@@ -37,10 +37,10 @@ def get_next_name(string):
     return  n + idx
 
 def _load_style():
-    path = cons.STYLE_FILE
+    path = envs.STYLE_FILE
     with open(path, "r") as f:
         data = f.read()
-        data = data.replace('<rootpath>', cons.STYLE_ROOT)
+        data = data.replace('<rootpath>', envs.STYLE_ROOT)
     return _scaled_stylesheet(data)
 
 def _px(value):
@@ -70,6 +70,6 @@ def _scaled_stylesheet(ss):
     return "\n".join(output)
 
 def get_example_path(name):
-    dir_path = cons.EXAMPLES_DIR_PATH
-    path = os.path.join(dir_path, name+cons.EXT)
+    dir_path = envs.EXAMPLES_DIR_PATH
+    path = os.path.join(dir_path, name+envs.EXT)
     return path

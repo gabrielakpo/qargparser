@@ -23,6 +23,8 @@ class Array(Arg):
     def create(self):
         from .argparser import ArgParser
         wdg = ArgParser(description=self._data['description'])
+        wdg.layout().setContentsMargins(1, 1, 1, 1)
+        wdg.layout().setVerticalSpacing(0)
 
         self.wdg = wdg
         kwargs = self._data["items"].copy()

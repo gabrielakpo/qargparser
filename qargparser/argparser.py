@@ -2,6 +2,7 @@ from functools import partial
 from collections import OrderedDict
 from .Qt import QtWidgets, QtCore, QtGui
 from .object import Object
+from .tab import Tab
 from .string import String, Info
 from .text import Text, Doc, Python, Mel
 from .array import Array
@@ -11,11 +12,12 @@ from .boolean import Boolean
 from .path import Path
 from .enum import Enum
 from . import utils
-from . import constants as cons
+from . import envs 
 import re
 
 TYPES = {
     "object": Object,
+    "tab": Tab,
     "enum": Enum,
     "info": Info,
     "string": String,
@@ -68,18 +70,19 @@ def get_object_from_type(type):
 
 class ResetButton(QtWidgets.QPushButton):
     def __init__(self, wdg, label = "*", *args, **kwargs):
-        super(ResetButton, self).__init__(QtGui.QIcon(cons.RELOAD_ICON), 
+        super(ResetButton, self).__init__(QtGui.QIcon(envs.RELOAD_ICON), 
                                           "", 
                                           *args, **kwargs)
-        self.setIconSize(QtCore.QSize(10, 10))
+        self.setIconSize(QtCore.QSize(envs.RELOAD_BUTTON_ICON_SIZE, 
+                                      envs.RELOAD_BUTTON_ICON_SIZE))
         self.wdg = wdg
 
     def paintEvent(self, event):
         super(ResetButton, self).paintEvent(event)
         height = self.wdg.sizeHint().height()
-        if height < 25:
-            height = 25
-        self.setFixedSize(25, height)
+        if height < envs.RELOAD_BUTTON_MIN_HEIGHT: 
+            height = envs.RELOAD_BUTTON_MIN_HEIGHT
+        self.setFixedSize(envs.RELOAD_BUTTON_WIDTH, height)
 
 def to_label_string(text):
     if text is None:
@@ -236,7 +239,7 @@ class ArgParser(QtWidgets.QGroupBox):
         reset_button = ResetButton(wdg)
         reset_button.clicked.connect(arg.reset)
         arg.changed.connect(partial(self.on_changed, arg, reset_button))
-        reset_button.hide()
+        reset_button.setVisible(False)
 
         #add widget to Layout
         layout = self.layout()

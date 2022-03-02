@@ -1,6 +1,6 @@
 import os
 
-from ..constants import EXT 
+from ..envs import EXT 
 
 _root = os.path.dirname(__file__)
 PROPERTIES_PATH = os.path.join(_root, "properties")

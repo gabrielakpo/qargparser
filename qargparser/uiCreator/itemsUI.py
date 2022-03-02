@@ -1,7 +1,7 @@
 from .Qt import QtWidgets, QtCore
 from qargparser import TYPES as items_types
 from functools import partial
-from . import constants as cons
+from . import envs 
 
 class Items(QtWidgets.QGroupBox):
     add_requested = QtCore.Signal(object)
@@ -16,10 +16,10 @@ class Items(QtWidgets.QGroupBox):
         header = self.tree.header()
         header.setStretchLastSection(False)
         try:
-            header.setSectionResizeMode(cons.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
+            header.setSectionResizeMode(envs.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
         except:
-            header.setResizeMode(cons.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
-        header.resizeSection(cons.ADD_IDX, 20)
+            header.setResizeMode(envs.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
+        header.resizeSection(envs.ADD_IDX, 20)
 
         layout = QtWidgets.QVBoxLayout(self)
         # layout.setContentsMargins(2, 2, 2, 2)
@@ -28,6 +28,7 @@ class Items(QtWidgets.QGroupBox):
     def load(self):
         self.tree.clear()
         names = sorted(items_types.keys())
+        names.remove("item")
 
         for name in names:
             item = QtWidgets.QTreeWidgetItem([name])
@@ -35,4 +36,4 @@ class Items(QtWidgets.QGroupBox):
             add_button = QtWidgets.QPushButton("+", parent=self)
             add_button.setFixedSize(20, 20)
             add_button.clicked.connect(partial(self.add_requested.emit, name))
-            self.tree.setItemWidget(item, cons.ADD_IDX, add_button)
+            self.tree.setItemWidget(item, envs.ADD_IDX, add_button)

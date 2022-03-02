@@ -1,32 +1,234 @@
-{
-    "name": "array", 
-    "type": "array", 
-    "description": "", 
-    "min": 0, 
-    "max": 10000, 
-    "buttonLabel": "Add Item", 
-    "default": [], 
-    "items": {
-        "name": "object", 
-        "type": "object", 
-        "description": "", 
+[
+    {
+        "movable": true, 
+        "closable": false, 
+        "name": "asTab", 
+        "type": "tab", 
+        "description": "I am a tab", 
+        "default": "I am a string", 
         "items": [
             {
-                "name": "name", 
-                "type": "string", 
-                "description": "The name", 
-                "default": ""
+                "name": "first tab", 
+                "type": "object", 
+                "description": "I am a tab object", 
+                "default": [], 
+                "items": [
+                    {
+                        "placeHolder": "", 
+                        "name": "str", 
+                        "type": "string", 
+                        "description": "", 
+                        "default": "I am an item string child"
+                    }, 
+                    {
+                        "name": "int", 
+                        "type": "integer", 
+                        "description": "", 
+                        "min": 1, 
+                        "max": 10000, 
+                        "step": 1, 
+                        "slider": true, 
+                        "default": 4
+                    }, 
+                    {
+                        "name": "bool", 
+                        "type": "boolean", 
+                        "description": "", 
+                        "default": true
+                    }
+                ]
             }, 
             {
-                "name": "nbJoints", 
-                "type": "integer", 
-                "description": "The number of joints", 
-                "min": 0, 
-                "max": 10, 
-                "step": 1, 
-                "slider": true, 
-                "default": 5
+                "name": "second tab", 
+                "type": "object", 
+                "description": "I am a tab object", 
+                "default": [], 
+                "items": []
             }
         ]
+    }, 
+    {
+        "placeHolder": "Enter something", 
+        "name": "asString", 
+        "type": "string", 
+        "description": "I am a string", 
+        "default": "I am a string"
+    }, 
+    {
+        "name": "asEnum", 
+        "type": "enum", 
+        "description": "I am a color enumeration", 
+        "enums": [
+            "green", 
+            "blue", 
+            "red"
+        ], 
+        "enumsDescriptions": [
+            "I am green", 
+            "I am blue"
+        ], 
+        "default": "blue"
+    }, 
+    {
+        "name": "asInfo", 
+        "type": "info", 
+        "description": "I am an info", 
+        "default": "I am an info"
+    }, 
+    {
+        "name": "asText", 
+        "type": "text", 
+        "description": "I am a text", 
+        "default": "Three can keep a secret,\nif two of them are dead"
+    }, 
+    {
+        "name": "asDoc", 
+        "type": "doc", 
+        "description": "I am a doc", 
+        "default": "This is a documentation of ..."
+    }, 
+    {
+        "name": "asMel", 
+        "type": "mel", 
+        "description": "I am a mel", 
+        "default": "string $objects[] = `ls -sl`;\nfor ($obj in $objects) {\nsetAttr ($obj + \".template\") (!`getAttr ($obj + \".template\")`);\n}"
+    }, 
+    {
+        "name": "asPython", 
+        "type": "python", 
+        "description": "I am a python", 
+        "default": "import os\nprint(os.environ[\"path\"])"
+    }, 
+    {
+        "name": "asPath", 
+        "type": "path", 
+        "description": "I am a path", 
+        "buttonLabel": "...", 
+        "searchMessage": "Choose a path", 
+        "default": "C://"
+    }, 
+    {
+        "name": "asBoolean", 
+        "type": "boolean", 
+        "description": "I am a boolean", 
+        "default": true
+    }, 
+    {
+        "name": "asArray", 
+        "type": "array", 
+        "description": "I am a array", 
+        "min": 0, 
+        "max": 10000, 
+        "buttonLabel": "+", 
+        "default": [
+            "arrayItemA", 
+            "arrayItemB", 
+            "arrayItemC"
+        ], 
+        "items": {
+            "placeHolder": "", 
+            "type": "string", 
+            "description": "I am a string array item", 
+            "default": "NewArrayItem"
+        }
+    }, 
+    {
+        "name": "asNestedArray", 
+        "type": "array", 
+        "description": "I am a nested array", 
+        "min": 2, 
+        "max": 3, 
+        "buttonLabel": "Add Item", 
+        "default": [
+            0
+        ], 
+        "items": {
+            "type": "array", 
+            "description": "I am a array", 
+            "min": 1, 
+            "max": 10000, 
+            "buttonLabel": "Add Item", 
+            "default": [
+                0, 
+                5, 
+                10
+            ], 
+            "items": {
+                "type": "integer", 
+                "description": "I am a int array item", 
+                "min": -10000, 
+                "max": 10000, 
+                "step": 1, 
+                "slider": false, 
+                "default": 0
+            }
+        }
+    }, 
+    {
+        "name": "asItemArray", 
+        "type": "array", 
+        "description": "", 
+        "min": 1, 
+        "max": 10000, 
+        "buttonLabel": "Add Item", 
+        "default": [
+            {
+                "str": "I am the 1st item string child", 
+                "int": 3
+            }, 
+            {
+                "str": "I am the 2nd item string child"
+            }
+        ], 
+        "items": {
+            "type": "object", 
+            "description": "", 
+            "default": {}, 
+            "items": [
+                {
+                    "placeHolder": "", 
+                    "name": "str", 
+                    "type": "string", 
+                    "description": "", 
+                    "default": "I am an item string child"
+                }, 
+                {
+                    "name": "int", 
+                    "type": "integer", 
+                    "description": "", 
+                    "min": 1, 
+                    "max": 10000, 
+                    "step": 1, 
+                    "slider": true, 
+                    "default": 4
+                }, 
+                {
+                    "name": "bool", 
+                    "type": "boolean", 
+                    "description": "", 
+                    "default": true
+                }
+            ]
+        }
+    }, 
+    {
+        "name": "asFloat", 
+        "type": "float", 
+        "description": "I am a float", 
+        "min": -10.0, 
+        "max": 10.0, 
+        "step": 0.1, 
+        "slider": true, 
+        "default": 3.5
+    }, 
+    {
+        "name": "asInteger", 
+        "type": "integer", 
+        "description": "I am an Integer", 
+        "min": -10, 
+        "max": 10000, 
+        "step": 1, 
+        "slider": true, 
+        "default": 5
     }
-}
+]

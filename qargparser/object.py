@@ -29,16 +29,18 @@ class Object(Arg):
         wdg.changed.connect(self.on_changed)
         self._read = wdg._read
         self.wdg = wdg
-        self._data.pop("default")
         return wdg
 
     def is_edited(self):
-        return any(child.is_edited() for child in self.get_children())
+        return (any(child.is_edited() for child in self.get_children()) 
+            or super(Object, self).is_edited() if self._data["default"] else False)
 
     def reset(self):
         for child in self.get_children():
             child.reset()
             child.changed.emit(None)
+            if child._data["name"] in self._data["default"]:
+                child._data["default"] = self._data["default"][child._data["name"]]     
         self.changed.emit(None)
 
     def _update(self):
@@ -46,10 +48,13 @@ class Object(Arg):
         self.reset()
 
     def add_arg(self, *args, **kwargs):
-        return self.wdg.add_arg(*args, **kwargs)
+        arg = self.wdg.add_arg(*args, **kwargs)
+        self._data["default"][arg._data["name"]] = arg.read()
+        return arg
 
-    def pop_arg(self, *args, **kwargs):
-        self.wdg.pop_arg(*args, **kwargs)
+    def pop_arg(self, arg):
+        self.wdg.pop_arg(arg)
+        self._data["default"].pop(arg._data["name"])
         self._update()
 
     def move_arg(self, *args, **kwargs):

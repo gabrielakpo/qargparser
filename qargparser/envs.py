@@ -1,9 +1,18 @@
 #Icons
 import os
 _root = os.path.dirname(__file__)
-RELOAD_ICON = os.path.join(_root, "icons", "reload.png")
 
 EXT = ".json"
+
+#Reload button
+RELOAD_ICON = os.path.join(_root, "icons", "reload.png")
+RELOAD_BUTTON_WIDTH = 15
+RELOAD_BUTTON_MIN_HEIGHT = 20
+RELOAD_BUTTON_ICON_SIZE = 10
+
+#Item delete button
+ITEM_DEL_BUTTON_WIDTH = 15
+ITEM_DEL_BUTTON_MIN_HEIGHT = 20
 
 NAMES_ORDER = [
     "name", 
@@ -47,6 +56,12 @@ DEFAULT_DATA = {
     },    
     "object":{
         "default" : {},
+        "items" : [],
+    },
+    "tab":{
+        "default" : {},
+        "movable" : True,
+        "closable" : False,
         "items" : [],
     },
     "path":{
