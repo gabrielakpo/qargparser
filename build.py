@@ -1,6 +1,8 @@
 from TBM_RezManager import utils
 import os
 
+_variant = os.path.split(os.environ["REZ_BUILD_VARIANT_SUBPATH"])[0]
+
 class Build(utils.Build):
     def pre_build(self):
         pass
@@ -11,7 +13,7 @@ class Build(utils.Build):
 
         #launchers
         for ext in ["exe", "bat"]:
-            self.create_launcher(data=[self.project], 
+            self.create_launcher(data=[self.project, _variant], 
                                 path=dest_bin, 
                                 name="%s_creator"%self.project, 
                                 cmd = "python -c \"from qargparser.uiCreator import show;show()\"",

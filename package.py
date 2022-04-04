@@ -1,18 +1,15 @@
 # -*- coding: utf-8 -*-
 
-name = 'qargparser'
+### --- internals
 
-version = '1.1.0'
+_release_version = '1.2'
+_dev_version = "dev"
 
-description = 'Build Qt UI by parsing argument'
+_release_variants = [
+    ["python-3.9","PySide2"], 
+    ["python-2", "PySide"]
+]
 
-authors = ['Gabriel AKPO-ALLAVO']
-
-tools = ["qargparser_creator"]
-
-requires = ["python-2", "PySide"]
-
-private_build_requires = ["python-2", "TBM_RezManager"]
 
 _data = {
     "files": {
@@ -22,6 +19,30 @@ _data = {
     }
 }
 
+### --- 
+
+name = 'qargparser'
+
+version = _dev_version
+version = _release_version
+
+description = 'Build Qt UI by parsing argument'
+
+authors = ['Gabriel AKPO-ALLAVO']
+
+tools = ["qargparser_creator"]
+
+requires = []
+
+private_build_requires = ["TBM_RezManager-dev"]
+
+@early()
+def variants():
+    if this.version != _dev_version: 
+        return _release_variants
+    else: 
+        return []
+        
 def commands():
     global env
     env.PYTHONPATH.append('{this.root}')
