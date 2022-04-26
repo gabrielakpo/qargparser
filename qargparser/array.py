@@ -52,14 +52,21 @@ class Array(Arg):
         #Add item button
         self._create_add_item_button()
 
-        self._write = None
-        self._read = lambda : [arg.read() for arg in wdg._args if arg.read() is not None]
+        self._write = self.__write
+        self._read = lambda : [arg.read() for arg in wdg._args \
+                               if arg.read() is not None]
         wdg.changed.connect(self.on_changed)
 
         return wdg
 
+    def __write(self, value):
+        for i, arg in enumerate(self.wdg._args) :
+            if arg._write is not None:
+                arg._write(value[i]) 
+
     def is_edited(self):
-        return (len(self.wdg._args) != len(self._data["default"]) and len(self.wdg._args) > self._data["min"]
+        return (len(self.wdg._args) != len(self._data["default"]) 
+                and len(self.wdg._args) > self._data["min"]
                 or any(child.is_edited() for child in self.wdg._args))
 
     def add_item(self, default=None):

@@ -11,6 +11,7 @@ from .item import Item
 from .boolean import Boolean
 from .path import Path
 from .enum import Enum
+from .color import Color
 from . import utils
 from . import envs 
 import re
@@ -31,6 +32,7 @@ TYPES = {
     "boolean": Boolean,
     "float": Float,
     "integer": Integer,
+    "color": Color,
 }
 
 _TYPES = TYPES.copy()
@@ -150,6 +152,7 @@ class ArgParser(QtWidgets.QGroupBox):
 
     def __init__(self, 
                  data=None,
+                 path=None,
                  label_suffix=None,
                  description="",
                  parent=None):
@@ -167,6 +170,9 @@ class ArgParser(QtWidgets.QGroupBox):
         layout.setFormAlignment(QtCore.Qt.AlignTop)
         layout.setLabelAlignment(QtCore.Qt.AlignRight)
         layout.setVerticalSpacing(5)
+
+        if path:
+            data = utils.load_data_from_file(path)
 
         # build from data
         if data:
@@ -450,3 +456,9 @@ class ArgParser(QtWidgets.QGroupBox):
         """
         data = self.to_data()
         utils.write_json(data, path)
+
+    def erase_data(self):
+        for arg in self.get_args():
+            arg.erase_data()
+            arg.reset()
+        

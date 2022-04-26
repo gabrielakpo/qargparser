@@ -2,13 +2,13 @@ from .Qt import QtWidgets, QtCore
 from . import utils
 from qargparser import ArgParser
 
-class Properties(QtWidgets.QGroupBox):
+class Properties(utils.FrameLayout):
     edited = QtCore.Signal()
 
     def __init__(self, *args, **kwargs):
         self.ap = ArgParser(label_suffix=':')
 
-        super(Properties, self).__init__(*args, **kwargs)   
+        super(Properties, self).__init__(collapsable=False, *args, **kwargs)   
 
         self.edit_button = QtWidgets.QPushButton("Edit")
         self.reset_button = QtWidgets.QPushButton("Reset")
@@ -25,9 +25,8 @@ class Properties(QtWidgets.QGroupBox):
         scroll_area.setWidget(self.ap)
 
         #Main
-        layout = QtWidgets.QVBoxLayout(self)
-        layout.addWidget(scroll_area)
-        layout.addLayout(buttons_layout)
+        self.addWidget(scroll_area)
+        self.addLayout(buttons_layout)
         
     def load(self, arg=None):
         self.arg = None

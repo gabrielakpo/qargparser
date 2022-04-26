@@ -25,7 +25,6 @@ class ReadPreview(QtWidgets.QWidget):
         wdg.setReadOnly(True)
 
         layout = QtWidgets.QVBoxLayout(self)
-        # layout.setContentsMargins(0, 0, 0, 0)
         layout.addWidget(wdg)
 
         data = utils.format_json(data)
@@ -124,7 +123,7 @@ class MainUI(QtWidgets.QWidget):
         self.save_action.triggered.connect(self.save_file)
         self.saveAs_action.triggered.connect(self.save_as_file)
         self.readPreview_action.triggered.connect(self.readPreview_file_clicked)
-        self.hierarchy_wdg.item_changed.connect(self.on_hierarchy_item_changed)
+        self.hierarchy_wdg.sel_changed.connect(self.on_hierarchy_sel_changed)
         self.items_wdg.add_requested.connect(self.on_add_requested)
         self.properties_wdg.edited.connect(self.on_properties_edited)
 
@@ -138,11 +137,12 @@ class MainUI(QtWidgets.QWidget):
     def add_arg(self, **data):
         self.ap.add_arg(**data)
 
-    def on_hierarchy_item_changed(self, arg):
+    def on_hierarchy_sel_changed(self, arg):
         self.properties_wdg.load(arg)
 
     def on_add_requested(self, name):
         self.hierarchy_wdg.add_item(name)
+        self.hierarchy_wdg.load()
 
     def on_clear_file_clicked(self):
         self.ap.delete_children()
@@ -174,9 +174,7 @@ class MainUI(QtWidgets.QWidget):
         #Rebuild preview
         self.ap.delete_children()
         self.ap.build(data)
-
         self.hierarchy_wdg.load()
-
         self.file_le.setText(path)
     
     def open_example(self, name):
@@ -187,11 +185,12 @@ class MainUI(QtWidgets.QWidget):
         path =  self.file_le.text()
 
         if os.path.isfile(path):
-            awns = QtWidgets.QMessageBox.question(None,
-                                           "This file already exists.", 
-                                           "Do you want to save your changes?",
-                                           QtWidgets.QMessageBox.Save | 
-                                           QtWidgets.QMessageBox.Cancel)
+            awns = QtWidgets.QMessageBox.question(
+                None,
+                "This file already exists.", 
+                "Do you want to save your changes?",
+                QtWidgets.QMessageBox.Save | 
+                QtWidgets.QMessageBox.Cancel)
             if awns == QtWidgets.QMessageBox.Cancel:
                 return
 

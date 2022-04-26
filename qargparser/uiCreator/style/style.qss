@@ -50,6 +50,10 @@ QGroupBox:title {
     padding-left: 8px;
 }
 
+FrameLayout {
+    color: white;
+}
+
 /* QTabBar */
 QTabWidget::pane {
     border: 1px solid grey;

@@ -68,6 +68,9 @@ class Arg(QtCore.QObject):
     def __call__(self, key, default=None):
         return self._data.get(key, default)
 
+    def __eq__(self, other):
+        return self._data == other._data
+
     def create(self):
         pass
         
@@ -164,3 +167,11 @@ class Arg(QtCore.QObject):
                    key=lambda x: envs.NAMES_ORDER.index(x[0]) 
                                  if x[0] in envs.NAMES_ORDER else 0))
         return data
+
+    def erase_data(self):
+        value = self.read()
+        self._data["default"] = value
+        for child in self.get_children():
+            child.erase_data()
+        self.reset()
+

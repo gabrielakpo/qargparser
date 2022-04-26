@@ -36,6 +36,7 @@ class Item(Arg):
             arg.reset_requested.connect(self.on_reset_request)
 
         self._read = lambda : self.item_wdg._args[0].read() if len(self.item_wdg._args) else None
+        self._write = self.__write
 
         #Delete button
         del_button = DeleteButton(self.item_wdg)
@@ -50,8 +51,11 @@ class Item(Arg):
         layout.setSpacing(1)
 
         self.item_wdg.changed.connect(self.on_changed)
-        self._write = self.item_wdg._write
         return self.wdg
+
+    def __write(self, value):
+        for arg in self.item_wdg._args:
+            arg._write(value)
 
     def reset(self):
         for child in self.item_wdg._args:

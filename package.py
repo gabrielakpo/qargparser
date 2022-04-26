@@ -6,7 +6,7 @@ _release_version = '1.2'
 _dev_version = "dev"
 
 _release_variants = [
-    ["python-3.9","PySide2"], 
+    ["python-3.9", "PySide2"], 
     ["python-2", "PySide"]
 ]
 
@@ -24,7 +24,7 @@ _data = {
 name = 'qargparser'
 
 version = _dev_version
-version = _release_version
+# version = _release_version
 
 description = 'Build Qt UI by parsing argument'
 
