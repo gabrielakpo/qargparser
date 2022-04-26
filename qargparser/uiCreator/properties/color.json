@@ -13,5 +13,10 @@
         "name": "spinbox", 
         "type": "bool", 
         "default": true
+    },
+    {
+        "name": "alpha", 
+        "type": "bool", 
+        "default": false
     }
 ]

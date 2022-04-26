@@ -2,7 +2,7 @@
 
 ### --- internals
 
-_release_version = '1.2'
+_release_version = '1.3.1'
 _dev_version = "dev"
 
 _release_variants = [
@@ -24,7 +24,7 @@ _data = {
 name = 'qargparser'
 
 version = _dev_version
-# version = _release_version
+version = _release_version
 
 description = 'Build Qt UI by parsing argument'
 
