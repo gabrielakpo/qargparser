@@ -2,7 +2,7 @@
 
 ### --- internals
 
-_release_version = '1.3'
+_release_version = '1.3.1'
 _dev_version = "dev"
 
 _release_variants = [
