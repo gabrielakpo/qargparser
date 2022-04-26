@@ -106,7 +106,8 @@ DEFAULT_DATA = {
     "color":{
         "default" : [0.0, 0.0, 0.0],
         "slider" : True,
-        "spinbox" : True
+        "spinbox" : True,
+        "alpha" : False
     }
 }
 
