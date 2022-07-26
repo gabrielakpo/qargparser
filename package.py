@@ -24,7 +24,7 @@ _data = {
 name = 'qargparser'
 
 version = _dev_version
-# version = _release_version
+version = _release_version
 
 description = 'Build Qt UI by parsing argument'
 
