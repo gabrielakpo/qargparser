@@ -36,7 +36,7 @@ class ReadPreview(QtWidgets.QWidget):
         self.show()
         self.move(self.parent().x(), self.parent().y())
 
-class MainUI(QtWidgets.QWidget):
+class MainUI(QtWidgets.QDialog):
     WINDOW_TITLE = "%s v-%s"%(__title__, __version__)
 
     def __init__(self, path=None, *args, **kwargs):
@@ -48,6 +48,7 @@ class MainUI(QtWidgets.QWidget):
         #Init UI
         super(MainUI, self).__init__(*args, **kwargs)
         self.setWindowTitle(self.WINDOW_TITLE)
+        self.setWindowFlags(self.windowFlags() | QtCore.Qt.Window)
         self.create_widgets()
         self.create_layouts()
         self.create_connections()
@@ -60,10 +61,10 @@ class MainUI(QtWidgets.QWidget):
         self.resize(envs.WIN_WIDTH, envs.WIN_HEIGHT)
         self.h_splitter.setSizes([self.width()*v for v in envs.SPLITTER_RATIOS])
 
-        self.setStyleSheet(utils._load_style())
+        # self.setStyleSheet(utils._load_style())
 
     def create_widgets(self):
-        #Menu 
+        # Menu 
         self.menuBar = QtWidgets.QMenuBar()
         self.menuBar.setFixedHeight(25)
         menu = self.menuBar.addMenu("File")
@@ -211,7 +212,14 @@ class MainUI(QtWidgets.QWidget):
         ReadPreview(data, parent=self)
 
 def show(path=None):
-    app = QtWidgets.QApplication(sys.argv)
+    try:
+        app = QtWidgets.QApplication(sys.argv)
+    except:
+        app = QtWidgets.QApplication.instance()
+
     win_dow = MainUI(path)
     win_dow.show()
-    sys.exit(app.exec_())
+    try:
+        sys.exit(app.exec_())
+    except:
+        pass

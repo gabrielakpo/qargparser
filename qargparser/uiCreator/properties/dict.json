@@ -1,0 +1,28 @@
+[
+    {
+        "name": "default", 
+        "type": "dict", 
+        "default": {}, 
+        "items": {}
+    },
+    {
+        "name": "min", 
+        "type": "int", 
+        "default": 0
+    }, 
+    {
+        "name": "max", 
+        "type": "int", 
+        "default": null
+    },
+    {
+        "name": "buttonLabel", 
+        "type": "string", 
+        "default": "Add Item"
+    },
+    {
+        "name": "readOnly", 
+        "type": "bool", 
+        "default": false
+    }
+]

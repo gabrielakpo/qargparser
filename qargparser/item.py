@@ -44,9 +44,9 @@ class Item(Arg):
 
         #Main
         self.wdg = QtWidgets.QWidget()
-        layout = QtWidgets.QGridLayout(self.wdg)
-        layout.addWidget(self.item_wdg, 0, 0)
-        layout.addWidget(del_button, 0, 1)
+        layout = QtWidgets.QHBoxLayout(self.wdg)
+        layout.addWidget(self.item_wdg)
+        layout.addWidget(del_button)
         layout.setContentsMargins(0, 0, 0, 0)
         layout.setSpacing(1)
 

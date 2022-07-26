@@ -10,6 +10,21 @@
         "default": "..."
     },
     {
+        "name": "mode", 
+        "type": "enum", 
+        "default": "",
+        "enums": [
+            "all",
+            "file",
+            "directory"
+        ]
+    },
+    {
+        "name": "filters", 
+        "type": "string", 
+        "default": ""
+    },
+    {
         "name": "searchMessage", 
         "type": "string", 
         "default": "Choose Path"

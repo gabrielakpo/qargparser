@@ -54,3 +54,15 @@ def clear_layout(layout):
             lay = item.layout()
             if lay:
                 clear_layout(lay) 
+
+def pretty_description(txt, next_line=80):
+    punctuation = "!)}, .:;?"
+    new = []
+    counter = 0
+    for c in txt:
+        new.append(c)
+        if counter > next_line and c in punctuation:
+            new.append("\n")
+            counter = 0
+        counter += 1
+    return "".join(new)

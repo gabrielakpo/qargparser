@@ -1,9 +1,11 @@
 from .Qt import QtWidgets
 from .arg import Arg
 from .item import Item
+from functools import partial
+from collections import OrderedDict
 
-class Array(Arg):
-    """ Array argument widget. It creates a list of deletables items.
+class Dict(Arg):
+    """ Dict argument widget. It creates a list of deletables items.
         You an can add a sub-argument that will be the items template.
 
         :param default: The default value, defaults to []
@@ -18,8 +20,9 @@ class Array(Arg):
         :type items: {}, optional
 
         :return: The new instance
-        :rtype: :class:`~qargparser.array.Array` instance
+        :rtype: :class:`~qargparser.dict.Dict` instance
     """
+
     def create(self):
         from .argparser import ArgParser
         wdg = ArgParser(description=self._data['description'])
@@ -37,11 +40,12 @@ class Array(Arg):
         #Add items
             #Check max
         defaults = self._data['default']
-        if len(defaults)  > self._data["max"]:
-            defaults = defaults[:self._data["max"]]
+        if len(defaults.keys())  > self._data["max"]:
+            for i in range(self._data["max"]):
+                defaults.pop(i)
 
-        for default in defaults:
-            self.add_item(default)
+        for k, v in defaults.items():
+            self.add_item(k, v)
 
             #Check min
         remaining = self._data["min"] - len(defaults)
@@ -53,8 +57,8 @@ class Array(Arg):
         self._create_add_item_button()
 
         self._write = self.__write
-        self._read = lambda : [arg.read() for arg in wdg._args \
-                               if arg.read() is not None]
+        self._read = lambda : OrderedDict([(arg._data["_name"], arg.read()) for arg in wdg._args \
+                                            if arg._data["_name"]])
         wdg.changed.connect(self.on_changed)
 
         return wdg
@@ -69,7 +73,7 @@ class Array(Arg):
                 and len(self.wdg._args) > self._data["min"]
                 or any(child.is_edited() for child in self.wdg._args))
 
-    def add_item(self, default=None):
+    def add_item(self, k="", v=""):
         idx = len(self.wdg._args)
 
         #Max
@@ -78,13 +82,23 @@ class Array(Arg):
             return
 
         data = {"type": self._item._data["type"], "template": self._item.to_data()}
-        if default:
-            data["default"] = default
+        if v:
+            data["default"] = v
             
         arg = self.wdg.add_arg(**data)
+        arg._data["_name"] = k
+
+        le = QtWidgets.QLineEdit(arg._data["_name"])
+        le.setReadOnly(self._data["readOnly"])
+        le.textChanged.connect(partial(self.on_key_text_changed, arg))
+        arg.wdg.layout().insertWidget(0, le)
+
         arg.delete_requested.connect(self.on_item_delete_resquested)
         self.changed.emit(None)
         return arg
+
+    def on_key_text_changed(self, arg, text):
+        arg._data["_name"] = text
 
     def on_item_delete_resquested(self, arg):
         #Check min items
@@ -107,18 +121,19 @@ class Array(Arg):
         layout.insertRow(layout.rowCount(), self.add_item_button)
         if self._data["min"] == self._data["max"]:
             self.add_item_button.setVisible(False)
-            
+        
     def reset(self):
         self.wdg.delete_children()
         self._create_add_item_button()
         self._init()
 
         defaults = self._data['default']
-        if len(defaults)  > self._data["max"]:
-            defaults = defaults[:self._data["max"]]
+        if len(defaults.keys())  > self._data["max"]:
+            for i in range(self._data["max"]):
+                defaults.pop(i)
 
-        for default in defaults:
-            self.add_item(default)
+        for k, v in defaults.items():
+            self.add_item(k, v)
 
             #Check min
         remaining = self._data["min"] - len(defaults)
@@ -129,7 +144,7 @@ class Array(Arg):
         self.changed.emit(None)
 
     def _update(self):
-        super(Array, self)._update()
+        super(Dict, self)._update()
         self.reset()
 
         #Add Item button
@@ -139,7 +154,7 @@ class Array(Arg):
         return self._item.get_children()
 
     def to_data(self):
-        data = super(Array, self).to_data()
+        data = super(Dict, self).to_data()
         children = self.get_children()
         if children:
             data["items"] = self._item.to_data()
@@ -156,11 +171,10 @@ class Array(Arg):
     def pop_arg(self, *args, **kwargs):
         self._item.pop_arg(*args, **kwargs)
         self._item.update_data({"template": {}})
-        self._data["default"] = []
+        self._data["default"] = {}
         self._data["items"] = {}
         self._update()
 
     def on_reset_request(self):
         self.reset()
         self.reset_requested.emit()
-

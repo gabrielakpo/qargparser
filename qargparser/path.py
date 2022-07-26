@@ -4,40 +4,56 @@ import os
 
 class FileFolderDialog(QtWidgets.QFileDialog):
     def __init__(self, *args, **kwargs):
+        self.mode = kwargs.pop("mode", "all")
+
         super(FileFolderDialog, self).__init__(*args, **kwargs)
         self.selected_paths = []
         self.setOption(QtWidgets.QFileDialog.DontUseNativeDialog)
-        self.setFileMode(QtWidgets.QFileDialog.Directory)
 
-        for pushButton in self.findChildren(QtWidgets.QPushButton):
-            if pushButton.text() == "&Open" or pushButton.text() == "&Choose" :
-                self.openButton=pushButton
-                break
-        self.openButton.clicked.disconnect()
-        self.openButton.clicked.connect(self.openClicked)
-        self.treeview=self.findChild(QtWidgets.QTreeView)
-        self.currentChanged.connect(self.change_mode)
-        
-    def change_mode(self, name):
-        if os.path.isdir(name):
+        if self.mode == "directory":
             self.setFileMode(QtWidgets.QFileDialog.Directory)
         else:
             self.setFileMode(QtWidgets.QFileDialog.ExistingFile)
+
+        for pushButton in self.findChildren(QtWidgets.QPushButton):
+            if pushButton.text() == "&Open" or pushButton.text() == "&Choose" :
+                self.open_button = pushButton
+                break
+        self.open_button.clicked.disconnect()
+        self.open_button.clicked.connect(self.on_open_clicked)
+        self.treeview = self.findChild(QtWidgets.QTreeView)
+        self.currentChanged.connect(self.on_current_changed)
+
+    def on_current_changed(self, name):
+        if self.mode == "file":
+            self.setFileMode(QtWidgets.QFileDialog.ExistingFile)
+            self.open_button.setDisabled(not os.path.isfile(name))
+
+        elif self.mode == "directory":
+            self.setFileMode(QtWidgets.QFileDialog.Directory)
+            self.open_button.setDisabled(not os.path.isdir(name))
+        else:
+            if os.path.isdir(name):
+                self.setFileMode(QtWidgets.QFileDialog.Directory)
+            else: 
+                self.setFileMode(QtWidgets.QFileDialog.ExistingFile)
  
     def selected(self):
-        selected_path=''
+        selected_path = ''
         if len(self.selected_paths):
-            selected_path=self.selected_paths[0]
+            selected_path = self.selected_paths[0]
         return selected_path
 
-    def openClicked(self):
-        self.selected_paths=[]
+    def on_open_clicked(self):
+        self.selected_paths = []
         self.treeview.selectionModel().selection()
         for modelIndex in self.treeview.selectionModel().selectedIndexes():
-            col=modelIndex.column()
+            col = modelIndex.column()
             if col == 0:
-                self.selected_paths.append('/'.join([self.directory().path(), 
-                                                    str(modelIndex.data())]))
+                path = '/'.join([self.directory().path(), str(modelIndex.data())])
+                if self.mode == "file" and not os.path.isfile(path):
+                    return
+                self.selected_paths.append(path)
         self.filesSelected.emit(self.selected_paths)
         self.hide()
 
@@ -82,7 +98,9 @@ class Path(Arg):
         previous_path = self.le.text()
         dialog = FileFolderDialog(None,
                                   self._data['searchMessage'],
-                                  previous_path)
+                                  previous_path,
+                                  self._data["filters"],
+                                  mode=self._data["mode"])
         dialog.exec_()
         path = dialog.selected()
         if not path:

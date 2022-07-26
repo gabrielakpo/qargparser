@@ -8,3 +8,4 @@ from .number import Float, Integer
 from .boolean import Boolean
 from .path import Path
 from .color import Color
+from .dict import Dict
