@@ -67,7 +67,9 @@ DEFAULT_DATA = {
     "path":{
         "default" : "",
         "buttonLabel" : "...",
-        "searchMessage" : "Choose a path"
+        "searchMessage" : "Choose a path",
+        "filters" : "",
+        "mode" : "all",
     },
     "enum":{
         "default" : "",
@@ -108,6 +110,14 @@ DEFAULT_DATA = {
         "slider" : True,
         "spinbox" : True,
         "alpha" : False
+    },
+    "dict":{
+        "default" : {},
+        "max" : 10000,
+        "min" : 0,
+        "buttonLabel" : "Add Item",
+        "readOnly" : False,
+        "items": {}
     }
 }
 

@@ -28,7 +28,7 @@ class ColorButton(QtWidgets.QPushButton):
 class ColorSliderSpinBox(QtWidgets.QWidget):
     valueChanged = QtCore.Signal(object)
 
-    def __init__(self, default=[0.0, 0.0, 0.0, 1.0], slider=False, spinbox=True, alpha=False, **kwargs):
+    def __init__(self, default=[0.0, 0.0, 0.0], slider=False, spinbox=True, alpha=False, **kwargs):
 
         super(ColorSliderSpinBox, self).__init__()
 
@@ -50,8 +50,7 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         self.spinbox = []
         if len(default) < 4:
             default.append(1.0)
-        else:
-            self.alpha = True
+
         spinbox_layout = QtWidgets.QHBoxLayout()
         spinbox_layout.setContentsMargins(0, 0, 0, 0)
         spinbox_layout.setSpacing(0)
@@ -70,10 +69,10 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         lay.addWidget(self.slider, QtCore.Qt.AlignLeft)
         lay.addLayout(spinbox_layout, QtCore.Qt.AlignLeft)
 
-        self.setValue(default)
         self.set_slider_visible(slider)
         self.set_spinbox_visible(spinbox)
         self.use_alpha(alpha)
+        self.setValue(default)
 
     def value(self):
         value =  [sb.value() for sb in self.spinbox]
@@ -105,6 +104,8 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
             return
         color = color_wdg.selectedColor()
         color = [color.red()/255.0, color.green()/255.0, color.blue()/255.0, color.alpha()/255.0]
+        if not self.alpha:
+            color.pop(-1)
         self.setValue(color)
 
     def on_spinbox_value_changed(self):
@@ -120,20 +121,21 @@ class Color(Arg):
 
         :param default: The default value, defaults to [0.0, 0.0, 0.0]
         :type default: color, optional
-        :param step: The step, defaults to 0.1
-        :type step: color, optional
-        :param min: The minimum value, defaults to -10000.0
-        :type min: color, optional
-        :param max: The maximum value, defaults to 10000.0
-        :type max: color, optional
-        :param slider: Add a slider if True, defaults to False
+        :param slider: Add a slider if True, defaults to True
         :type slider: bool, optional
+        :param spinbox: Add a 3 double spinbox if True, defaults to True
+        :type spinbox: bool, optional
+        :param alpha: Add a double spinbox for alpha if True, defaults to False
+        :type alpha: bool, optional
 
         :return: The new instance
         :rtype: :class:`~qargparser.number.Color` instance
     """
     def create(self):
         #Widget
+        if not self._data["alpha"] and len(self._data["default"]) > 3:
+            self._data["default"].pop(-1)
+
         wdg = ColorSliderSpinBox(slider=self._data["slider"],
                                  spinbox=self._data["spinbox"],
                                  alpha=self._data["alpha"],
@@ -151,6 +153,8 @@ class Color(Arg):
         self._write(self._data['default'])
 
     def _update(self):
+        if self._data["alpha"] and len(self._data["default"]) < 4:
+            self._data["default"].append(1.0)
         self.wdg.set_slider_visible(self._data["slider"])
         self.wdg.set_spinbox_visible(self._data["spinbox"])
         self.wdg.use_alpha(self._data["alpha"])

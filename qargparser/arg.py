@@ -97,7 +97,7 @@ class Arg(QtCore.QObject):
     def _update(self):
         desc = self._data['description']
         if desc.strip():
-            self.wdg.setToolTip(desc)
+            self.wdg.setToolTip(utils.pretty_description(desc))
         self.reset()
 
     def delete(self):
@@ -174,4 +174,10 @@ class Arg(QtCore.QObject):
         for child in self.get_children():
             child.erase_data()
         self.reset()
+
+    def overwrite(self):
+        self.erase_data()
+
+    def disable(self, disable):
+        self.wdg.setDisabled(disable)
 

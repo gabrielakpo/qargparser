@@ -7,16 +7,13 @@ from functools import partial
 from .itemsUI import ItemsTree
 
 class HierarchyItem(QtWidgets.QTreeWidgetItem):
-    def __new__(cls, *args, **kwargs):
-        if isinstance(kwargs["arg"], (Array, Object) ) and cls is HierarchyItem:
-            cls = HierarchyParentItem
-        return super(HierarchyItem, cls).__new__(cls, *args, **kwargs)
-
     def __init__(self, name, arg, parent=None):
         super(HierarchyItem, self).__init__(parent, [name, arg("type")])
         flags = self.flags()
-        flags ^= QtCore.Qt.ItemIsDropEnabled
         flags |= QtCore.Qt.ItemIsDragEnabled
+        flags |= QtCore.Qt.ItemIsDropEnabled
+        if isinstance(arg, (Array, Object)):
+            flags ^= QtCore.Qt.ItemIsDropEnabled
         self.setFlags(flags)
 
         self.arg = arg
@@ -25,7 +22,6 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
         return "<%s( %s, %s)>"%(self.__class__.__name__, 
                                 self.text(envs.TYPE_IDX), 
                                 self.text(envs.NAME_IDX))
-
     @property
     def path(self):
         path = str(self)
@@ -41,15 +37,7 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
     def add_arg(self, **data):
         return self.arg.add_arg(**data)
 
-class HierarchyParentItem(HierarchyItem):
-    def __init__(self, *args, **kwargs):
-        super(HierarchyParentItem, self).__init__(*args, **kwargs)
-        flags = self.flags()
-        flags |= QtCore.Qt.ItemIsDropEnabled
-        self.setFlags(flags)
-
 class HierarchyTree(QtWidgets.QTreeWidget):
-
     def __init__(self, *args, **kwargs):
         super(HierarchyTree, self).__init__(*args, **kwargs)
         self.setDragEnabled(True)
@@ -71,7 +59,6 @@ class HierarchyTree(QtWidgets.QTreeWidget):
     @property
     def ap(self):
         return self.parent().parent().ap
-
 
     def dropEvent(self, event):
         arg = None
@@ -119,7 +106,7 @@ class HierarchyTree(QtWidgets.QTreeWidget):
             data["type"] = type
             data["name"] = self.search_name(data["type"])
         
-        if target and target.arg("type") not in ["array", "object", "tab"]:
+        if target and target.arg("type") not in ["array", "object", "tab", "dict"]:
             target = target.parent()
 
         if not target: 
@@ -172,7 +159,6 @@ class Hierarchy(utils.FrameLayout):
         buttons_layout.addWidget(self.up_button)
         buttons_layout.addWidget(self.down_button)
 
-        self.setContentsMargins(2, 2, 2, 2)
         self.addWidget(self.tree)
         self.addLayout(buttons_layout)
 

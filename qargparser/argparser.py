@@ -4,7 +4,7 @@ from .Qt import QtWidgets, QtCore, QtGui
 from .object import Object
 from .tab import Tab
 from .string import String, Info
-from .text import Text, Doc, Python, Mel
+from .text import Text, Doc, Code, Python, Mel
 from .array import Array
 from .number import Float, Integer
 from .item import Item
@@ -12,6 +12,7 @@ from .boolean import Boolean
 from .path import Path
 from .enum import Enum
 from .color import Color
+from .dict import Dict
 from . import utils
 from . import envs 
 import re
@@ -24,7 +25,9 @@ TYPES = {
     "string": String,
     "text": Text,
     "doc": Doc,
+    "dict": Dict,
     "path": Path,
+    "code": Code,
     "mel": Mel,
     "python": Python,
     "array": Array,
@@ -39,7 +42,8 @@ _TYPES = TYPES.copy()
 _TYPES.update({
     "bool": Boolean,
     "int": Integer,
-    "str": String
+    "str": String,
+    "unicode": String
 })
 
 def deleteChildWidgets(item):
@@ -171,15 +175,16 @@ class ArgParser(QtWidgets.QGroupBox):
         layout.setLabelAlignment(QtCore.Qt.AlignRight)
         layout.setVerticalSpacing(5)
 
+        # build from path
         if path:
-            data = utils.load_data_from_file(path)
-
+            self.build_from_path(path)
         # build from data
-        if data:
+        elif data:
             self.build(data)
 
         self._write = lambda *args, **kwargs: (arg._write(*args, **kwargs) for arg in self._args)
-        self._read = lambda : OrderedDict((arg("name"), arg._read()) for arg in self._args)
+        self._read = lambda : OrderedDict((arg("name"), arg._read()) for arg in self._args\
+                                           if arg._data.get("optional") is None or arg.wdg.parent().isChecked())
 
     def __repr__(self):
         return "<%s( %s )>" %(self.__class__.__name__, 
@@ -239,7 +244,7 @@ class ArgParser(QtWidgets.QGroupBox):
         wdg = arg.create()
         desc = arg._data.get("description")
         if desc.strip():
-            wdg.setToolTip(desc)
+            wdg.setToolTip(utils.pretty_description(desc))
 
         #Reset
         reset_button = ResetButton(wdg)
@@ -253,7 +258,14 @@ class ArgParser(QtWidgets.QGroupBox):
 
         label_ui = CustomLabel(label, label_suffix=self._label_suffix)
 
-        row_wdg = QtWidgets.QWidget()
+        optional = arg._data.get("optional")
+        if optional is not None:
+            row_wdg = QtWidgets.QGroupBox()
+            row_wdg.setCheckable(True)
+            row_wdg.setChecked(optional)
+        else:
+            row_wdg = QtWidgets.QWidget()
+            
         row_layout = QtWidgets.QHBoxLayout(row_wdg)
         row_layout.setContentsMargins(0, 0, 0, 0)
         row_layout.setSpacing(0)
@@ -399,11 +411,19 @@ class ArgParser(QtWidgets.QGroupBox):
         for d in data:
             self.add_arg(**d)
 
+    def build_from_path(self, path):
+        self.clear()
+        data = utils.load_data_from_file(path)
+        self.build(data)
+
     def delete_children(self):
         """Deletes all children arguments.
         """
         clear_layout(self.layout())
         self._args = []
+
+    def clear(self):
+        self.delete_children()
 
     def on_changed(self, arg, button, *args, **kwargs):
         #Set edit_button visibiliy
@@ -462,3 +482,6 @@ class ArgParser(QtWidgets.QGroupBox):
             arg.erase_data()
             arg.reset()
         
+    def reset(self):
+        for arg in self.get_args():
+            arg.reset()
