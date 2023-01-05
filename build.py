@@ -11,10 +11,9 @@ class Build(utils.Build):
 
         #launchers
         for ext in ["exe", "bat"]:
-            self.create_launcher(data=[self.project], 
+            self.create_launcher(data=[self.project, "python-2"], 
                                 path=dest_bin, 
                                 name="%s_creator"%self.project, 
-                                cmd = "python -c \"from qargparser.uiCreator import show;show()\"",
                                 ext=ext,
                                 icon=None)
 
