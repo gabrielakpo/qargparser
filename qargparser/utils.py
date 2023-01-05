@@ -1,5 +1,11 @@
 import json
-from collections import OrderedDict as BaseOrderedDict, Mapping
+from collections import OrderedDict as BaseOrderedDict
+import sys
+
+if sys.version_info[0] == 3:
+    from collections.abc import Mapping
+else:
+    from collections import Mapping
 
 class OrderedDict(BaseOrderedDict):
     def insert(self, idx, key, value):
