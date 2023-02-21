@@ -1,32 +1,33 @@
 from .Qt import QtWidgets, QtCore
-from . import utils
+from . import utils, envs
 from qargparser import ArgParser
+from .customs_ui import CustomToolbar
 
-class Properties(utils.FrameLayout):
+class PropertiesWidget(QtWidgets.QGroupBox):
     edited = QtCore.Signal()
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, title="SETTINGS", *args, **kwargs):
+        self.arg = None
         self.ap = ArgParser(label_suffix=':')
 
-        super(Properties, self).__init__(collapsable=False, *args, **kwargs)   
+        super(PropertiesWidget, self).__init__(title, *args, **kwargs)   
+        self.setAlignment(QtCore.Qt.AlignCenter)
 
-        self.edit_button = QtWidgets.QPushButton("Edit")
-        self.reset_button = QtWidgets.QPushButton("Reset")
-        self.edit_button.clicked.connect(self.on_edit_cliked)
-        self.reset_button.clicked.connect(self.on_reset_cliked)
-
-        buttons_layout = QtWidgets.QHBoxLayout()
-        buttons_layout.setContentsMargins(0, 0, 0, 0)
-        buttons_layout.addWidget(self.reset_button)
-        buttons_layout.addWidget(self.edit_button)
+        toolbar = CustomToolbar()
+        toolbar.addAction(envs.ICONS["reset"], "reset", self.on_reset_requested)
+        toolbar.addAction(envs.ICONS["valid"], "valid", self.on_valid_requested)
 
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(self.ap)
 
         #Main
-        self.addWidget(scroll_area)
-        self.addLayout(buttons_layout)
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.layout().setSpacing(1)
+        self.layout().addWidget(scroll_area)
+        self.layout().addWidget(toolbar)
+
+        self.setDisabled(True)
         
     def load(self, arg=None):
         self.arg = None
@@ -59,10 +60,12 @@ class Properties(utils.FrameLayout):
 
         self.ap.build(_data)
 
-    def on_edit_cliked(self):
+    def on_valid_requested(self):
+        if not self.arg:
+            return
         data = self.ap.export_data()
         self.arg.update_data(data)
         self.edited.emit()
 
-    def on_reset_cliked(self):
+    def on_reset_requested(self):
         self.load(self.arg)

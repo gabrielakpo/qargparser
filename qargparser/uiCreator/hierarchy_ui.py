@@ -4,11 +4,17 @@ from .Qt import QtWidgets, QtCore
 from . import utils
 from . import envs 
 from functools import partial
-from .itemsUI import ItemsTree
+from .items_ui import ItemsTree
+from .customs_ui import CustomTree, CustomToolbar
+
+TYPE_IDX = 1
+NAME_IDX = 0
 
 class HierarchyItem(QtWidgets.QTreeWidgetItem):
     def __init__(self, name, arg, parent=None):
         super(HierarchyItem, self).__init__(parent, [name, arg("type")])
+        self.setIcon(NAME_IDX, envs.ICONS["type_%s" % arg("type")])
+
         flags = self.flags()
         flags |= QtCore.Qt.ItemIsDragEnabled
         flags |= QtCore.Qt.ItemIsDropEnabled
@@ -20,8 +26,8 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
 
     def __repr__(self):
         return "<%s( %s, %s)>"%(self.__class__.__name__, 
-                                self.text(envs.TYPE_IDX), 
-                                self.text(envs.NAME_IDX))
+                                self.text(TYPE_IDX), 
+                                self.text(NAME_IDX))
     @property
     def path(self):
         path = str(self)
@@ -37,7 +43,7 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
     def add_arg(self, **data):
         return self.arg.add_arg(**data)
 
-class HierarchyTree(QtWidgets.QTreeWidget):
+class HierarchyTree(CustomTree):
     def __init__(self, *args, **kwargs):
         super(HierarchyTree, self).__init__(*args, **kwargs)
         self.setDragEnabled(True)
@@ -45,16 +51,12 @@ class HierarchyTree(QtWidgets.QTreeWidget):
         self.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
         self.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.currentItemChanged.connect(self.on_selection_changed)
-
-        #Header
-        header = self.header()
-        header.setDefaultAlignment(QtCore.Qt.AlignCenter)
-        header.setStretchLastSection(False)
-        try:
-            header.setSectionResizeMode(envs.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
-        except:
-            header.setResizeMode(envs.NAME_IDX, QtWidgets.QHeaderView.Stretch) 
-        header.resizeSection(envs.TYPE_IDX, 100)
+        self.setIconSize(QtCore.QSize(25, 25))
+        self.setSectionResizeMode(NAME_IDX, QtWidgets.QHeaderView.Stretch) 
+        self.header().setDefaultAlignment(QtCore.Qt.AlignCenter)
+        self.header().setStretchLastSection(False)
+        self.header().resizeSection(TYPE_IDX, 100)
+        self.header().hideSection(TYPE_IDX)
 
     @property
     def ap(self):
@@ -86,7 +88,7 @@ class HierarchyTree(QtWidgets.QTreeWidget):
                                          data=data)
                 if arg:
                     if not parent:
-                        self.ap.pop_arg(source_item.arg)
+                        envs.CURRENT_AP.pop_arg(source_item.arg)
                     else:
                         parent.arg.pop_arg(source_item.arg)
                 else:
@@ -116,65 +118,123 @@ class HierarchyTree(QtWidgets.QTreeWidget):
         return arg
 
     def add_arg(self, **data):
-        return self.ap.add_arg(**data)
+        return envs.CURRENT_AP.add_arg(**data)
 
     def search_name(self, name):
         while(self.findItems(name, QtCore.Qt.MatchExactly 
-                                 | QtCore.Qt.MatchRecursive, envs.NAME_IDX)):
+                                 | QtCore.Qt.MatchRecursive, NAME_IDX)):
             name = utils.get_next_name(name)
         return name
 
-
     def on_selection_changed(self):
+        arg = None
         item = self.currentItem()
         if item:
-            self.get_parent().sel_changed.emit(item.arg)
+            arg = item.arg
+        self.get_parent().sel_changed.emit(arg)
 
     def delete_item(self, item):
         parent = item.parent()
         if not parent:
-            self.get_parent().ap.pop_arg(item.arg)
+            envs.CURRENT_AP.pop_arg(item.arg)
             self.takeTopLevelItem(self.indexOfTopLevelItem(item))
         else:
             parent.arg.pop_arg(item.arg)
             parent.takeChild(parent.indexOfChild(item))
 
     def get_parent(self):
-        return self.parent().parent() 
+        return self.parent()
 
-class Hierarchy(utils.FrameLayout):
-    to_delete = QtCore.Signal(object, object)
+class HierarchyWidget(QtWidgets.QGroupBox):
     sel_changed = QtCore.Signal(object)
 
-    def __init__(self, ap, *args, **kwargs):
-        self.ap = ap
+    def __init__(self, title="HIERARCHY", *args, **kwargs):
 
-        super(Hierarchy, self).__init__(collapsable=False, *args, **kwargs)  
+        super(HierarchyWidget, self).__init__(title, *args, **kwargs)  
+        self.setAlignment(QtCore.Qt.AlignCenter)
 
         self.tree = HierarchyTree()
-        self.up_button = QtWidgets.QPushButton("up")
-        self.down_button = QtWidgets.QPushButton("down")
 
-        buttons_layout = QtWidgets.QHBoxLayout()
-        buttons_layout.addWidget(self.up_button)
-        buttons_layout.addWidget(self.down_button)
+        toolbar = CustomToolbar()
+        toolbar.addAction(envs.ICONS["move_up"], "up", self.on_up_requested)
+        toolbar.addAction(envs.ICONS["move_down"], "down", self.on_down_requested)
+        toolbar.addAction(envs.ICONS["delete"], "delete", self.on_delete_requested)
+        toolbar.addAction(envs.ICONS["clear"], "clear", self.on_clear_requested)
 
-        self.addWidget(self.tree)
-        self.addLayout(buttons_layout)
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.layout().setSpacing(1)
+        self.layout().addWidget(self.tree)
+        self.layout().addWidget(toolbar)
 
         self.tree.customContextMenuRequested.connect(self.show_context_menu)
-        self.up_button.clicked.connect(self.on_up_requested)
-        self.down_button.clicked.connect(self.on_down_requested)
+
+    def load(self, current_arg=None):
+        self.tree.clear()
+
+        # Fill tree
+        for arg in envs.CURRENT_AP._args:
+                name = arg.name
+                item = HierarchyItem(name, arg=arg)
+                self.tree.addTopLevelItem(item)
+
+                for c_arg in arg.get_children():
+                    item.add_children(name, c_arg)
+
+        self.tree.expandAll()
+
+        # Find current arg
+        if current_arg:
+            items = self.tree.findItems(current_arg.name, QtCore.Qt.MatchExactly 
+                                      | QtCore.Qt.MatchRecursive, NAME_IDX) or []
+            for item in items:
+                if item.arg == current_arg:
+                    self.tree.setCurrentItem(item)
+                    return
+        
+        # Select first item
+        if self.tree.topLevelItemCount():
+            self.tree.setCurrentItem(self.tree.topLevelItem(0))
+
+    def clear(self):
+        envs.CURRENT_AP.delete_children()
+        self.load()
+
+    def edit_current_item(self):
+        item = self.tree.selectedItems()[0]
+        item.setText(NAME_IDX, item.arg("name"))
+
+    def show_context_menu(self, point):
+        item = self.tree.itemAt(point)
+        if not item:
+            return
+
+        menu = QtWidgets.QMenu()
+        menu.addAction(envs.ICONS["delete"], "delete", partial(self.on_delete_item, item))
+        menu.exec_(self.tree.mapToGlobal(point))
+
+    def add_item(self, *args, **kwargs):
+        return self.tree.add_item(*args, **kwargs)
+
+    def on_delete_item(self, item):
+        self.tree.delete_item(item)
+
+    def on_delete_requested(self):
+        item = self.tree.currentItem()
+        if item:
+            self.tree.delete_item(item)
+
+    def on_clear_requested(self):
+        self.clear()
 
     def on_down_requested(self):
         item = self.tree.currentItem()
         parent_item = item.parent()
         if not parent_item:
-            idx = self.ap._args.index(item.arg)
-            if  (item.arg in self.ap._args 
+            idx = envs.CURRENT_AP._args.index(item.arg)
+            if  (item.arg in envs.CURRENT_AP._args 
                 and idx != -1 
-                and idx < len(self.ap._args)):
-                self.ap.move_arg(item.arg, idx+1)
+                and idx < len(envs.CURRENT_AP._args)):
+                envs.CURRENT_AP.move_arg(item.arg, idx+1)
         else:
             children = parent_item.arg.get_children()
             idx = children.index(item.arg)
@@ -189,11 +249,11 @@ class Hierarchy(utils.FrameLayout):
         item = self.tree.currentItem()
         parent_item = item.parent()
         if not parent_item:
-            idx = self.ap._args.index(item.arg)
-            if  (item.arg in self.ap._args 
+            idx = envs.CURRENT_AP._args.index(item.arg)
+            if  (item.arg in envs.CURRENT_AP._args 
                 and idx != -1 
                 and idx > 0):
-                self.ap.move_arg(item.arg, idx-1)
+                envs.CURRENT_AP.move_arg(item.arg, idx-1)
         else:
             children = parent_item.arg.get_children()
             idx = children.index(item.arg)
@@ -203,50 +263,3 @@ class Hierarchy(utils.FrameLayout):
                 parent_item.arg.move_arg(item.arg, idx-1)
 
         self.load(item.arg)
-
-    def load(self, current_arg=None):
-        self.tree.clear()
-
-        # Fill tree
-        for arg in self.ap._args:
-                name = arg.name
-                item = HierarchyItem(name, arg=arg)
-                self.tree.addTopLevelItem(item)
-
-                for c_arg in arg.get_children():
-                    item.add_children(name, c_arg)
-
-        self.tree.expandAll()
-
-        # Find current arg
-        if current_arg:
-            items = self.tree.findItems(current_arg.name, QtCore.Qt.MatchExactly 
-                                      | QtCore.Qt.MatchRecursive, envs.NAME_IDX) or []
-            for item in items:
-                if item.arg == current_arg:
-                    self.tree.setCurrentItem(item)
-                    return
-        
-        # Select first item
-        if self.tree.topLevelItemCount():
-            self.tree.setCurrentItem(self.tree.topLevelItem(0))
-
-    def edit_current_item(self):
-        item = self.tree.selectedItems()[0]
-        item.setText(envs.NAME_IDX, item.arg("name"))
-
-    def show_context_menu(self, point):
-        item = self.tree.itemAt(point)
-        if not item:
-            return
-
-        menu = QtWidgets.QMenu()
-        delete_action = menu.addAction("delete")
-        delete_action.triggered.connect(partial(self.on_delete_item, item))
-        menu.exec_(self.mapToGlobal(point))
-
-    def on_delete_item(self, item):
-        self.tree.delete_item(item)
-
-    def add_item(self, *args, **kwargs):
-        return self.tree.add_item(*args, **kwargs)
