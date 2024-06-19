@@ -1,6 +1,6 @@
 import os
 
-from ..envs import EXT 
+from ..envs import EXT, DOC_FILE
 from .Qt import QtGui
 
 _root = os.path.dirname(__file__)
@@ -10,13 +10,13 @@ PROPERTIES_MAPPING_NAMES = {
     "int": "integer",
     "bool": 'boolean',
     "python": 'text',
-    "mel": 'text', 
-    "doc": 'text', 
+    "mel": 'text',
+    "doc": 'text',
     "python": 'text'
 }     
 
 
-#UI
+# UI
 NAME_IDX = 0
 TYPE_IDX = 1
 ADD_IDX = 1
@@ -29,23 +29,24 @@ PREVIEW_WIN_HEIGHT = 750
 
 SPLITTER_RATIOS = [0.25, 0.5, 0.25]
 
-#Style
+# Style
 STYLE_ROOT = os.path.join(_root, "style").replace('\\', '/')
-STYLE_FILE = os.path.join(STYLE_ROOT, 'style.qss')
-STYLEVARS_FILE = os.path.join(STYLE_ROOT, 'styleVars.json')
-ICONS_PATH = os.path.join(STYLE_ROOT, "icons").replace("\\", "/")
 
 EXAMPLES_DIR_PATH = os.path.join(_root, "examples")
 EXAMPLES_NAMES = ["allArgClasses"]
 
 CURRENT_AP = None
 
+# preferences
+PREFS_ROOT_NAME = ".qargparser"
+PREFS_FILE_NAME = "qargparser_prefs.json"
+
 
 class DirFiles(dict):
     def __init__(self, root, *args, **kwargs):
         self._root = root
         super(DirFiles, self).__init__(*args, **kwargs)
-        
+
     def __getitem__(self, __k):
         if __k in self:
             return os.path.join(self._root, 

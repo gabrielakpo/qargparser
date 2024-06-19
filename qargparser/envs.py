@@ -2,6 +2,8 @@
 import os
 _root = os.path.dirname(__file__)
 
+DOC_FILE = os.path.join(os.path.abspath(os.path.join(_root, "..")), "docs", "index.html")
+
 EXT = ".json"
 
 #Reload button

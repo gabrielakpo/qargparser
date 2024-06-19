@@ -1,10 +1,97 @@
 import os
 import json
 import re
-import json
-from ..utils import load_data_from_file, write_json
-from .Qt import QtWidgets, QtGui, QtCore
-from . import envs 
+
+from qargparser.utils import (
+    load_data_from_file,
+    write_json,
+    make_dir,
+    read_json)
+
+from . import envs
+
+
+class ThemeManager(object):
+    def __init__(self, app):
+        self._app = app
+        self._current_theme = "default"
+
+    @property
+    def current_theme(self):
+        return self._current_theme
+
+    def load_theme(self, theme_name=None):
+        if not theme_name:
+            theme_name = "default"
+
+        if theme_name == "default":
+            self._app.setStyleSheet("")
+        else:
+            style_file = os.path.join(envs.STYLE_ROOT, theme_name) + ".css"
+
+            if not os.path.isfile(style_file):
+                raise FileExistsError("Could not find : {}".format(style_file))
+
+            with open(style_file, "r", encoding="utf-8") as f:
+                style_data = f.read()
+
+                self._app.setStyleSheet(style_data)
+
+        self._current_theme = theme_name
+
+    def get_theme_names(self):
+        names = ["default"]
+        for name in os.listdir(envs.STYLE_ROOT):
+            names.append(os.path.splitext(name)[0])
+        return names
+
+
+class PreferenceManager(object):
+    def __init__(self, app):
+        self._app = app
+        self.theme = ThemeManager(app)
+
+    def _make_root(self, path):
+        if not path or not os.path.exists(path):
+            path = os.path.expanduser("~")
+
+        if not path:
+            return
+
+        root = os.path.join(path, envs.PREFS_ROOT_NAME)
+        make_dir(root)
+        return root
+
+    def save(self, path=None):
+        """Saves package preferences
+
+        :param data: The preference data to save
+        :type data: dict
+        :param path: The path to save the prefs, defaults to None
+        :type path: str, optional
+        """
+        data = {
+            "theme": self.theme.current_theme
+        }
+
+        root = self._make_root(path)
+        if root:
+            file_path = os.path.join(root, envs.PREFS_FILE_NAME)
+            write_json(data, file_path)
+
+    def load(self, path=None):
+        """Reads package preferences
+
+        :param path: The path to save the prefs, defaults to None
+        :type path: str, optional
+        """
+        root = self._make_root(path)
+        file_path = os.path.join(root, envs.PREFS_FILE_NAME)
+        if os.path.isfile(file_path):
+            data = read_json(file_path) or {}
+            if "theme" in data:
+                self.theme.load_theme(data["theme"])
+
 
 def get_properties_data(name, default=False):
     #Get true file name
@@ -20,8 +107,10 @@ def get_properties_data(name, default=False):
         data = {d["name"]: d["default"] for d in data}
     return data
 
+
 def format_json(data, indent=4):
     return json.dumps(data, indent=indent)
+
 
 def split_digits(string):
     match = re.match('.*?([0-9]+)$', string)
@@ -31,6 +120,7 @@ def split_digits(string):
         split = [string, None]
     return split
 
+
 def get_next_name(string):
     n, idx = split_digits(string)
     if not idx:
@@ -38,156 +128,18 @@ def get_next_name(string):
     idx = str(int(idx) + 1)
     return  n + idx
 
-def _load_style():
-    path = envs.STYLE_FILE
-    with open(path, "r") as f:
-        data = f.read()
-        data = data.replace('<rootpath>', envs.STYLE_ROOT)
-    return _scaled_stylesheet(data)
-
-def _px(value):
-    #Get screen resolution
-    rec = QtWidgets.QApplication.desktop().screenGeometry()
-    h = rec.height()
-    factor = h / 2160.0
-    return factor * value
-
-def _scaled_stylesheet(ss):
-    """Replace any mention of <num>px with scaled version
-    This way, you can still use px without worrying about what
-    it will look like at HDPI resolution.
-    """
-
-    output = []
-    for line in ss.splitlines():
-        line = line.rstrip()
-        if line.endswith("px;"):
-            key, value = line.rsplit(" ", 1)
-            try:
-                value = _px(int(value[:-3]))
-                line = "%s %dpx;" % (key, value)
-            except:
-                pass
-        output += [line]
-    return "\n".join(output)
 
 def get_example_path(name):
     dir_path = envs.EXAMPLES_DIR_PATH
     path = os.path.join(dir_path, name+envs.EXT)
     return path
 
-class FrameLayout(QtWidgets.QGroupBox):
-    def __init__(self, title='', parent=None, collapsable=True):
-        super(FrameLayout, self).__init__(title, parent)
-        
-        self.wdg = QtWidgets.QFrame()
-        self.wdg.setFrameShape(QtWidgets.QFrame.Panel)
-        self.wdg.setFrameShadow(QtWidgets.QFrame.Plain)
-        self.wdg.setLineWidth(0)
 
-        wdg_layout = QtWidgets.QVBoxLayout(self.wdg)
-        wdg_layout.setContentsMargins(0, 10, 0, 0)
-        wdg_layout.setSpacing(0)
+def show_documentation():
+    """Opens documentation file in browser
+    """
+    if not os.path.isfile(envs.DOC_FILE):
+        raise RuntimeError("Could not find doumentation.")
 
-        layout = QtWidgets.QVBoxLayout()
-        layout.setContentsMargins(2, 2, 2, 2)
-        layout.setSpacing(0)
-        super(FrameLayout, self).setLayout(layout)
-        layout.addWidget(self.wdg)
-         
-        self.is_colapsed = False
-        self.is_collapsable = collapsable
-        self.offset = 25
-
-    def setLayout(self, layout):
-        self.wdg.setLayout(layout)
-         
-    def expandCollapseRect(self):
-        return QtCore.QRect(0, 0, self.width(), 20)
- 
-    def mouseReleaseEvent(self, event):
-        if self.expandCollapseRect().contains(event.pos()):
-            self.toggleCollapsed()
-            event.accept()
-        else:
-            event.ignore()
-     
-    def toggleCollapsed(self):
-        self.setCollapsed(not self.is_colapsed)
-
-    def setCollapsable(self, value):
-        self.is_collapsable = bool(value)
-         
-    def setCollapsed(self, state=True):
-        if not self.is_collapsable:
-            return 
-
-        self.is_colapsed = state
- 
-        if state:
-            self.setMaximumHeight(20)
-            self.wdg.setMaximumHeight(0)
-            self.wdg.setHidden(True)
-        else:
-            self.setMaximumHeight(1000000)
-            self.wdg.setMaximumHeight(1000000)
-            self.wdg.setHidden(False)
-
-    def addWidget(self, *args, **kwargs):
-        self.wdg.layout().addWidget(*args, **kwargs)
-     
-    def addLayout(self, *args, **kwargs):
-        self.wdg.layout().addLayout(*args, **kwargs)
-
-    def setSpacing(self, value):
-        self.wdg.layout().setSpacing(value)
-
-    def addStretch(self, value):
-        self.wdg.layout().addStretch(value)
-
-    def paintEvent(self, event):
-        painter = QtGui.QPainter()
-        painter.begin(self)
-         
-        font = painter.font()
-        font.setBold(True)
-        painter.setFont(font)
- 
-        x = self.rect().x()
-        y = self.rect().y()
-        w = self.rect().width()
-         
-        painter.setRenderHint(painter.Antialiasing)
-        painter.fillRect(self.expandCollapseRect(), QtGui.QColor(93, 93, 93))
-        painter.drawText(
-            x, y + 3, w, 16,
-            QtCore.Qt.AlignCenter| QtCore.Qt.AlignTop,
-            self.title())
-        self.drawTriangle(painter, x, y)
-        painter.setRenderHint(QtGui.QPainter.Antialiasing, False)
-        painter.end()
-         
-    def drawTriangle(self, painter, x, y):     
-        if not self.is_collapsable:
-            return 
-
-        if not self.is_colapsed:
-            points = [  QtCore.QPoint(x+10,  y+6 ),
-                        QtCore.QPoint(x+20, y+6 ),
-                        QtCore.QPoint(x+15, y+11) ]
-             
-        else:
-            points = [  QtCore.QPoint(x+10, y+4 ),
-                        QtCore.QPoint(x+15, y+9 ),
-                        QtCore.QPoint(x+10, y+14)]
-        currentBrush = painter.brush()
-        currentPen = painter.pen()
-         
-        painter.setBrush(
-            QtGui.QBrush(
-                QtGui.QColor(187, 187, 187),
-                QtCore.Qt.SolidPattern))
-        painter.setPen(QtGui.QPen(QtCore.Qt.NoPen))
-        painter.drawPolygon(QtGui.QPolygon(points))
-        painter.setBrush(currentBrush)
-        painter.setPen(currentPen)
+    import webbrowser
+    webbrowser.open(os.path.join('file:', envs.DOC_FILE))
