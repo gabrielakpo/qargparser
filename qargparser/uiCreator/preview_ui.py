@@ -3,11 +3,11 @@ from . import envs
 from . import utils
 from .customs_ui import CustomToolbar
 
-class ReadPreview(QtWidgets.QWidget):
+
+class ReadPreview(QtWidgets.QDialog):
     def __init__(self, data, *args, **kwargs):
         super(ReadPreview, self).__init__(*args, **kwargs)
         self.setWindowTitle("Read Preview")
-        self.setWindowFlags(self.windowFlags() | QtCore.Qt.Window)
 
         wdg = QtWidgets.QPlainTextEdit()
         wdg.setReadOnly(True)
@@ -18,11 +18,9 @@ class ReadPreview(QtWidgets.QWidget):
         data = utils.format_json(data)
         wdg.appendPlainText(data)
 
-        self.resize(envs.PREVIEW_WIN_WIDTH, 
+        self.resize(envs.PREVIEW_WIN_WIDTH,
                     envs.PREVIEW_WIN_HEIGHT)
 
-        self.show()
-        self.move(self.parent().x(), self.parent().y())
 
 class PreviewWidget(QtWidgets.QGroupBox):
     def __init__(self, title="PREVIEW", *args, **kwargs):
@@ -43,4 +41,5 @@ class PreviewWidget(QtWidgets.QGroupBox):
 
     def on_read_preview_requested(self):
         data = envs.CURRENT_AP.export_data()
-        ReadPreview(data, parent=self)
+        preview_ui = ReadPreview(data, parent=self)
+        preview_ui.show()
