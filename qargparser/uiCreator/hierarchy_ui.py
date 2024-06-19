@@ -1,5 +1,5 @@
 import os
-from qargparser import Array, Object
+from qargparser import Array, Object, TYPES as ITEMS_TYPES
 from .Qt import QtWidgets, QtCore
 from . import utils
 from . import envs 
@@ -42,6 +42,9 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
 
     def add_arg(self, **data):
         return self.arg.add_arg(**data)
+    
+    def is_block(self):
+        return self.arg.is_block()
 
 class HierarchyTree(CustomTree):
     def __init__(self, *args, **kwargs):
@@ -57,10 +60,6 @@ class HierarchyTree(CustomTree):
         self.header().setStretchLastSection(False)
         self.header().resizeSection(TYPE_IDX, 100)
         self.header().hideSection(TYPE_IDX)
-
-    @property
-    def ap(self):
-        return self.parent().parent().ap
 
     def dropEvent(self, event):
         arg = None
@@ -108,7 +107,7 @@ class HierarchyTree(CustomTree):
             data["type"] = type
             data["name"] = self.search_name(data["type"])
         
-        if target and target.arg("type") not in ["array", "object", "tab", "dict"]:
+        if target and not target.arg.is_block():
             target = target.parent()
 
         if not target: 
@@ -210,6 +209,11 @@ class HierarchyWidget(QtWidgets.QGroupBox):
 
         menu = QtWidgets.QMenu()
         menu.addAction(envs.ICONS["delete"], "delete", partial(self.on_delete_item, item))
+
+        if item.is_block():
+            children_menu = menu.addMenu("add child")
+            for name in ITEMS_TYPES:
+                children_menu.addAction(envs.ICONS["type_%s" % name], name, partial(self.on_add_child_requested, item, name))
         menu.exec_(self.tree.mapToGlobal(point))
 
     def add_item(self, *args, **kwargs):
@@ -263,3 +267,7 @@ class HierarchyWidget(QtWidgets.QGroupBox):
                 parent_item.arg.move_arg(item.arg, idx-1)
 
         self.load(item.arg)
+
+    def on_add_child_requested(self, item, name):
+        self.add_item(type=name, target=item)
+        self.load()

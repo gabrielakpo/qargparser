@@ -1,10 +1,10 @@
 from .Qt import QtWidgets
-from .arg import Arg
+from .arg import BlockArg
 from .item import Item
 from functools import partial
 from collections import OrderedDict
 
-class Dict(Arg):
+class Dict(BlockArg):
     """ Dict argument widget. It creates a list of deletables items.
         You an can add a sub-argument that will be the items template.
 

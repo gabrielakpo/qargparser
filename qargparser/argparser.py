@@ -31,7 +31,6 @@ TYPES = {
     "mel": Mel,
     "python": Python,
     "array": Array,
-    "item": Item,
     "boolean": Boolean,
     "float": Float,
     "integer": Integer,
@@ -40,6 +39,7 @@ TYPES = {
 
 _TYPES = TYPES.copy()
 _TYPES.update({
+    "item": Item,
     "bool": Boolean,
     "int": Integer,
     "str": String,
@@ -120,7 +120,7 @@ class CustomLabel(QtWidgets.QLabel):
             txt = "%s%s "%(txt, self.label_suffix)
         return txt
 
-class ArgParser(QtWidgets.QGroupBox):
+class ArgParser(QtWidgets.QWidget):
     """ Generates argument widget instances parented in its layout.
         You can read its values or save its build data in a .json file
         and use it to recreate this widget.
@@ -167,6 +167,8 @@ class ArgParser(QtWidgets.QGroupBox):
         self._args = []
 
         super(ArgParser, self).__init__(parent)
+
+        self.setContentsMargins(2, 5, 2, 5)
 
         #Layout
         layout = QtWidgets.QFormLayout(self)

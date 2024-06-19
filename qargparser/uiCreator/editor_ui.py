@@ -15,12 +15,12 @@ from . import envs
 
 class EditorWidget(QtWidgets.QDialog):
     def __init__(self, path=None, data=None, *args, **kwargs):
-        #Init data
+        # Init data
         self.data = None
         self.path = None
         envs.CURRENT_AP = ArgParser(label_suffix=":")
 
-        #Init UI
+        # Init UI
         super(EditorWidget, self).__init__(*args, **kwargs)
         self.setWindowTitle("qargparser - Editor")
         self.setWindowFlags(self.windowFlags() | QtCore.Qt.Window)
@@ -28,11 +28,12 @@ class EditorWidget(QtWidgets.QDialog):
         self.create_layouts()
         self.create_connections()
 
-        #Start
+        # Start
         self.items_wdg.load()
         self.edit(data=data, path=path)
 
         self.resize(envs.WIN_WIDTH, envs.WIN_HEIGHT)
+        self.splitter.setSizes([self.width()*0.25, self.width()*0.5, self.width()*0.25])
         
     def create_widgets(self):
         #Sections
@@ -47,19 +48,19 @@ class EditorWidget(QtWidgets.QDialog):
         self.v_splitter.addWidget(self.items_wdg)
         self.v_splitter.addWidget(self.hierarchy_wdg)
 
-        self.h_splitter = QtWidgets.QSplitter()
-        self.h_splitter.addWidget(self.v_splitter)
-        self.h_splitter.addWidget(self.preview_wdg)
-        self.h_splitter.addWidget(self.properties_wdg)
-        self.h_splitter.setStretchFactor(0, 0)
-        self.h_splitter.setStretchFactor(1, 1)
-        self.h_splitter.setStretchFactor(2, 0)
-        self.h_splitter.setContentsMargins(10, 10, 10, 10)
+        self.splitter = QtWidgets.QSplitter()
+        self.splitter.addWidget(self.v_splitter)
+        self.splitter.addWidget(self.preview_wdg)
+        self.splitter.addWidget(self.properties_wdg)
+        self.splitter.setStretchFactor(0, 0)
+        self.splitter.setStretchFactor(1, 1)
+        self.splitter.setStretchFactor(2, 0)
+        self.splitter.setContentsMargins(10, 10, 10, 10)
 
     def create_layouts(self):
         main_layout = QtWidgets.QVBoxLayout(self)
         main_layout.setContentsMargins(5, 5, 5, 5)
-        main_layout.addWidget(self.h_splitter)
+        main_layout.addWidget(self.splitter)
 
     def create_connections(self):
         self.hierarchy_wdg.sel_changed.connect(self.on_hierarchy_sel_changed)

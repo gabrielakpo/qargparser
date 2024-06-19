@@ -1,8 +1,8 @@
 from .Qt import QtWidgets
-from .arg import Arg
+from .arg import BlockArg
 from .item import Item
 
-class Array(Arg):
+class Array(BlockArg):
     """ Array argument widget. It creates a list of deletables items.
         You an can add a sub-argument that will be the items template.
 

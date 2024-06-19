@@ -1,6 +1,6 @@
-from .arg import Arg
+from .arg import BlockArg
 
-class Object(Arg):
+class Object(BlockArg):
     """ Object argument widget. 
         You an can add all sub-argument types.
 

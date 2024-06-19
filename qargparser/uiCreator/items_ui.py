@@ -1,5 +1,5 @@
 from .Qt import QtWidgets, QtCore
-from qargparser import TYPES as items_types
+from qargparser import TYPES as ITEMS_TYPES
 from functools import partial
 from . import envs
 from .customs_ui import CustomTree, set_font_size
@@ -44,9 +44,7 @@ class ItemsWidget(QtWidgets.QGroupBox):
 
     def load(self):
         self.tree.clear()
-        names = sorted(items_types.keys())
-        names.remove("item")
-
+        names = sorted(ITEMS_TYPES.keys())
         for name in names:
             item = ItemsTreeItem(name)
             self.tree.addChild(item)

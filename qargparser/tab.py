@@ -1,8 +1,8 @@
-from .arg import Arg
+from .arg import BlockArg
 from .object import Object
 from .Qt import QtWidgets 
 
-class Tab(Arg):
+class Tab(BlockArg):
     """ Tab argument widget. 
         You an can add all sub-argument types.
 

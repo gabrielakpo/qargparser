@@ -73,6 +73,9 @@ class Arg(QtCore.QObject):
 
     def create(self):
         pass
+
+    def is_block(self):
+        return isinstance(self, BlockArg)
         
     def set_data(self, name, value):
         """Sets its data with new from a name and a value.
@@ -181,3 +184,5 @@ class Arg(QtCore.QObject):
     def disable(self, disable):
         self.wdg.setDisabled(disable)
 
+class BlockArg(Arg):
+    pass
