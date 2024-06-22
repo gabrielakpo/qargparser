@@ -13,7 +13,7 @@ authors = ['Gabriel AKPO-ALLAVO']
 
 tools = ["qargparser_creator"]
 
-requires = ["python"]
+requires = ["python", "Qt.py"]
 
 private_build_requires = ["TBM_RezManager-dev"]
         
