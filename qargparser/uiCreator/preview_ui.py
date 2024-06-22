@@ -22,13 +22,20 @@ class ReadPreview(QtWidgets.QDialog):
                     envs.PREVIEW_WIN_HEIGHT)
 
 
-class PreviewWidget(QtWidgets.QGroupBox):
-    def __init__(self, title="PREVIEW", *args, **kwargs):
-        super(PreviewWidget, self).__init__(title, *args, **kwargs)   
-        self.setAlignment(QtCore.Qt.AlignCenter)
+class PreviewWidget(QtWidgets.QWidget):
+    reset_requested = QtCore.Signal()
 
+    def __init__(self, *args, **kwargs):
+        super(PreviewWidget, self).__init__(*args, **kwargs)
         toolbar = CustomToolbar()
-        toolbar.addAction(envs.ICONS["read_preview"], "read preview", self.on_read_preview_requested)
+
+        toolbar.addAction(
+            envs.ICONS["reset"], "reset", self.on_reset_requested)
+
+        toolbar.addAction(
+            envs.ICONS["read_preview"],
+            "read preview",
+            self.on_read_preview_requested)
 
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidgetResizable(True)
@@ -43,3 +50,6 @@ class PreviewWidget(QtWidgets.QGroupBox):
         data = envs.CURRENT_AP.export_data()
         preview_ui = ReadPreview(data, parent=self)
         preview_ui.show()
+
+    def on_reset_requested(self):
+        self.reset_requested.emit()

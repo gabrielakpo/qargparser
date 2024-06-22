@@ -3,15 +3,15 @@ from . import utils, envs
 from qargparser import ArgParser
 from .customs_ui import CustomToolbar
 
-class PropertiesWidget(QtWidgets.QGroupBox):
+
+class PropertiesWidget(QtWidgets.QWidget):
     edited = QtCore.Signal()
 
-    def __init__(self, title="SETTINGS", *args, **kwargs):
+    def __init__(self, *args, **kwargs):
         self.arg = None
         self.ap = ArgParser(label_suffix=':')
 
-        super(PropertiesWidget, self).__init__(title, *args, **kwargs)   
-        self.setAlignment(QtCore.Qt.AlignCenter)
+        super(PropertiesWidget, self).__init__(*args, **kwargs)   
 
         toolbar = CustomToolbar()
         toolbar.addAction(envs.ICONS["reset"], "reset", self.on_reset_requested)
@@ -28,7 +28,7 @@ class PropertiesWidget(QtWidgets.QGroupBox):
         self.layout().addWidget(toolbar)
 
         self.setDisabled(True)
-        
+
     def load(self, arg=None):
         self.arg = None
         self.setDisabled(True)

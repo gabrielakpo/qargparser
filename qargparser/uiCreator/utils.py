@@ -4,93 +4,10 @@ import re
 
 from qargparser.utils import (
     load_data_from_file,
-    write_json,
-    make_dir,
-    read_json)
+    read_json,
+    write_json)
 
 from . import envs
-
-
-class ThemeManager(object):
-    def __init__(self, app):
-        self._app = app
-        self._current_theme = "default"
-
-    @property
-    def current_theme(self):
-        return self._current_theme
-
-    def load_theme(self, theme_name=None):
-        if not theme_name:
-            theme_name = "default"
-
-        if theme_name == "default":
-            self._app.setStyleSheet("")
-        else:
-            style_file = os.path.join(envs.STYLE_ROOT, theme_name) + ".css"
-
-            if not os.path.isfile(style_file):
-                raise FileExistsError("Could not find : {}".format(style_file))
-
-            with open(style_file, "r", encoding="utf-8") as f:
-                style_data = f.read()
-
-                self._app.setStyleSheet(style_data)
-
-        self._current_theme = theme_name
-
-    def get_theme_names(self):
-        names = ["default"]
-        for name in os.listdir(envs.STYLE_ROOT):
-            names.append(os.path.splitext(name)[0])
-        return names
-
-
-class PreferenceManager(object):
-    def __init__(self, app):
-        self._app = app
-        self.theme = ThemeManager(app)
-
-    def _make_root(self, path):
-        if not path or not os.path.exists(path):
-            path = os.path.expanduser("~")
-
-        if not path:
-            return
-
-        root = os.path.join(path, envs.PREFS_ROOT_NAME)
-        make_dir(root)
-        return root
-
-    def save(self, path=None):
-        """Saves package preferences
-
-        :param data: The preference data to save
-        :type data: dict
-        :param path: The path to save the prefs, defaults to None
-        :type path: str, optional
-        """
-        data = {
-            "theme": self.theme.current_theme
-        }
-
-        root = self._make_root(path)
-        if root:
-            file_path = os.path.join(root, envs.PREFS_FILE_NAME)
-            write_json(data, file_path)
-
-    def load(self, path=None):
-        """Reads package preferences
-
-        :param path: The path to save the prefs, defaults to None
-        :type path: str, optional
-        """
-        root = self._make_root(path)
-        file_path = os.path.join(root, envs.PREFS_FILE_NAME)
-        if os.path.isfile(file_path):
-            data = read_json(file_path) or {}
-            if "theme" in data:
-                self.theme.load_theme(data["theme"])
 
 
 def get_properties_data(name, default=False):
@@ -106,6 +23,20 @@ def get_properties_data(name, default=False):
     if default:
         data = {d["name"]: d["default"] for d in data}
     return data
+
+
+def make_dir(path):
+    if not os.path.exists(path):
+        try:
+            os.makedirs(path)
+        except:
+            pass
+    return os.path.exists(path)
+
+
+def read_file(path):
+    with open(path, 'r') as f:
+        return f.read()
 
 
 def format_json(data, indent=4):
@@ -131,8 +62,17 @@ def get_next_name(string):
 
 def get_example_path(name):
     dir_path = envs.EXAMPLES_DIR_PATH
-    path = os.path.join(dir_path, name+envs.EXT)
+    path = os.path.join(dir_path, name+envs.FILE_EXT)
     return path
+
+
+def get_example_names():
+    names = []
+    for name in os.listdir(envs.EXAMPLES_DIR_PATH):
+        base, ext = os.path.splitext(name)
+        if ext == envs.FILE_EXT:
+            names.append(base)
+    return names
 
 
 def show_documentation():

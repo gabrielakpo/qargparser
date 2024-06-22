@@ -1,6 +1,6 @@
 import os
 
-from ..envs import EXT, DOC_FILE
+from qargparser.envs import FILE_EXT, DOC_FILE
 from .Qt import QtGui
 
 _root = os.path.dirname(__file__)
@@ -11,10 +11,10 @@ PROPERTIES_MAPPING_NAMES = {
     "bool": 'boolean',
     "python": 'text',
     "mel": 'text',
-    "doc": 'text',
-    "python": 'text'
-}     
+    "doc": 'text'
+}
 
+FILE_FILTERS = "JSON (**.json)"
 
 # UI
 NAME_IDX = 0
@@ -29,17 +29,26 @@ PREVIEW_WIN_HEIGHT = 750
 
 SPLITTER_RATIOS = [0.25, 0.5, 0.25]
 
-# Style
-STYLE_ROOT = os.path.join(_root, "style").replace('\\', '/')
+# theme
+THEME_ROOT = os.path.join(_root, "styles").replace('\\', '/')
+THEME_EXTS = [".qss", ".css"]
 
 EXAMPLES_DIR_PATH = os.path.join(_root, "examples")
-EXAMPLES_NAMES = ["allArgClasses"]
 
 CURRENT_AP = None
 
 # preferences
+THEME_KEY = "theme"
+
+PREFS_DEFAULT = {
+    THEME_KEY: "default"
+}
+
 PREFS_ROOT_NAME = ".qargparser"
 PREFS_FILE_NAME = "qargparser_prefs.json"
+
+# settings
+SETTINGS_FILE_NAME = "qarparser_settings.ini"
 
 
 class DirFiles(dict):
@@ -57,6 +66,7 @@ class DirFiles(dict):
             return self.__getitem__(__k)
         return default
 
+
 class CacheIcons(dict):
     def __getitem__(self, __k):
         if not __k:
@@ -64,13 +74,16 @@ class CacheIcons(dict):
 
         if __k not in self:
             if not os.path.isfile(__k):
-                super(CacheIcons, self).__setitem__(__k, QtGui.QIcon(IMAGES[__k]))
+                super(CacheIcons, self).__setitem__(__k, QtGui.QIcon(FILES[__k]))
             else:
                 super(CacheIcons, self).__setitem__(__k, QtGui.QIcon(__k))
-                
+
         return super(CacheIcons, self).__getitem__(__k)
 
-IMAGES = DirFiles(os.path.join(_root, "icons"), {
+
+FILES = DirFiles(os.path.join(_root, "icons"), {
+    "app": "app.png",
+    "throbber": "throbber.png",
     "read_preview": "read_preview.png",
 
     "valid": "valid.png",

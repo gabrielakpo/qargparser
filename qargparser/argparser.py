@@ -414,8 +414,10 @@ class ArgParser(QtWidgets.QWidget):
             self.add_arg(**d)
 
     def build_from_path(self, path):
-        self.clear()
         data = utils.load_data_from_file(path)
+        if not data:
+            raise RuntimeError("Error reading data")
+        self.clear()
         self.build(data)
 
     def delete_children(self):

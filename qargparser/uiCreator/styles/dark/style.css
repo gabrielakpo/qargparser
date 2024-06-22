@@ -45,6 +45,13 @@ QPushButton {
     padding: 0.2em;
 }
 
+QPushButton[flat="true"] {
+    background-color: transparent;
+    color: #FFFFFF;
+    border: none;
+    padding: 5px;
+}
+
 QPushButton:hover {
     background-color: #555555;
 }
@@ -74,6 +81,7 @@ QComboBox {
     border: 1px solid #555555;
     border-radius: 5px;
     padding: 5px;
+    height: 15px;
 }
 
 QComboBox::drop-down {
@@ -83,6 +91,12 @@ QComboBox::drop-down {
     border-left-width: 1px;
     border-left-color: #555555;
     border-left-style: solid;
+}
+
+QComboBox::down-arrow {
+    image: url("img/dropdown.png"); /* Path to your custom indicator image */
+    width: 10px;
+    height: 10px;
 }
 
 QComboBox QAbstractItemView {
@@ -100,10 +114,12 @@ QTabBar::tab {
     background-color: #444444;
     color: #FFFFFF;
     padding: 5px;
+    border-top-left-radius: 5%;
+    border-top-right-radius: 5%;
 }
 
 QTabBar::tab:selected {
-    background-color: #555555;
+    background-color: #2E2E2E;
 }
 
 /* QScrollBar */
@@ -162,6 +178,7 @@ QHeaderView::section {
     background-color: #444444;
     color: #FFFFFF;
     padding: 5px;
+    min-height: 11px;
     border: 1px solid #555555;
 }
 
@@ -220,4 +237,30 @@ QSlider::handle:vertical {
     height: 18px;
     margin: 0 -6px;
     border-radius: 9px;
+}
+
+/* QSplitter */
+/* QMainWindow::separator */
+
+QMainWindow::separator,
+QSplitter::handle {
+    background-color: #CCCCCC;
+    border: 1px solid #AAAAAA;
+}
+
+QMainWindow::separator:horizontal,
+QSplitter::handle:horizontal {
+    width: 1;
+    image: url(none); /* Ensure there's no image */
+}
+
+QMainWindow::separator:vertical,
+QSplitter::handle:vertical {
+    height: 1;
+    image: url(none); /* Ensure there's no image */
+}
+
+QMainWindow::separator:hover,
+QSplitter::handle:hover {
+    background-color: #ffffff;
 }

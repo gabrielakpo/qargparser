@@ -2,10 +2,11 @@ from .Qt import QtWidgets, QtCore
 from qargparser import TYPES as ITEMS_TYPES
 from functools import partial
 from . import envs
-from .customs_ui import CustomTree, set_font_size
+from .customs_ui import CustomTree, set_widget_font
 
 ADD_IDX = 1
 NAME_IDX = 0
+
 
 class ItemsTreeItem(QtWidgets.QTreeWidgetItem):
     def __init__(self, name):
@@ -16,15 +17,16 @@ class ItemsTreeItem(QtWidgets.QTreeWidgetItem):
     def name(self):
         return self.text(NAME_IDX)
 
+
 class ItemsTree(CustomTree):
     pass
 
-class ItemsWidget(QtWidgets.QGroupBox):
+
+class ItemsWidget(QtWidgets.QWidget):
     add_requested = QtCore.Signal(object)
 
-    def __init__(self, title="ITEMS", *args, **kwargs):
-        super(ItemsWidget, self).__init__(title, *args, **kwargs)  
-        self.setAlignment(QtCore.Qt.AlignCenter)
+    def __init__(self, *args, **kwargs):
+        super(ItemsWidget, self).__init__(*args, **kwargs)  
 
         self.tree = ItemsTree()
         self.tree.setDragEnabled(True)
@@ -50,6 +52,6 @@ class ItemsWidget(QtWidgets.QGroupBox):
             self.tree.addChild(item)
             add_button = QtWidgets.QPushButton("+", parent=self)
             add_button.setFixedSize(35, 35)
-            set_font_size(add_button, 14)
+            set_widget_font(add_button, size=14)
             add_button.clicked.connect(partial(self.add_requested.emit, name))
             self.tree.setItemWidget(item, ADD_IDX, add_button)

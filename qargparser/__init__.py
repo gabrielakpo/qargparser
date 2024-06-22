@@ -9,5 +9,3 @@ from .boolean import Boolean
 from .path import Path
 from .color import Color
 from .dict import Dict
-
-from .uiCreator.editor_ui import EditorWidget

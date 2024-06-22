@@ -1,10 +1,47 @@
-from .Qt import QtWidgets, QtCore
+from .Qt import QtWidgets, QtCore, QtGui
+from . import envs
 from functools import partial
 
-def set_font_size(wdg, size):
+
+def set_widget_font(wdg, size=None, weight=None):
     font = wdg.font()
-    font.setPointSize(size)
+    if size:
+        font.setPointSize(size)
+    if weight:
+        font.setWeight(weight)
     wdg.setFont(font)
+
+
+class ThrobberWidget(QtWidgets.QDialog):
+    def __init__(self, parent=None, loading_message="Loading...", *args, **kwargs):
+        super(ThrobberWidget, self).__init__(parent, *args, **kwargs)
+        self.setWindowFlags(QtCore.Qt.Window
+                            | QtCore.Qt.FramelessWindowHint
+                            | QtCore.Qt.CustomizeWindowHint)
+        self.setWindowTitle(loading_message)
+        self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
+
+        pixmap = QtGui.QPixmap(envs.FILES["throbber"])
+        label = QtWidgets.QLabel()
+        label.setPixmap(pixmap.scaled(200,
+                                      200,
+                                      QtCore.Qt.KeepAspectRatio,
+                                      QtCore.Qt.SmoothTransformation))
+        label.setScaledContents(True)
+
+        self.setLayout(QtWidgets.QVBoxLayout())
+        self.layout().addWidget(label)
+
+        self.setFixedSize(200, 200)
+
+        if self.parent():
+            center = self.parent().rect().center()
+            point = self.parent().mapToGlobal(center)
+            point = self.mapFromGlobal(point)
+            point.setX(point.x()-self.width()/2)
+            point.setY(point.y()-self.height()/2)
+            self.move(point.x(), point.y())
+
 
 class CustomToolbar(QtWidgets.QToolBar):
     def __init__(self, style=QtCore.Qt.ToolButtonTextUnderIcon, icon_size=(25, 25), *args, **kwargs):
@@ -28,11 +65,12 @@ class CustomToolbar(QtWidgets.QToolBar):
 
         return menu
 
+
 class CustomTree(QtWidgets.QTreeWidget):
     delete_item_requested = QtCore.Signal(object)
- 
+
     def __init__(self, *args, **kwargs):
-        self.hide_ignores = [] #Ignore indexes when hide requested
+        self.hide_ignores = []  # Ignore indexes when hide requested
         self.itemWidgets = set()
 
         super(CustomTree, self).__init__(*args, **kwargs)
@@ -43,7 +81,7 @@ class CustomTree(QtWidgets.QTreeWidget):
         self.itemWidgets.add(widget)
         widget.destroyed.connect(lambda: self.itemWidgets.discard(widget))
         super(CustomTree, self).setItemWidget(item, column, widget)
-        
+
     def updateGeometries(self):
         hidden = [w for w in self.itemWidgets if w.isHidden()]
         super(CustomTree, self).updateGeometries()
@@ -63,9 +101,9 @@ class CustomTree(QtWidgets.QTreeWidget):
         menu.exec_(self.mapToGlobal(point))
 
     def on_hide_section_requested(self, idx, value):
-        if (not value 
-            and (self.header().count() - self.header().hiddenSectionCount() < 2)):
-                return
+        if (not value
+                and (self.header().count() - self.header().hiddenSectionCount() < 2)):
+            return
         self.header().setSectionHidden(idx, not value)
 
     def childCount(self):
@@ -82,7 +120,8 @@ class CustomTree(QtWidgets.QTreeWidget):
         if deletable:
             del_button = QtWidgets.QPushButton("x")
             del_button.setFixedWidth(20)
-            del_button.clicked.connect(partial(self.on_delete_item_requested, item))
+            del_button.clicked.connect(
+                partial(self.on_delete_item_requested, item))
             del_wdg = QtWidgets.QWidget(self)
             del_wdg.setLayout(QtWidgets.QHBoxLayout())
             del_wdg.layout().setContentsMargins(0, 0, 0, 0)
@@ -102,18 +141,18 @@ class CustomTree(QtWidgets.QTreeWidget):
 
     def setSectionResizeMode(self, *args, **kwargs):
         try:
-            self.header().setSectionResizeMode(*args, **kwargs) 
+            self.header().setSectionResizeMode(*args, **kwargs)
         except:
-            self.header().setResizeMode(*args, **kwargs) 
+            self.header().setResizeMode(*args, **kwargs)
 
     def setResizeMode(self, *args, **kwargs):
         self.setSectionResizeMode(*args, **kwargs)
 
     def setSectionMinimumSize(self, size):
         try:
-            self.header().setSectionMinimumSize(size) 
+            self.header().setSectionMinimumSize(size)
         except:
-            self.header().setMinimumSectionSize(size) 
+            self.header().setMinimumSectionSize(size)
 
     def iter_all_items(self):
         def _iter(parent):
@@ -141,7 +180,7 @@ class CustomTree(QtWidgets.QTreeWidget):
         if not index.isValid():
             return
         childCount = index.model().rowCount(index)
-        for  i in range(childCount):
+        for i in range(childCount):
             child = index.child(i, 0)
             self.expandChildren(child, state)
         if state:
@@ -152,3 +191,25 @@ class CustomTree(QtWidgets.QTreeWidget):
     def collapse_all(self):
         for item in self.iter_all_items():
             item.setExpanded(False)
+
+
+class CustomDockWidget(QtWidgets.QDockWidget):
+    def __init__(self, title=None, *args, **kwargs):
+        super(CustomDockWidget, self).__init__(*args, **kwargs)
+        self.setFeatures(QtWidgets.QDockWidget.DockWidgetMovable |
+                         QtWidgets.QDockWidget.DockWidgetFloatable |
+                         QtWidgets.QDockWidget.DockWidgetClosable)
+        if title:
+            title_label = QtWidgets.QLabel(title)
+            title_label.setAlignment(QtCore.Qt.AlignCenter)
+            set_widget_font(title_label, size=10, weight=QtGui.QFont.Bold)
+            self.setTitleBarWidget(title_label)
+            self.setWindowTitle(title)
+            self.setObjectName(title.replace("", "_"))
+
+        wdg = QtWidgets.QWidget()
+        wdg.setLayout(QtWidgets.QVBoxLayout())
+        self.setWidget(wdg)
+
+    def layout(self):
+        return self.widget().layout()

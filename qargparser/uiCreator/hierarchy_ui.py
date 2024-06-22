@@ -144,13 +144,13 @@ class HierarchyTree(CustomTree):
     def get_parent(self):
         return self.parent()
 
-class HierarchyWidget(QtWidgets.QGroupBox):
+
+class HierarchyWidget(QtWidgets.QWidget):
     sel_changed = QtCore.Signal(object)
 
-    def __init__(self, title="HIERARCHY", *args, **kwargs):
+    def __init__(self, *args, **kwargs):
 
-        super(HierarchyWidget, self).__init__(title, *args, **kwargs)  
-        self.setAlignment(QtCore.Qt.AlignCenter)
+        super(HierarchyWidget, self).__init__(*args, **kwargs)  
 
         self.tree = HierarchyTree()
 
