@@ -1,7 +1,7 @@
 import os
 
 from qargparser.envs import FILE_EXT, DOC_FILE
-from .Qt import QtGui
+from Qt import QtGui
 
 _root = os.path.dirname(__file__)
 PROPERTIES_PATH = os.path.join(_root, "properties")

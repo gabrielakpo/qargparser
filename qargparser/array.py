@@ -1,6 +1,7 @@
-from .Qt import QtWidgets
+from Qt import QtWidgets
 from .arg import BlockArg
 from .item import Item
+
 
 class Array(BlockArg):
     """ Array argument widget. It creates a list of deletables items.
@@ -20,6 +21,7 @@ class Array(BlockArg):
         :return: The new instance
         :rtype: :class:`~qargparser.array.Array` instance
     """
+
     def create(self):
         from .argparser import ArgParser
         wdg = ArgParser(description=self._data['description'])
@@ -29,65 +31,66 @@ class Array(BlockArg):
         self.wdg = wdg
         kwargs = self._data["items"].copy()
 
-        #Item template
+        # Item template
         self._item = Item(None, template=kwargs)
         self._item.create()
         self._item.reset_requested.connect(self.on_reset_request)
 
-        #Add items
-            #Check max
+        # Add items
+        # Check max
         defaults = self._data['default']
-        if len(defaults)  > self._data["max"]:
+        if len(defaults) > self._data["max"]:
             defaults = defaults[:self._data["max"]]
 
         for default in defaults:
             self.add_item(default)
 
-            #Check min
+            # Check min
         remaining = self._data["min"] - len(defaults)
         if remaining > 0:
             for i in range(remaining):
                 self.add_item()
 
-        #Add item button
+        # Add item button
         self._create_add_item_button()
 
         self._write = self.__write
-        self._read = lambda : [arg.read() for arg in wdg._args \
-                               if arg.read() is not None]
+        self._read = lambda: [arg.read() for arg in wdg._args
+                              if arg.read() is not None]
         wdg.changed.connect(self.on_changed)
 
         return wdg
 
     def __write(self, value):
-        for i, arg in enumerate(self.wdg._args) :
+        for i, arg in enumerate(self.wdg._args):
             if arg._write is not None:
-                arg._write(value[i]) 
+                arg._write(value[i])
 
     def is_edited(self):
-        return (len(self.wdg._args) != len(self._data["default"]) 
+        return (len(self.wdg._args) != len(self._data["default"])
                 and len(self.wdg._args) > self._data["min"]
                 or any(child.is_edited() for child in self.wdg._args))
 
     def add_item(self, default=None):
         idx = len(self.wdg._args)
 
-        #Max
+        # Max
         _max = self._data["max"]
         if _max and idx == _max:
             return
 
-        data = {"type": self._item._data["type"], "template": self._item.to_data()}
+        data = {"type": self._item._data["type"],
+                "template": self._item.to_data()}
         if default:
             data["default"] = default
-            
+
         arg = self.wdg.add_arg(**data)
         arg.delete_requested.connect(self.on_item_delete_resquested)
         self.changed.emit(None)
         return arg
 
     def on_item_delete_resquested(self, arg):
-        #Check min items
+        # Check min items
         idx = len(self.wdg._args)
         min = self._data.get("min")
         if min and idx == min:
@@ -107,20 +110,20 @@ class Array(BlockArg):
         layout.insertRow(layout.rowCount(), self.add_item_button)
         if self._data["min"] == self._data["max"]:
             self.add_item_button.setVisible(False)
-            
+
     def reset(self):
         self.wdg.delete_children()
         self._create_add_item_button()
         self._init()
 
         defaults = self._data['default']
-        if len(defaults)  > self._data["max"]:
+        if len(defaults) > self._data["max"]:
             defaults = defaults[:self._data["max"]]
 
         for default in defaults:
             self.add_item(default)
 
-            #Check min
+            # Check min
         remaining = self._data["min"] - len(defaults)
         if remaining > 0:
             for i in range(remaining):
@@ -132,7 +135,7 @@ class Array(BlockArg):
         super(Array, self)._update()
         self.reset()
 
-        #Add Item button
+        # Add Item button
         self.add_item_button.setText(self._data["buttonLabel"])
 
     def get_children(self):
@@ -143,7 +146,7 @@ class Array(BlockArg):
         children = self.get_children()
         if children:
             data["items"] = self._item.to_data()
-        
+
         return data
 
     def add_arg(self, *args, **kwargs):
@@ -163,4 +166,3 @@ class Array(BlockArg):
     def on_reset_request(self):
         self.reset()
         self.reset_requested.emit()
-

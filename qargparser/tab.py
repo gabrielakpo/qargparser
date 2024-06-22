@@ -1,9 +1,10 @@
 from .arg import BlockArg
 from .object import Object
-from .Qt import QtWidgets 
+from Qt import QtWidgets
+
 
 class Tab(BlockArg):
-    """ Tab argument widget. 
+    """ Tab argument widget.
         You an can add all sub-argument types.
 
         :param default: The default value, defaults to {}
@@ -26,13 +27,14 @@ class Tab(BlockArg):
 
         if 'items' in self._data:
             for _data in self._data.get('items')[:]:
-                #Update default
+                # Update default
                 if _data["name"] in default:
                     _data["default"] = default[_data["name"]]
 
                 self.add_arg(**_data)
 
-        self._read = lambda: {self.wdg.tabText(i): c._read() for i, c in enumerate(self._args)}
+        self._read = lambda: {self.wdg.tabText(
+            i): c._read() for i, c in enumerate(self._args)}
 
         return self.wdg
 
@@ -42,12 +44,12 @@ class Tab(BlockArg):
     def reset(self):
         self.wdg.setMovable(self._data["movable"])
         self.wdg.setTabsClosable(self._data["closable"])
-        
+
         for i, child in enumerate(self._args):
             child.reset()
             child.changed.emit(None)
             self.wdg.setTabText(i, child._data["name"])
-            
+
         self.changed.emit(None)
 
     def _update(self):
@@ -81,7 +83,5 @@ class Tab(BlockArg):
         data = super(Tab, self).to_data()
         if self._args:
             data["items"] = [child.to_data() for child in self._args]
-        
-        return data
 
-    
+        return data

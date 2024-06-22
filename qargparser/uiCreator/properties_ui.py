@@ -1,4 +1,4 @@
-from .Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
 from . import utils, envs
 from qargparser import ArgParser
 from .customs_ui import CustomToolbar

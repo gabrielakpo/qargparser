@@ -1,6 +1,7 @@
-from .Qt import QtWidgets
+from Qt import QtWidgets
 from .arg import Arg
 import os
+
 
 class FileFolderDialog(QtWidgets.QFileDialog):
     def __init__(self, *args, **kwargs):
@@ -16,7 +17,7 @@ class FileFolderDialog(QtWidgets.QFileDialog):
             self.setFileMode(QtWidgets.QFileDialog.ExistingFile)
 
         for pushButton in self.findChildren(QtWidgets.QPushButton):
-            if pushButton.text() == "&Open" or pushButton.text() == "&Choose" :
+            if pushButton.text() == "&Open" or pushButton.text() == "&Choose":
                 self.open_button = pushButton
                 break
         self.open_button.clicked.disconnect()
@@ -35,9 +36,9 @@ class FileFolderDialog(QtWidgets.QFileDialog):
         else:
             if os.path.isdir(name):
                 self.setFileMode(QtWidgets.QFileDialog.Directory)
-            else: 
+            else:
                 self.setFileMode(QtWidgets.QFileDialog.ExistingFile)
- 
+
     def selected(self):
         selected_path = ''
         if len(self.selected_paths):
@@ -50,12 +51,14 @@ class FileFolderDialog(QtWidgets.QFileDialog):
         for modelIndex in self.treeview.selectionModel().selectedIndexes():
             col = modelIndex.column()
             if col == 0:
-                path = '/'.join([self.directory().path(), str(modelIndex.data())])
+                path = '/'.join([self.directory().path(),
+                                str(modelIndex.data())])
                 if self.mode == "file" and not os.path.isfile(path):
                     return
                 self.selected_paths.append(path)
         self.filesSelected.emit(self.selected_paths)
         self.hide()
+
 
 class Path(Arg):
     """ Path argument widget. 
@@ -65,19 +68,21 @@ class Path(Arg):
         :type default: str, optional
         :param buttonLabel: The label of the button, defaults to "..."
         :type buttonLabel: str, optional
-        :param searchMessage: The title message of the explorer window, defaults to "choose a path"
+        :param searchMessage: The title message of the explorer window,
+                              defaults to "choose a path"
         :type searchMessage: str, optional
 
         :return: The new instance
         :rtype: :class:`~qargparser.path.Path` instance
     """
+
     def create(self):
         self.le = QtWidgets.QLineEdit()
         self.le.setText(self._data['default'])
         self.folder_button = QtWidgets.QPushButton(self._data['buttonLabel'])
         self.folder_button.clicked.connect(self.show_search_path_dialog)
         self.folder_button.setFixedSize(self.le.sizeHint().height(),
-                                   self.le.sizeHint().height())
+                                        self.le.sizeHint().height())
         wdg = QtWidgets.QWidget()
         wdg.setContentsMargins(0, 0, 0, 0)
 

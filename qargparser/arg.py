@@ -1,6 +1,6 @@
-from .Qt import QtCore
-from . import utils
-from . import envs 
+from Qt import QtCore
+from . import utils, envs
+
 
 class ArgData(dict):
 
@@ -10,17 +10,21 @@ class ArgData(dict):
         if ref["type"] in envs.DEFAULT_DATA:
             for key in envs.DEFAULT_DATA[ref["type"]]:
                 if not key in self or self[key] is None:
-                    super(ArgData, self).__setitem__(key, envs.DEFAULT_DATA[ref["type"]][key])
+                    super(ArgData, self).__setitem__(
+                        key, envs.DEFAULT_DATA[ref["type"]][key])
 
     def __repr__(self):
-        return "<%s %s>"%(self.__class__.__name__, super(ArgData, self).__repr__())
+        return "<{} {}>".format(self.__class__.__name__,
+                                super(ArgData, self).__repr__())
+
 
 class Arg(QtCore.QObject):
     """ Base of argument widgets.
 
         :param name: The name of the widget, defaults to None
         :type name: str, optional
-        :param default: The widget default value. Depends widget type, defaults to None
+        :param default: The widget default value. Depends widget type,
+                        defaults to None
         :type default: type, optional
         :param description: The description of the widget, defaults to ""
         :type description: str, optional
@@ -43,7 +47,7 @@ class Arg(QtCore.QObject):
     """
     changed = QtCore.Signal(tuple)
     reset_requested = QtCore.Signal()
-    
+
     def __init__(self, name=None, default=None, **kwargs):
         super(Arg, self).__init__(kwargs.pop('parent', None))
 
@@ -59,11 +63,11 @@ class Arg(QtCore.QObject):
 
     @property
     def name(self):
-        return self._data['name']  
+        return self._data['name']
 
     def __repr__(self):
-        return '<%s( %s )>' %(self.__class__.__name__, 
-                          self._data.items())
+        return '<%s( %s )>' % (self.__class__.__name__,
+                               self._data.items())
 
     def __call__(self, key, default=None):
         return self._data.get(key, default)
@@ -76,7 +80,7 @@ class Arg(QtCore.QObject):
 
     def is_block(self):
         return isinstance(self, BlockArg)
-        
+
     def set_data(self, name, value):
         """Sets its data with new from a name and a value.
 
@@ -115,7 +119,7 @@ class Arg(QtCore.QObject):
         :return: The list of its children
         :rtype: list of :class:`~qargparser.array.Array` ,
                 :class:`~qargparser.boolean.Boolean`,
-                :class:`~qargparser.enum.Enum` ,
+                :class:`~qargparser.enum.Enum`,
                 :class:`~qargparser.number.Integer`,
                 :class:`~qargparser.number.Float`,
                 :class:`~qargparser.object.Object`,
@@ -166,9 +170,10 @@ class Arg(QtCore.QObject):
         :rtype: dict
         """
         data = utils.OrderedDict(
-            sorted([item for item in self._data.items() if item[1] is not None], 
-                   key=lambda x: envs.NAMES_ORDER.index(x[0]) 
-                                 if x[0] in envs.NAMES_ORDER else 0))
+            sorted([item for item in self._data.items()
+                    if item[1] is not None],
+                   key=lambda x: envs.NAMES_ORDER.index(x[0])
+                   if x[0] in envs.NAMES_ORDER else 0))
         return data
 
     def erase_data(self):
@@ -183,6 +188,7 @@ class Arg(QtCore.QObject):
 
     def disable(self, disable):
         self.wdg.setDisabled(disable)
+
 
 class BlockArg(Arg):
     pass

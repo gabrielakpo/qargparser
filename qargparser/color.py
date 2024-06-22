@@ -1,6 +1,7 @@
 from .arg import Arg
-from .Qt import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui
 from . import envs
+
 
 class ColorButton(QtWidgets.QPushButton):
     _style = """
@@ -9,7 +10,8 @@ class ColorButton(QtWidgets.QPushButton):
 
     def __init__(self, color=None, *args, **kwargs):
         super(ColorButton, self).__init__(*args, **kwargs)
-        if not color: color = (0, 0, 0, 1.0)
+        if not color:
+            color = (0, 0, 0, 1.0)
         self.set_color(color)
 
     def set_color(self, color):
@@ -20,15 +22,20 @@ class ColorButton(QtWidgets.QPushButton):
 
     def paintEvent(self, event):
         super(ColorButton, self).paintEvent(event)
-        self.setStyleSheet(self._style%({"r":self._color[0], 
-                                         "g": self._color[1], 
-                                         "b": self._color[2], 
-                                         "a": self._color[3]}))
+        self.setStyleSheet(self._style % ({"r": self._color[0],
+                                           "g": self._color[1],
+                                           "b": self._color[2],
+                                           "a": self._color[3]}))
+
 
 class ColorSliderSpinBox(QtWidgets.QWidget):
     valueChanged = QtCore.Signal(object)
 
-    def __init__(self, default=[0.0, 0.0, 0.0], slider=False, spinbox=True, alpha=False, **kwargs):
+    def __init__(self, default=[0.0, 0.0, 0.0],
+                 slider=False,
+                 spinbox=True,
+                 alpha=False,
+                 **kwargs):
 
         super(ColorSliderSpinBox, self).__init__()
 
@@ -45,7 +52,7 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         self.slider.setMaximum(len(envs.IDX_COLORS)-1)
         self.slider.setSingleStep(1)
         self.slider.valueChanged.connect(self.on_slider_value_changed)
-        
+
         # spinboxes
         self.spinbox = []
         if len(default) < 4:
@@ -75,7 +82,7 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         self.setValue(default)
 
     def value(self):
-        value =  [sb.value() for sb in self.spinbox]
+        value = [sb.value() for sb in self.spinbox]
         if not self.alpha:
             value.pop(-1)
         return value
@@ -98,12 +105,14 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
     def on_color_clicked(self):
         color = QtGui.QColor(*[255*c for c in self.value()])
         color_wdg = QtWidgets.QColorDialog(color)
-        color_wdg.setOption(QtWidgets.QColorDialog.ShowAlphaChannel, self.alpha)
+        color_wdg.setOption(
+            QtWidgets.QColorDialog.ShowAlphaChannel, self.alpha)
         response = color_wdg.exec_()
         if not response:
             return
         color = color_wdg.selectedColor()
-        color = [color.red()/255.0, color.green()/255.0, color.blue()/255.0, color.alpha()/255.0]
+        color = [color.red()/255.0, color.green()/255.0,
+                 color.blue()/255.0, color.alpha()/255.0]
         if not self.alpha:
             color.pop(-1)
         self.setValue(color)
@@ -115,6 +124,7 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
     def on_slider_value_changed(self, idx):
         color = envs.IDX_COLORS[idx]
         self.setValue(color)
+
 
 class Color(Arg):
     """ Color argument widget.
@@ -131,8 +141,9 @@ class Color(Arg):
         :return: The new instance
         :rtype: :class:`~qargparser.number.Color` instance
     """
+
     def create(self):
-        #Widget
+        # Widget
         if not self._data["alpha"] and len(self._data["default"]) > 3:
             self._data["default"].pop(-1)
 

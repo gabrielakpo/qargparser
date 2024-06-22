@@ -1,4 +1,4 @@
-from .Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
 from qargparser import TYPES as ITEMS_TYPES
 from functools import partial
 from . import envs

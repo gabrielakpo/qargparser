@@ -1,11 +1,12 @@
 from .arg import Arg
-from .Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
+
 
 class DoubleSlider(QtWidgets.QSlider):
 
     doubleValueChanged = QtCore.Signal(float)
 
-    def __init__(self, orient=QtCore.Qt.Horizontal , parent=None, decimals=3):
+    def __init__(self, orient=QtCore.Qt.Horizontal, parent=None, decimals=3):
         super(DoubleSlider, self).__init__(orient, parent)
         self._multi = 10 ** decimals
 
@@ -33,6 +34,7 @@ class DoubleSlider(QtWidgets.QSlider):
     def setValue(self, value):
         super(DoubleSlider, self).setValue(int(value * self._multi))
 
+
 class AbstractSliderSpinBox(QtWidgets.QWidget):
     valueChanged = QtCore.Signal(int)
 
@@ -49,7 +51,7 @@ class AbstractSliderSpinBox(QtWidgets.QWidget):
             self.spin_box = QtWidgets.QDoubleSpinBox()
             self.slider = DoubleSlider(QtCore.Qt.Horizontal)
             self.slider.doubleValueChanged.connect(self.spin_box.setValue)
-            
+
         self.setMinimum(min)
         self.setMaximum(max)
         self.setSingleStep(step)
@@ -91,16 +93,19 @@ class AbstractSliderSpinBox(QtWidgets.QWidget):
     def set_slider_visible(self, show):
         self.slider.setVisible(show)
 
+
 class SliderSpinBox(AbstractSliderSpinBox):
     pass
+
 
 class SliderDoubleSpinBox(AbstractSliderSpinBox):
     pass
 
+
 class Number(Arg):
 
     def create(self):
-        #Widget
+        # Widget
         if isinstance(self, Float):
             _cls = SliderDoubleSpinBox
         else:
@@ -130,6 +135,7 @@ class Number(Arg):
         self.wdg.setSingleStep(self._data["step"])
         self.wdg.set_slider_visible(self._data["slider"])
 
+
 class Integer(Number):
     """ Integer argument widget.
 
@@ -148,6 +154,7 @@ class Integer(Number):
         :rtype: :class:`~qargparser.number.Integer` instance
     """
     pass
+
 
 class Float(Number):
     """ Float argument widget.

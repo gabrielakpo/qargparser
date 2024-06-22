@@ -1,7 +1,7 @@
 import os
 from functools import partial
 from qargparser import ArgParser
-from .Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
 from . import utils
 from .__version__ import __title__, __version__
 from .preferences_manager import PreferencesManager

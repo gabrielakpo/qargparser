@@ -1,5 +1,6 @@
 from .arg import BlockArg
 
+
 class Object(BlockArg):
     """ Object argument widget. 
         You an can add all sub-argument types.
@@ -20,7 +21,7 @@ class Object(BlockArg):
 
         if 'items' in self._data:
             for _data in self._data.get('items')[:]:
-                #Update default
+                # Update default
                 if _data["name"] in default:
                     _data["default"] = default[_data["name"]]
 
@@ -32,15 +33,17 @@ class Object(BlockArg):
         return wdg
 
     def is_edited(self):
-        return (any(child.is_edited() for child in self.get_children()) 
-            or super(Object, self).is_edited() if self._data["default"] else False)
+        return (any(child.is_edited() for child in self.get_children())
+                or super(Object, self).is_edited()
+                if self._data["default"] else False)
 
     def reset(self):
         for child in self.get_children():
             child.reset()
             child.changed.emit(None)
-            if child._data["name"] in self._data["default"]:
-                child._data["default"] = self._data["default"][child._data["name"]]     
+            child_name = child._data["name"]
+            if child_name in self._data["default"]:
+                child._data["default"] = self._data["default"][child_name]
         self.changed.emit(None)
 
     def _update(self):
@@ -70,7 +73,5 @@ class Object(BlockArg):
         children = self.get_children()
         if children:
             data["items"] = [child.to_data() for child in self.get_children()]
-        
-        return data
 
-    
+        return data

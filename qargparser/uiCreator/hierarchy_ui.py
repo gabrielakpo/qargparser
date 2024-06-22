@@ -1,6 +1,6 @@
 import os
 from qargparser import Array, Object, TYPES as ITEMS_TYPES
-from .Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
 from . import utils
 from . import envs 
 from functools import partial

@@ -1,6 +1,6 @@
-from .Qt import QtWidgets
+from Qt import QtWidgets
 from .arg import Arg
-from . import envs 
+
 
 class Boolean(Arg):
     """ Boolean argument widget.

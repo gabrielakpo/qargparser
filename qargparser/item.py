@@ -1,7 +1,8 @@
-from .Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
 from functools import partial
 from .arg import Arg
 from . import envs
+
 
 class DeleteButton(QtWidgets.QPushButton):
     def __init__(self, wdg,  label="x", *args, **kwargs):
@@ -11,10 +12,11 @@ class DeleteButton(QtWidgets.QPushButton):
     def paintEvent(self, event):
         super(DeleteButton, self).paintEvent(event)
         height = self.wdg.sizeHint().height()
-        if height < envs.ITEM_DEL_BUTTON_MIN_HEIGHT: 
+        if height < envs.ITEM_DEL_BUTTON_MIN_HEIGHT:
             height = envs.ITEM_DEL_BUTTON_MIN_HEIGHT
         self.setFixedSize(envs.ITEM_DEL_BUTTON_WIDTH, height)
-        
+
+
 class Item(Arg):
     delete_requested = QtCore.Signal(object)
 
@@ -27,7 +29,7 @@ class Item(Arg):
         tpls = self._data["template"] = self._data.get('template', {})
         default = self._data['default']
 
-        if tpls: 
+        if tpls:
             _tpls = tpls.copy()
             if default is not None:
                 _tpls["default"] = default
@@ -35,14 +37,15 @@ class Item(Arg):
             arg = self.item_wdg.add_arg(**_tpls)
             arg.reset_requested.connect(self.on_reset_request)
 
-        self._read = lambda : self.item_wdg._args[0].read() if len(self.item_wdg._args) else None
+        self._read = lambda: self.item_wdg._args[0].read() if len(
+            self.item_wdg._args) else None
         self._write = self.__write
 
-        #Delete button
+        # Delete button
         del_button = DeleteButton(self.item_wdg)
         del_button.clicked.connect(partial(self.delete_requested.emit, self))
 
-        #Main
+        # Main
         self.wdg = QtWidgets.QWidget()
         layout = QtWidgets.QHBoxLayout(self.wdg)
         layout.addWidget(self.item_wdg)
@@ -70,14 +73,15 @@ class Item(Arg):
         return self.item_wdg._args
 
     def to_data(self):
-        data = self.item_wdg._args[0].to_data() if len(self.item_wdg._args) else {}
-        return data 
+        data = self.item_wdg._args[0].to_data() if len(
+            self.item_wdg._args) else {}
+        return data
 
     def add_arg(self, *args, **kwargs):
         return self.item_wdg.add_arg(*args, **kwargs)
 
     def pop_arg(self, *args, **kwargs):
-        self.item_wdg.pop_arg(*args, **kwargs) 
+        self.item_wdg.pop_arg(*args, **kwargs)
         self._data['default'] = None
         self._update()
 

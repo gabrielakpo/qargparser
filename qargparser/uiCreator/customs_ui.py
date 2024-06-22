@@ -1,4 +1,4 @@
-from .Qt import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui
 from . import envs
 from functools import partial
 

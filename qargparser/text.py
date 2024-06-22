@@ -1,5 +1,6 @@
-from .Qt import QtWidgets, QtCore, QtGui
+from Qt import QtWidgets, QtCore, QtGui
 from .arg import Arg
+
 
 def format(color, style=''):
     """Return a QTextCharFormat with the given attributes.
@@ -16,6 +17,7 @@ def format(color, style=''):
 
     return _format
 
+
 # Syntax styles that can be shared by all languages
 STYLES = {
     'keyword': format('darkGreen'),
@@ -28,6 +30,7 @@ STYLES = {
     'self': format('black', 'italic'),
     'numbers': format('darkViolet'),
 }
+
 
 class PythonHighlighter (QtGui.QSyntaxHighlighter):
     """Syntax highlighter for the Python language.
@@ -71,11 +74,11 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
 
         # Keyword, operator, and brace rules
         rules += [(r'\b%s\b' % w, 0, STYLES['keyword'])
-            for w in PythonHighlighter.keywords]
+                  for w in PythonHighlighter.keywords]
         rules += [(r'%s' % o, 0, STYLES['operator'])
-            for o in PythonHighlighter.operators]
+                  for o in PythonHighlighter.operators]
         rules += [(r'%s' % b, 0, STYLES['brace'])
-            for b in PythonHighlighter.braces]
+                  for b in PythonHighlighter.braces]
 
         # All other rules
         rules += [
@@ -90,7 +93,8 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
             # Numeric literals
             (r'\b[+-]?[0-9]+[lL]?\b', 0, STYLES['numbers']),
             (r'\b[+-]?0[xX][0-9A-Fa-f]+[lL]?\b', 0, STYLES['numbers']),
-            (r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b', 0, STYLES['numbers']),
+            (r'\b[+-]?[0-9]+(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?\b',
+             0, STYLES['numbers']),
 
             # Double-quoted string, possibly containing escape sequences
             (r'"[^"\\]*(\\.[^"\\]*)*"', 0, STYLES['string']),
@@ -116,14 +120,18 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
                 # if there is a string we check
                 # if there are some triple quotes within the string
                 # they will be ignored if they are matched again
-                if expression.pattern() in [r'"[^"\\]*(\\.[^"\\]*)*"', r"'[^'\\]*(\\.[^'\\]*)*'"]:
+                patterns = [r'"[^"\\]*(\\.[^"\\]*)*"',
+                            r"'[^'\\]*(\\.[^'\\]*)*'"]
+
+                if expression.pattern() in patterns:
                     innerIndex = self.tri_single[0].indexIn(text, index + 1)
                     if innerIndex == -1:
                         innerIndex = self.tri_double[0].indexIn(text, index + 1)
 
                     if innerIndex != -1:
-                        tripleQuoteIndexes = range(innerIndex, innerIndex + 3)
-                        self.tripleQuoutesWithinStrings.extend(tripleQuoteIndexes)
+                        triple_quote_indexes = range(innerIndex, innerIndex + 3)
+                        self.tripleQuoutesWithinStrings.extend(
+                            triple_quote_indexes)
 
             while index >= 0:
                 # skipping triple quotes within strings
@@ -188,6 +196,7 @@ class PythonHighlighter (QtGui.QSyntaxHighlighter):
         else:
             return False
 
+
 class LineNumberArea(QtWidgets.QWidget):
     def __init__(self, editor):
         super(LineNumberArea, self).__init__(editor)
@@ -199,6 +208,7 @@ class LineNumberArea(QtWidgets.QWidget):
     def paintEvent(self, event):
         self._code_editor.lineNumberAreaPaintEvent(event)
 
+
 class CodeEditor(QtWidgets.QPlainTextEdit):
     def __init__(self, *args, **kwarg):
         super(CodeEditor, self).__init__(*args, **kwarg)
@@ -208,7 +218,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.line_number_area = LineNumberArea(self)
 
         self.blockCountChanged[int].connect(self.update_line_number_area_width)
-        self.updateRequest[QtCore.QRect, int].connect(self.update_line_number_area)
+        self.updateRequest[QtCore.QRect, int].connect(
+            self.update_line_number_area)
         self.cursorPositionChanged.connect(self.highlight_current_line)
 
         self.update_line_number_area_width(0)
@@ -232,8 +243,9 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
         self.line_number_area.setGeometry(rect)
 
     def lineNumberAreaPaintEvent(self, event):
-        painter =  QtGui.QPainter(self.line_number_area)
-        painter.fillRect(event.rect(), QtGui.QColor(QtCore.Qt.gray).lighter(50))
+        painter = QtGui.QPainter(self.line_number_area)
+        painter.fillRect(event.rect(),
+                         QtGui.QColor(QtCore.Qt.gray).lighter(50))
         block = self.firstVisibleBlock()
         block_number = block.blockNumber()
         offset = self.contentOffset()
@@ -246,7 +258,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
                 painter.setPen(QtCore.Qt.black)
                 width = self.line_number_area.width()
                 height = self.fontMetrics().height()
-                painter.drawText(0, top, width, height, QtCore.Qt.AlignCenter, number)
+                painter.drawText(
+                    0, top, width, height, QtCore.Qt.AlignCenter, number)
 
             block = block.next()
             top = bottom
@@ -275,7 +288,8 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
             line_color = QtGui.QColor(QtCore.Qt.gray).lighter(50)
             selection.format.setBackground(line_color)
 
-            selection.format.setProperty(QtGui.QTextFormat.FullWidthSelection, True)
+            selection.format.setProperty(
+                QtGui.QTextFormat.FullWidthSelection, True)
 
             selection.cursor = self.textCursor()
             selection.cursor.clearSelection()
@@ -286,7 +300,7 @@ class CodeEditor(QtWidgets.QPlainTextEdit):
 
 
 class Text(Arg):
-    """ Text argument widget. 
+    """ Text argument widget.
 
         :param default: The default value, defaults to ""
         :type default: str, optional
@@ -316,8 +330,9 @@ class Text(Arg):
     def reset(self):
         self._write(self._data['default'])
 
+
 class Doc(Text):
-    """ Doc argument widget. 
+    """ Doc argument widget.
         The value is on read-only mode.
 
         :param default: The default value, defaults to ""
@@ -327,11 +342,13 @@ class Doc(Text):
         :rtype: :class:`~qargparser.text.Doc` instance
     """
 
+
 class Code(Text):
     pass
 
+
 class Python(Code):
-    """ Python argument widget. 
+    """ Python argument widget.
 
         :param default: The default value, defaults to ""
         :type default: str, optional
@@ -340,8 +357,9 @@ class Python(Code):
         :rtype: :class:`~qargparser.text.Python` instance
     """
 
+
 class Mel(Code):
-    """ Mel argument widget. 
+    """ Mel argument widget.
 
         :param default: The default value, defaults to ""
         :type default: str, optional

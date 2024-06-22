@@ -2,7 +2,7 @@ import os
 
 from . import envs, utils
 
-from .Qt import QtCore
+from Qt import QtCore
 
 
 class ThemeManager(object):

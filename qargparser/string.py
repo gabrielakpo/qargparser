@@ -1,8 +1,9 @@
-from .Qt import QtWidgets, QtCore
+from Qt import QtWidgets, QtCore
 from .arg import Arg
 
+
 class String(Arg):
-    """ String argument widget. 
+    """ String argument widget.
 
         :param default: The default value, defaults to ""
         :type default: str, optional
@@ -12,6 +13,7 @@ class String(Arg):
         :return: The new instance
         :rtype: :class:`~qargparser.string.String` instance
     """
+
     def create(self):
         default = self._data['default']
 
@@ -19,7 +21,7 @@ class String(Arg):
             enum = self._data['enum']
             wdg = QtWidgets.QComboBox()
             wdg.addItems(enum)
-            
+
             if default is not None and default in enum:
                 idx = wdg.findText(default, QtCore.Qt.MatchExactly)
                 wdg.setCurrentIndex(idx)
@@ -28,15 +30,17 @@ class String(Arg):
                 text = wdg.itemText(idx)
                 self._data['default'] = text
 
-            self._write = lambda x: wdg.setCurrentIndex(wdg.findText(x, QtCore.Qt.MatchExactly))
-            self._read =  lambda: wdg.itemText(wdg.currentIndex())
-            wdg.currentIndexChanged.connect(lambda x: self.on_changed(wdg.itemText(x)))
+            self._write = lambda x: wdg.setCurrentIndex(
+                wdg.findText(x, QtCore.Qt.MatchExactly))
+            self._read = lambda: wdg.itemText(wdg.currentIndex())
+            wdg.currentIndexChanged.connect(
+                lambda x: self.on_changed(wdg.itemText(x)))
 
-        else:   
+        else:
             wdg = QtWidgets.QLineEdit()
             wdg.setText(self._data['default'])
 
-            #Info
+            # Info
             if isinstance(self, Info):
                 wdg.setReadOnly(True)
 
@@ -60,8 +64,9 @@ class String(Arg):
         text = wdg.text()
         self.on_changed(text)
 
+
 class Info(String):
-    """ Info argument widget. 
+    """ Info argument widget.
         The value is on read-only mode.
 
         :param default: The default value, defaults to ""
