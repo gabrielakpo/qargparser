@@ -6,7 +6,7 @@
         "description": "I am a tab",
         "items": [
             {
-                "name": "first tab",
+                "name": "tab 1",
                 "type": "object", 
                 "default": {},
                 "description": "I am a tab object",
@@ -31,7 +31,7 @@
                 ]
             },
             {
-                "name": "second tab",
+                "name": "tab 2",
                 "type": "object", 
                 "default": {},
                 "description": "I am a tab object",

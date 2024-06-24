@@ -2,7 +2,7 @@
     {
         "name": "default", 
         "type": "object", 
-        "default": [], 
+        "default": {}, 
         "items": []
     },    
     {
