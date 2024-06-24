@@ -1,5 +1,7 @@
-# Icons
 import os
+
+
+# Icons
 _root = os.path.dirname(__file__)
 
 DOC_FILE = os.path.join(os.path.abspath(
@@ -16,6 +18,27 @@ RELOAD_BUTTON_ICON_SIZE = 10
 # Item delete button
 ITEM_DEL_BUTTON_WIDTH = 15
 ITEM_DEL_BUTTON_MIN_HEIGHT = 20
+
+ARG_TYPE_NAMES = [
+    "object",
+    "tab",
+    "enum",
+    "info",
+    "string",
+    "text",
+    "doc",
+    "dict",
+    "path",
+    "code",
+    "mel",
+    "python",
+    "array",
+    "boolean",
+    "float",
+    "integer",
+    "color"
+]
+
 
 NAMES_ORDER = [
     "name",

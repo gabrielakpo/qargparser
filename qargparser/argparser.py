@@ -1,40 +1,13 @@
 from functools import partial
 from collections import OrderedDict
 from Qt import QtWidgets, QtCore, QtGui
-from .object import Object
-from .tab import Tab
-from .string import String, Info
-from .text import Text, Doc, Code, Python, Mel
-from .array import Array
-from .number import Float, Integer
+from .string import String
+from .number import Integer
 from .item import Item
 from .boolean import Boolean
-from .path import Path
-from .enum import Enum
-from .color import Color
-from .dict import Dict
+from .types_mapping import TYPES
 from . import utils, envs
 import re
-
-TYPES = {
-    "object": Object,
-    "tab": Tab,
-    "enum": Enum,
-    "info": Info,
-    "string": String,
-    "text": Text,
-    "doc": Doc,
-    "dict": Dict,
-    "path": Path,
-    "code": Code,
-    "mel": Mel,
-    "python": Python,
-    "array": Array,
-    "boolean": Boolean,
-    "float": Float,
-    "integer": Integer,
-    "color": Color,
-}
 
 _TYPES = TYPES.copy()
 _TYPES.update({
