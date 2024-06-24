@@ -65,6 +65,10 @@ class Arg(QtCore.QObject):
     def name(self):
         return self._data['name']
 
+    @property
+    def type(self):
+        return self._data['type']
+
     def __repr__(self):
         return '<%s( %s )>' % (self.__class__.__name__,
                                self._data.items())

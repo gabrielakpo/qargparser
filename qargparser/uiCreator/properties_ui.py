@@ -12,17 +12,19 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.arg = None
         self.ap = ArgParser(label_suffix=':')
 
-        super(PropertiesWidget, self).__init__(*args, **kwargs)   
+        super(PropertiesWidget, self).__init__(*args, **kwargs)
 
         toolbar = CustomToolbar()
-        toolbar.addAction(envs.ICONS["reset"], "reset", self.on_reset_requested)
-        toolbar.addAction(envs.ICONS["valid"], "valid", self.on_valid_requested)
+        toolbar.addAction(envs.ICONS["reset"],
+                          "reset", self.on_reset_requested)
+        toolbar.addAction(envs.ICONS["valid"],
+                          "valid", self.on_valid_requested)
 
         scroll_area = QtWidgets.QScrollArea()
         scroll_area.setWidgetResizable(True)
         scroll_area.setWidget(self.ap)
 
-        #Main
+        # Main
         self.setLayout(QtWidgets.QVBoxLayout())
         self.layout().setSpacing(1)
         self.layout().addWidget(scroll_area)
@@ -35,31 +37,31 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.setDisabled(True)
         self.ap.delete_children()
 
-        if not arg:
+        if not arg or arg("type") == "item":
             return
-
-        data = arg.to_data()
-
-        if arg("type") == "item":
-            return 
 
         self.arg = arg
         self.setDisabled(False)
 
-        _data = PropertiesManager().get_data(data["type"])
+        properties_data = PropertiesManager().get_data(arg.type)
+        data = arg.to_data()
 
-        for d in _data:
-            k = d["name"] 
-            if not k in data:
+        for d in properties_data:
+            k = d["name"]
+
+            if k not in data:
                 continue
+
             v = data[k]
             if k in ["enum", "enumDescriptions"]:
                 v = [[e] for e in v]
+
             d["default"] = v
+
             if k == "default" and "items" in data:
                 d["items"] = data["items"]
 
-        self.ap.build(_data)
+        self.ap.build(properties_data)
 
     def on_valid_requested(self):
         if not self.arg:
