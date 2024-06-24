@@ -10,7 +10,7 @@ NAME_IDX = 0
 
 class ItemsTreeItem(QtWidgets.QTreeWidgetItem):
     def __init__(self, name):
-        super(ItemsTreeItem, self).__init__([name])  
+        super(ItemsTreeItem, self).__init__([name])
         self.setIcon(NAME_IDX, envs.ICONS["type_%s" % name])
 
     @property
@@ -26,15 +26,16 @@ class ItemsWidget(QtWidgets.QWidget):
     add_requested = QtCore.Signal(object)
 
     def __init__(self, *args, **kwargs):
-        super(ItemsWidget, self).__init__(*args, **kwargs)  
+        super(ItemsWidget, self).__init__(*args, **kwargs)
 
         self.tree = ItemsTree()
         self.tree.setDragEnabled(True)
         self.tree.setRootIsDecorated(False)
         self.tree.setHeaderHidden(True)
         self.tree.setColumnCount(2)
-        self.tree.setResizeMode(NAME_IDX, QtWidgets.QHeaderView.Stretch) 
-        self.tree.setResizeMode(ADD_IDX, QtWidgets.QHeaderView.ResizeToContents) 
+        self.tree.setResizeMode(NAME_IDX, QtWidgets.QHeaderView.Stretch)
+        self.tree.setResizeMode(
+            ADD_IDX, QtWidgets.QHeaderView.ResizeToContents)
         self.tree.setIconSize(QtCore.QSize(35, 35))
         self.tree.setSectionMinimumSize(10)
         self.tree.header().setStretchLastSection(False)
