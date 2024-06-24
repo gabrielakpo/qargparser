@@ -11,10 +11,11 @@ class ColorButton(QtWidgets.QPushButton):
     def __init__(self, color=None, *args, **kwargs):
         super(ColorButton, self).__init__(*args, **kwargs)
         if not color:
-            color = (0, 0, 0, 1.0)
+            color = [0, 0, 0, 1.0]
         self.set_color(color)
 
     def set_color(self, color):
+        color = color[:]
         if len(color) < 4:
             color.append(1.0)
         self._color = [c*255 for c in color]
@@ -34,12 +35,12 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
     def __init__(self, default=[0.0, 0.0, 0.0],
                  slider=False,
                  spinbox=True,
-                 alpha=False,
-                 **kwargs):
+                 use_alpha=False):
 
         super(ColorSliderSpinBox, self).__init__()
 
-        self.alpha = alpha
+        default = default[:]
+        self._use_alpha = use_alpha
 
         # color
         self.color_button = ColorButton()
@@ -49,12 +50,11 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         # slider
         self.slider = QtWidgets.QSlider(QtCore.Qt.Horizontal)
         self.slider.setMinimum(0)
-        self.slider.setMaximum(len(envs.IDX_COLORS)-1)
+        self.slider.setMaximum(len(envs.COLOR_INDEXES)-1)
         self.slider.setSingleStep(1)
-        self.slider.valueChanged.connect(self.on_slider_value_changed)
 
         # spinboxes
-        self.spinbox = []
+        self.spinboxes = []
         if len(default) < 4:
             default.append(1.0)
 
@@ -62,12 +62,13 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         spinbox_layout.setContentsMargins(0, 0, 0, 0)
         spinbox_layout.setSpacing(0)
         for i in range(4):
-            self.spinbox.append(QtWidgets.QDoubleSpinBox())
-            spinbox_layout.addWidget(self.spinbox[i])
-            self.spinbox[i].setMinimum(0.0)
-            self.spinbox[i].setMaximum(1.0)
-            self.spinbox[i].setSingleStep(0.01)
-            self.spinbox[i].valueChanged.connect(self.on_spinbox_value_changed)
+            self.spinboxes.append(QtWidgets.QDoubleSpinBox())
+            spinbox_layout.addWidget(self.spinboxes[i])
+            self.spinboxes[i].setMinimum(0.0)
+            self.spinboxes[i].setMaximum(1.0)
+            self.spinboxes[i].setSingleStep(0.01)
+            self.spinboxes[i].valueChanged.connect(
+                self.on_spinbox_value_changed)
 
         lay = QtWidgets.QHBoxLayout(self)
         lay.setContentsMargins(0, 0, 0, 0)
@@ -78,51 +79,63 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
 
         self.set_slider_visible(slider)
         self.set_spinbox_visible(spinbox)
-        self.use_alpha(alpha)
+        self.use_alpha(use_alpha)
         self.setValue(default)
 
+        # connections
+        self.slider.valueChanged.connect(self.on_slider_value_changed)
+
     def value(self):
-        value = [sb.value() for sb in self.spinbox]
-        if not self.alpha:
+        value = [sb.value() for sb in self.spinboxes]
+        if not self._use_alpha:
             value.pop(-1)
         return value
 
     def setValue(self, value):
-        for i in range(len(value)):
-            self.spinbox[i].setValue(value[i])
+        self.color_button.set_color(value)
+        self._set_spinboxes_values(value)
+        self.valueChanged.emit(self.value())
+
+    def _set_spinboxes_values(self, values):
+        for i in range(len(values)):
+            self.spinboxes[i].blockSignals(True)
+            self.spinboxes[i].setValue(values[i])
+            self.spinboxes[i].blockSignals(False)
 
     def set_slider_visible(self, show):
         self.slider.setVisible(show)
 
     def set_spinbox_visible(self, show):
         for i in range(4):
-            self.spinbox[i].setVisible(show)
+            self.spinboxes[i].setVisible(show)
 
-    def use_alpha(self, use):
-        self.alpha = use
-        self.spinbox[-1].setVisible(use)
+    def use_alpha(self, use_alpha):
+        self._use_alpha = use_alpha
+        self.spinboxes[-1].setVisible(use_alpha)
 
     def on_color_clicked(self):
         color = QtGui.QColor(*[255*c for c in self.value()])
         color_wdg = QtWidgets.QColorDialog(color)
         color_wdg.setOption(
-            QtWidgets.QColorDialog.ShowAlphaChannel, self.alpha)
+            QtWidgets.QColorDialog.ShowAlphaChannel, self._use_alpha)
         response = color_wdg.exec_()
+
         if not response:
             return
+
         color = color_wdg.selectedColor()
         color = [color.red()/255.0, color.green()/255.0,
                  color.blue()/255.0, color.alpha()/255.0]
-        if not self.alpha:
-            color.pop(-1)
+
         self.setValue(color)
 
     def on_spinbox_value_changed(self):
-        self.color_button.set_color(self.value())
+        value = self.value()
+        self.color_button.set_color(value)
         self.valueChanged.emit(self.value())
 
     def on_slider_value_changed(self, idx):
-        color = envs.IDX_COLORS[idx]
+        color = envs.COLOR_INDEXES[idx]
         self.setValue(color)
 
 
@@ -149,7 +162,7 @@ class Color(Arg):
 
         wdg = ColorSliderSpinBox(slider=self._data["slider"],
                                  spinbox=self._data["spinbox"],
-                                 alpha=self._data["alpha"],
+                                 use_alpha=self._data["alpha"],
                                  default=self._data['default'])
 
         self._write = wdg.setValue
@@ -166,7 +179,9 @@ class Color(Arg):
     def _update(self):
         if self._data["alpha"] and len(self._data["default"]) < 4:
             self._data["default"].append(1.0)
+
         self.wdg.set_slider_visible(self._data["slider"])
         self.wdg.set_spinbox_visible(self._data["spinbox"])
         self.wdg.use_alpha(self._data["alpha"])
+
         super(Color, self)._update()

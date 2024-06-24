@@ -109,7 +109,7 @@ DEFAULT_DATA = {
         "default": ""
     },
     "python": {
-        "default": "#Python"
+        "default": "# Python"
     },
     "mel": {
         "default": "//Mel"
@@ -144,7 +144,7 @@ DEFAULT_DATA = {
     }
 }
 
-IDX_COLORS = [
+COLOR_INDEXES = [
     [0.0, 0.0, 0.0],
     [0.25, 0.25, 0.25],
     [0.6000000238418579, 0.6000000238418579, 0.6000000238418579],

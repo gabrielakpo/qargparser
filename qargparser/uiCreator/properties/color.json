@@ -2,7 +2,7 @@
     {
         "name": "default", 
         "type": "color", 
-        "alpha":  true,
+        "alpha":  false,
         "default": [0.0, 0.0, 0.0]
     }, 
     {
