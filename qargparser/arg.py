@@ -72,8 +72,8 @@ class Arg(QtCore.QObject):
     def __call__(self, key, default=None):
         return self._data.get(key, default)
 
-    def __eq__(self, other):
-        return self._data == other._data
+    # def __eq__(self, other):
+    #     return self._data == other._data
 
     def create(self):
         pass
@@ -191,4 +191,8 @@ class Arg(QtCore.QObject):
 
 
 class BlockArg(Arg):
-    pass
+    def get_accepted_types(self):
+        return envs.ARG_TYPE_NAMES
+
+    def accept(self):
+        return True

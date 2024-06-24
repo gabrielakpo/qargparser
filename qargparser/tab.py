@@ -85,3 +85,6 @@ class Tab(BlockArg):
             data["items"] = [child.to_data() for child in self._args]
 
         return data
+
+    def get_accepted_types(self):
+        return ["object"]

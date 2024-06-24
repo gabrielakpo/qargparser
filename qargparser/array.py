@@ -149,9 +149,10 @@ class Array(BlockArg):
 
         return data
 
+    def accept(self):
+        return not len(self._item.item_wdg._args)
+
     def add_arg(self, *args, **kwargs):
-        if len(self._item.item_wdg._args):
-            return
         arg = self._item.add_arg(*args, **kwargs)
         self.reset()
         return arg
