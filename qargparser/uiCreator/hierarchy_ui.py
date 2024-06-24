@@ -121,9 +121,6 @@ class HierarchyTree(CustomTree):
 
         return name
 
-    def get_parent(self):
-        return self.parent()
-
 
 class HierarchyWidget(QtWidgets.QWidget):
     selection_changed = QtCore.Signal(object)
@@ -176,6 +173,7 @@ class HierarchyWidget(QtWidgets.QWidget):
         self.tree.reload_requested.connect(self.on_reload_requested)
 
     def reload(self, current_arg=None):
+        self.tree.blockSignals(True)
         self.tree.clear()
 
         # Fill tree
@@ -196,6 +194,8 @@ class HierarchyWidget(QtWidgets.QWidget):
                     self.tree.setCurrentItem(item)
                     return
 
+        self.tree.blockSignals(False)
+        
         # Select first item
         if self.tree.childCount():
             self.tree.setCurrentItem(self.tree.child(0))
