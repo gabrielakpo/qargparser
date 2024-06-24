@@ -1,28 +1,69 @@
 import os
-from functools import partial
+from functools import partial, wraps
 from qargparser import ArgParser
 from Qt import QtWidgets, QtCore
-from . import utils
+from . import utils, envs
 from .__version__ import __title__, __version__
 from .preferences_manager import PreferencesManager
 from .properties_ui import PropertiesWidget
 from .hierarchy_ui import HierarchyWidget
 from .preview_ui import PreviewWidget
 from .items_ui import ItemsWidget
-from . import envs
 from .customs_ui import CustomDockWidget, ThrobberWidget
 
 
 class MainUI(QtWidgets.QMainWindow):
 
+    @ staticmethod
+    def throbber_decorator(*args, **kwargs):
+        raise_error = kwargs.get("raise_error", True)
+
+        def actual_decorator(function):
+            @wraps(function)
+            def wrapper(self, *args, **kwargs):
+                throbber_wdg = ThrobberWidget(parent=self)
+                throbber_wdg.show()
+
+                QtWidgets.QApplication.processEvents()
+
+                result = None
+                try:
+                    result = function(self, *args, **kwargs)
+
+                except Exception:
+                    import traceback
+                    msg = traceback.format_exc()
+                    QtWidgets.QMessageBox.critical(
+                        self,
+                        "%s - error" % self.windowTitle(),
+                        "%s" % msg)
+
+                    if raise_error:
+                        raise
+                finally:
+                    throbber_wdg.deleteLater()
+
+                QtWidgets.QApplication.processEvents()
+
+                return result
+
+            return wrapper
+
+        # If the decorator is called without arguments
+        if len(args) == 1 and callable(args[0]) and not kwargs:
+            return actual_decorator(args[0])
+        else:
+            return actual_decorator
+
     def __init__(self, path=None, *args, **kwargs):
-        self._current_file = ""
+        self._current_file = path
         self._preferences_manager = PreferencesManager(self)
 
         envs.CURRENT_AP = ArgParser(label_suffix=":")
 
         super(MainUI, self).__init__(*args, **kwargs)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
+        self.setWindowIcon(envs.ICONS["app"])
 
         self.create_widgets()
         self.create_layouts()
@@ -30,18 +71,20 @@ class MainUI(QtWidgets.QMainWindow):
 
         # init
         self.items_wdg.load()
-        self.populate_examples_actions()
-
-        if path:
-            self.load_file(path)
-
         self.resize(envs.WIN_WIDTH, envs.WIN_HEIGHT)
 
-        # theme
-        self.call_throbber(self._preferences_manager.load, raise_error=False)
+        self.initialize()
 
         # title
         self.update_window_title()
+
+    @throbber_decorator(raise_error=False)
+    def initialize(self):
+        if self._current_file:
+            self.load_file(self._current_file)
+
+        # theme
+        self._preferences_manager.load()
 
     def create_widgets(self):
         # Menu
@@ -120,7 +163,9 @@ class MainUI(QtWidgets.QMainWindow):
     def create_connections(self):
         self.workspace_edit_menu.aboutToShow.connect(
             self.on_show_workspace_menu_requested)
+
         self.theme_menu.aboutToShow.connect(self.populate_themes_actions)
+
         self.examples_menu.aboutToShow.connect(self.populate_examples_actions)
 
         self.hierarchy_wdg.selection_changed.connect(
@@ -136,13 +181,9 @@ class MainUI(QtWidgets.QMainWindow):
         self.properties_wdg.edited.connect(self.on_properties_edited)
         self.preview_wdg.reset_requested.connect(self.on_reset_requested)
 
-    def call_throbber(self,
-                      callback=None,
-                      raise_error=True,
-                      loading_message=None):
+    def call_throbber(self, callback=None, raise_error=True):
 
-        throbber_wdg = ThrobberWidget(parent=self,
-                                      loading_message=loading_message)
+        throbber_wdg = ThrobberWidget(parent=self)
         throbber_wdg.show()
 
         QtWidgets.QApplication.processEvents()
@@ -204,7 +245,8 @@ class MainUI(QtWidgets.QMainWindow):
             self.load_file(self._current_file)
 
     def clear(self):
-        self.hierarchy_wdg.clear()
+        envs.CURRENT_AP.delete_children()
+        self.hierarchy_wdg.reload()
 
     def reset(self):
         envs.CURRENT_AP.reset()
@@ -221,6 +263,11 @@ class MainUI(QtWidgets.QMainWindow):
     def add_item(self, name):
         self.hierarchy_wdg.add_item(name)
         self.hierarchy_wdg.reload()
+
+    def delete_argument(self, parent, child):
+        if not parent:
+            parent = envs.CURRENT_AP
+            parent.pop_arg(child)
 
     def load_file(self, path):
         self._current_file = path
@@ -285,39 +332,47 @@ class MainUI(QtWidgets.QMainWindow):
         # Update path test
         self.load_file(path)
 
+    @throbber_decorator
     def on_properties_edited(self):
         self.hierarchy_wdg.edit_current_item()
 
+    @throbber_decorator
     def on_hierarchy_selection_changed(self, arg):
         self.properties_wdg.load(arg)
 
+    @throbber_decorator
     def on_hierarchy_clear_requested(self):
-        envs.CURRENT_AP.delete_children()
-        self.hierarchy_wdg.reload()
+        self.clear()
 
+    @throbber_decorator
     def on_hierarchy_delete_requested(self, parent, child):
-        if not parent:
-            parent = envs.CURRENT_AP
-        parent.pop_arg(child)
+        self.delete_argument(parent, child)
 
+    @throbber_decorator
     def on_add_item_requested(self, name):
-        self.call_throbber(partial(self.add_item, name))
+        self.add_item(name)
 
+    @throbber_decorator
     def on_theme_requested(self, theme_name):
-        self.call_throbber(partial(self.set_theme, theme_name))
+        self.set_theme(theme_name)
 
+    @throbber_decorator
     def on_reload_requested(self):
-        self.call_throbber(self.reload_ui)
+        self.reload_ui()
 
+    @throbber_decorator
     def on_reset_requested(self):
-        self.call_throbber(self.reset)
+        self.reset()
 
+    @throbber_decorator
     def on_clear_file_requested(self):
-        self.call_throbber(self.clear)
+        self.clear()
 
+    @throbber_decorator
     def on_reset_workspace_requested(self):
         self._preferences_manager.settings.restore()
 
+    @throbber_decorator
     def on_show_workspace_menu_requested(self):
         self.workspace_edit_menu.clear()
         menu = self.createPopupMenu()
@@ -326,23 +381,29 @@ class MainUI(QtWidgets.QMainWindow):
             action.setDefaultWidget(menu)
             self.workspace_edit_menu.addAction(action)
 
+    @throbber_decorator
     def on_new_file_requested(self):
-        self.call_throbber(self.new_file)
+        self.new_file()
 
+    @throbber_decorator
     def on_save_file_requested(self):
-        self.call_throbber(self.request_save_file)
+        self.request_save_file()
 
+    @throbber_decorator
     def on_open_file_requested(self):
-        self.call_throbber(self.request_open_file)
+        self.request_open_file()
 
+    @throbber_decorator
     def on_save_as_file_requested(self):
-        self.call_throbber(self.request_save_as_file)
+        self.request_save_as_file()
 
+    @throbber_decorator
     def on_show_documentation_requested(self):
-        self.call_throbber(utils.show_documentation)
+        utils.show_documentation()
 
+    @throbber_decorator
     def on_open_example_requested(self, name):
-        self.call_throbber(partial(self.open_example, name))
+        self.open_example(name)
 
     def closeEvent(self, event):
         self._preferences_manager.save()

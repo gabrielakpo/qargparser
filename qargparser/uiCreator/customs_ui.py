@@ -13,12 +13,13 @@ def set_widget_font(wdg, size=None, weight=None):
 
 
 class ThrobberWidget(QtWidgets.QDialog):
-    def __init__(self, parent=None, loading_message="Loading...", *args, **kwargs):
+    def __init__(self, parent=None, *args, **kwargs):
         super(ThrobberWidget, self).__init__(parent, *args, **kwargs)
         self.setWindowFlags(QtCore.Qt.Window
                             | QtCore.Qt.FramelessWindowHint
                             | QtCore.Qt.CustomizeWindowHint)
-        self.setWindowTitle(loading_message)
+
+        self.setWindowTitle("ThrobberWidget")
         self.setAttribute(QtCore.Qt.WA_TranslucentBackground, True)
 
         pixmap = QtGui.QPixmap(envs.FILES["throbber"])
