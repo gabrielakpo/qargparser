@@ -23,6 +23,7 @@ class FileFolderDialog(QtWidgets.QFileDialog):
         self.open_button.clicked.disconnect()
         self.open_button.clicked.connect(self.on_open_clicked)
         self.treeview = self.findChild(QtWidgets.QTreeView)
+
         self.currentChanged.connect(self.on_current_changed)
 
     def on_current_changed(self, name):
@@ -45,7 +46,7 @@ class FileFolderDialog(QtWidgets.QFileDialog):
             selected_path = self.selected_paths[0]
         return selected_path
 
-    def on_open_clicked(self):
+    def accept(self):
         self.selected_paths = []
         self.treeview.selectionModel().selection()
         for modelIndex in self.treeview.selectionModel().selectedIndexes():
@@ -56,8 +57,10 @@ class FileFolderDialog(QtWidgets.QFileDialog):
                 if self.mode == "file" and not os.path.isfile(path):
                     return
                 self.selected_paths.append(path)
-        self.filesSelected.emit(self.selected_paths)
-        self.hide()
+        super(FileFolderDialog, self).accept()
+
+    def on_open_clicked(self):
+        self.accept()
 
 
 class Path(Arg):
