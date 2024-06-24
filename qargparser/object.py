@@ -25,11 +25,14 @@ class Object(BlockArg):
                 if _data["name"] in default:
                     _data["default"] = default[_data["name"]]
 
-                wdg.add_arg(**_data)
+                arg = wdg.add_arg(**_data)
+                self._data["default"][arg._data["name"]] = arg.read()
 
         wdg.changed.connect(self.on_changed)
+
         self._read = wdg._read
         self.wdg = wdg
+
         return wdg
 
     def is_edited(self):
@@ -39,11 +42,11 @@ class Object(BlockArg):
 
     def reset(self):
         for child in self.get_children():
-            child.reset()
-            child.changed.emit(None)
             child_name = child._data["name"]
             if child_name in self._data["default"]:
                 child._data["default"] = self._data["default"][child_name]
+            child.reset()
+            child.changed.emit(None)
         self.changed.emit(None)
 
     def _update(self):
