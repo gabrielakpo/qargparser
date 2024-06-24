@@ -198,5 +198,13 @@ class BlockArg(Arg):
     def get_accepted_types(self):
         return envs.ARG_TYPE_NAMES
 
+    def accept_type(self, arg_type):
+        if isinstance(arg_type, Arg):
+            arg_type = arg_type.type
+        return arg_type in self.get_accepted_types()
+
     def accept(self):
         return True
+
+    def add_arg(self):
+        raise NotImplementedError("This function need to be implemented")

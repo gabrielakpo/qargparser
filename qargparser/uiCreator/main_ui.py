@@ -5,6 +5,7 @@ from Qt import QtWidgets, QtCore
 from . import utils, envs
 from .__version__ import __title__, __version__
 from .preferences_manager import PreferencesManager
+from .properties_manager import PropertiesManager
 from .properties_ui import PropertiesWidget
 from .hierarchy_ui import HierarchyWidget
 from .preview_ui import PreviewWidget
@@ -177,8 +178,11 @@ class MainUI(QtWidgets.QMainWindow):
         self.hierarchy_wdg.delete_requested.connect(
             self.on_hierarchy_delete_requested)
 
-        self.items_wdg.add_requested.connect(self.on_add_item_requested)
-        self.properties_wdg.edited.connect(self.on_properties_edited)
+        self.hierarchy_wdg.add_argument_requested.connect(
+            self.on_add_argument_requested)
+
+        self.items_wdg.add_requested.connect(self.on_add_argument_requested)
+        self.properties_wdg.edit_requested.connect(self.on_properties_edit_requested)
         self.preview_wdg.reset_requested.connect(self.on_reset_requested)
 
     def call_throbber(self, callback=None, raise_error=True):
@@ -261,14 +265,27 @@ class MainUI(QtWidgets.QMainWindow):
         self._preferences_manager.theme.load_theme(theme_name)
         theme_name = self._preferences_manager.theme.current_theme
 
-    def add_item(self, name):
-        self.hierarchy_wdg.add_item(name)
-        self.hierarchy_wdg.reload()
+    def add_argument(self, source, target=None, source_parent=None):
+        if not target:
+            target = envs.CURRENT_AP
+
+        if isinstance(source, str):
+            data = PropertiesManager().get_data(source, default=True)
+            argument = target.add_arg(**data)
+        else:
+            if not source_parent:
+                source_parent = envs.CURRENT_AP
+            data = source.to_data()
+            source_parent.pop_arg(source)
+            argument = target.add_arg(**data)
+
+        self.hierarchy_wdg.reload(argument)
 
     def delete_argument(self, parent, child):
         if not parent:
             parent = envs.CURRENT_AP
-            parent.pop_arg(child)
+        parent.pop_arg(child)
+        parent.reset()
 
     def load_file(self, path):
         self._current_file = path
@@ -334,10 +351,12 @@ class MainUI(QtWidgets.QMainWindow):
         self.load_file(path)
 
     @throbber_decorator
-    def on_properties_edited(self):
-        self.hierarchy_wdg.edit_current_item()
+    def on_properties_edit_requested(self, arg, data):
+        arg.update_data(data)
+        arg.reset()
+        self.hierarchy_wdg.update_current_item()
 
-    @throbber_decorator
+    # @throbber_decorator
     def on_hierarchy_selection_changed(self, arg):
         self.properties_wdg.load(arg)
 
@@ -350,8 +369,8 @@ class MainUI(QtWidgets.QMainWindow):
         self.delete_argument(parent, child)
 
     @throbber_decorator
-    def on_add_item_requested(self, name):
-        self.add_item(name)
+    def on_add_argument_requested(self, source, target=None, source_parent=None):
+        self.add_argument(source, target=target, source_parent=source_parent)
 
     @throbber_decorator
     def on_theme_requested(self, theme_name):

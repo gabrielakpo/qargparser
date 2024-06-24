@@ -33,8 +33,8 @@ class Tab(BlockArg):
 
                 self.add_arg(**_data)
 
-        self._read = lambda: {self.wdg.tabText(
-            i): c._read() for i, c in enumerate(self._args)}
+        self._read = lambda: {
+            self.wdg.tabText(i): c.read() for i, c in enumerate(self._args)}
 
         return self.wdg
 
@@ -51,6 +51,11 @@ class Tab(BlockArg):
             self.wdg.setTabText(i, child._data["name"])
 
         self.changed.emit(None)
+
+    def on_changed(self, *args, **kwargs):
+        for i, child in enumerate(self._args):
+            self.wdg.setTabText(i, child._data["name"])
+        return super(Tab, self).on_changed(*args, **kwargs)
 
     def _update(self):
         super(Tab, self)._update()
@@ -88,3 +93,4 @@ class Tab(BlockArg):
 
     def get_accepted_types(self):
         return ["object"]
+

@@ -6,7 +6,7 @@ from .properties_manager import PropertiesManager
 
 
 class PropertiesWidget(QtWidgets.QWidget):
-    edited = QtCore.Signal()
+    edit_requested = QtCore.Signal(object, object)
 
     def __init__(self, *args, **kwargs):
         self.arg = None
@@ -67,8 +67,7 @@ class PropertiesWidget(QtWidgets.QWidget):
         if not self.arg:
             return
         data = self.ap.export_data()
-        self.arg.update_data(data)
-        self.edited.emit()
+        self.edit_requested.emit(self.arg, data)
 
     def on_reset_requested(self):
         self.load(self.arg)

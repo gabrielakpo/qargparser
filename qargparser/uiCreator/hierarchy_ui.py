@@ -12,23 +12,18 @@ NAME_IDX = 0
 
 
 class HierarchyItem(QtWidgets.QTreeWidgetItem):
-    def __init__(self, name, arg, parent=None):
-        super(HierarchyItem, self).__init__(parent, [name, arg("type")])
-        self.setIcon(NAME_IDX, envs.ICONS["type_%s" % arg("type")])
+    def __init__(self, argument, parent=None):
+        self.arg = argument
 
-        flags = self.flags()
-        flags |= QtCore.Qt.ItemIsDragEnabled
-        flags |= QtCore.Qt.ItemIsDropEnabled
-        # if isinstance(arg, (Array, Object)):
-        #     flags ^= QtCore.Qt.ItemIsDropEnabled
-        self.setFlags(flags)
+        super(HierarchyItem, self).__init__(parent)
 
-        self.arg = arg
+        self.setText(NAME_IDX, argument.name)
+        self.setText(TYPE_IDX, argument.type)
 
-    def __repr__(self):
-        return "<%s( %s, %s)>" % (self.__class__.__name__,
-                                  self.text(TYPE_IDX),
-                                  self.text(NAME_IDX))
+        self.setIcon(NAME_IDX, envs.ICONS["type_%s" % argument("type")])
+
+        self.setFlags(self.flags() | (QtCore.Qt.ItemIsDragEnabled |
+                                      QtCore.Qt.ItemIsDropEnabled))
 
     @property
     def path(self):
@@ -37,10 +32,9 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
             path = os.path.join(self.parent().path, path)
         return path
 
-    def add_children(self, name, arg):
-        item = HierarchyItem(arg("name"), arg=arg, parent=self)
-        for c_arg in arg.get_children():
-            item.add_children(name, c_arg)
+    @property
+    def type(self):
+        return self.arg.type
 
     def add_arg(self, **data):
         return self.arg.add_arg(**data)
@@ -48,14 +42,40 @@ class HierarchyItem(QtWidgets.QTreeWidgetItem):
     def is_block(self):
         return self.arg.is_block()
 
+    def accept_children(self):
+        return (self.arg.is_block() and self.arg.accept())
+
+    def accept_drop(self, source_item):
+        return (self.accept_children()
+                and self.arg.accept_type(source_item.type))
+
+    def get_accepted_children_types(self):
+        if self.accept_children():
+            return sorted(self.arg.get_accepted_types())
+        
+    def update_name(self):
+        self.setText(NAME_IDX, self.arg.name)
+
 
 class HierarchyTree(CustomTree):
     reload_requested = QtCore.Signal(object)
+    add_argument_requested = QtCore.Signal(object, object, object)
 
     def dragMoveEvent(self, event):
+        source_tree = event.source()
+
+        # check sources
+        if not isinstance(source_tree, (ItemsTree, HierarchyTree)):
+            event.ignore()
+            return
+
+        # manage parenting drop
         target_item = self.itemAt(event.pos())
         if target_item:
-            if not target_item.is_block() or not target_item.arg.accept():
+            source_item = source_tree.currentItem()
+
+            # check accepted
+            if not target_item.accept_drop(source_item):
                 event.ignore()
                 return
 
@@ -64,68 +84,34 @@ class HierarchyTree(CustomTree):
     def dropEvent(self, event):
         source_tree = event.source()
 
-        # source is hierarchy tree
+        # check sources
+        if not isinstance(source_tree, (ItemsTree, HierarchyTree)):
+            event.ignore()
+            return
+
+        source_item = source_tree.currentItem()
+        target_item = self.itemAt(event.pos())
+        target = target_item.arg if target_item else None
+
+        # move and reparent current argument
         if isinstance(source_tree, HierarchyTree):
-            source_item = source_tree.currentItem()
             parent_item = source_item.parent()
-            target_item = self.itemAt(event.pos())
+            source = source_item.arg
+            source_parent = parent_item.arg if parent_item else None
 
-            data = source_item.arg.to_data()
-
-            arg = self.add_item(target=target_item, data=data)
-
-            if arg:
-                if not parent_item:
-                    envs.CURRENT_AP.pop_arg(source_item.arg)
-                else:
-                    parent_item.arg.pop_arg(source_item.arg)
-            else:
-                event.ignore()
-                return
+            self.add_argument_requested.emit(source, target, source_parent)
 
         # source is items tree
         elif isinstance(source_tree, ItemsTree):
             source_item = source_tree.currentItem()
-
-            arg = self.add_item(type=source_item.name,
-                                target=self.itemAt(event.pos()))
-        else:
-            event.ignore()
-            return
-
-        self.reload_requested.emit(arg)
-
-    def add_item(self, type=None, target=None, data=None):
-        if not data:
-            data = PropertiesManager().get_data(type, default=True)
-            data["type"] = type
-            data["name"] = self.get_unique_name(data["type"])
-
-        if target and not target.arg.is_block():
-            target = target.parent()
-
-        if not target:
-            target = self
-
-        arg = target.add_arg(**data)
-        return arg
-
-    def add_arg(self, **data):
-        return envs.CURRENT_AP.add_arg(**data)
-
-    def get_unique_name(self, name):
-        names = self.findItems(name,
-                               QtCore.Qt.MatchExactly
-                               | QtCore.Qt.MatchRecursive, NAME_IDX)
-        name = utils.get_unique_name(name, names)
-
-        return name
+            self.add_argument_requested.emit(source_item.name, target, None)
 
 
 class HierarchyWidget(QtWidgets.QWidget):
     selection_changed = QtCore.Signal(object)
     clear_requested = QtCore.Signal()
     delete_requested = QtCore.Signal(object, object)
+    add_argument_requested = QtCore.Signal(object, object, object)
 
     def __init__(self, *args, **kwargs):
 
@@ -138,7 +124,12 @@ class HierarchyWidget(QtWidgets.QWidget):
         self.tree.setDragDropMode(QtWidgets.QAbstractItemView.DragDrop)
         self.tree.setContextMenuPolicy(QtCore.Qt.CustomContextMenu)
         self.tree.setIconSize(QtCore.QSize(25, 25))
-        self.tree.setSectionResizeMode(NAME_IDX, QtWidgets.QHeaderView.Stretch)
+        self.tree.setSectionResizeMode(NAME_IDX,
+                                       QtWidgets.QHeaderView.Stretch)
+
+        self.tree.setSectionResizeMode(TYPE_IDX,
+                                       QtWidgets.QHeaderView.ResizeToContents)
+
         self.tree.header().setDefaultAlignment(QtCore.Qt.AlignCenter)
         self.tree.header().setStretchLastSection(False)
         self.tree.header().resizeSection(TYPE_IDX, 100)
@@ -171,21 +162,24 @@ class HierarchyWidget(QtWidgets.QWidget):
         self.tree.customContextMenuRequested.connect(self.show_context_menu)
         self.tree.currentItemChanged.connect(self.on_selection_changed)
         self.tree.reload_requested.connect(self.on_reload_requested)
+        self.tree.add_argument_requested.connect(self.on_add_argument_requested)
 
     def reload(self, current_arg=None):
+
+        def _populate_items(parent, parent_item):
+            for child in parent.get_children():
+                child_item = HierarchyItem(child, parent=parent_item)
+                _populate_items(child, child_item)
+
         self.tree.blockSignals(True)
         self.tree.clear()
 
         # Fill tree
-        for arg in envs.CURRENT_AP._args:
-            name = arg.name
-            item = HierarchyItem(name, arg=arg)
-            self.tree.addTopLevelItem(item)
-
-            for c_arg in arg.get_children():
-                item.add_children(name, c_arg)
+        _populate_items(envs.CURRENT_AP, self.tree)
 
         self.tree.expandAll()
+
+        self.tree.blockSignals(False)
 
         # Find current arg
         if current_arg:
@@ -194,15 +188,13 @@ class HierarchyWidget(QtWidgets.QWidget):
                     self.tree.setCurrentItem(item)
                     return
 
-        self.tree.blockSignals(False)
-        
         # Select first item
-        if self.tree.childCount():
+        elif self.tree.childCount():
             self.tree.setCurrentItem(self.tree.child(0))
 
-    def edit_current_item(self):
+    def update_current_item(self):
         item = self.tree.selectedItems()[0]
-        item.setText(NAME_IDX, item.arg("name"))
+        item.update_name()
 
     def show_context_menu(self, point):
         item = self.tree.itemAt(point)
@@ -214,24 +206,22 @@ class HierarchyWidget(QtWidgets.QWidget):
                        "delete",
                        self.on_delete_requested)
 
-        if item.is_block() and item.arg.accept():
+        # check if arguement can have children
+        accepted_children_types = item.get_accepted_children_types()
+        if accepted_children_types:
             children_menu = menu.addMenu("add child")
-            accepted_types = sorted(item.arg.get_accepted_types())
-
-            for name in accepted_types:
-                children_menu.addAction(envs.ICONS["type_%s" % name],
-                                        name,
-                                        partial(self.on_add_child_requested,
-                                                item,
-                                                name))
+            for name in accepted_children_types:
+                children_menu.addAction(
+                    envs.ICONS["type_%s" % name],
+                    name,
+                    partial(self.on_add_argument_requested,
+                            target=item.arg,
+                            source=name))
 
         menu.exec_(self.tree.mapToGlobal(point))
 
-    def add_item(self, *args, **kwargs):
-        return self.tree.add_item(*args, **kwargs)
-
-    def on_reload_requested(self):
-        self.reload()
+    def on_reload_requested(self, argument):
+        self.reload(argument)
 
     def on_selection_changed(self):
         arg = None
@@ -300,6 +290,5 @@ class HierarchyWidget(QtWidgets.QWidget):
 
         self.reload(item.arg)
 
-    def on_add_child_requested(self, item, name):
-        self.add_item(type=name, target=item)
-        self.reload()
+    def on_add_argument_requested(self, source, target, source_parent=None):
+        self.add_argument_requested.emit(source, target, source_parent)

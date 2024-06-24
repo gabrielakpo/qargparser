@@ -308,6 +308,12 @@ class ArgParser(QtWidgets.QWidget):
         """
         return self._args
 
+    def get_arguments(self):
+        return self._args
+
+    def get_children(self):
+        return self._args
+
     def pop_arg(self, arg):
         """Removes an argument.
 
@@ -341,6 +347,8 @@ class ArgParser(QtWidgets.QWidget):
         layout.removeItem(lay_item)
 
         self._args.remove(arg)
+
+        return arg
 
     def move_arg(self, key, idx):
         """Move an argument from itself or its index to a target index.

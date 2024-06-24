@@ -37,17 +37,6 @@ def split_digits(string):
     return split
 
 
-def get_unique_name(name, names):
-    while name in names:
-        n, idx = split_digits(name)
-        if not idx:
-            idx = "0"
-        idx = str(int(idx) + 1)
-        name = n + idx
-
-    return name
-
-
 def get_example_path(name):
     dir_path = envs.EXAMPLES_DIR_PATH
     path = os.path.join(dir_path, name+envs.FILE_EXT)

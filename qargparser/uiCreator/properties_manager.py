@@ -18,10 +18,10 @@ class PropertiesManager(object):
             file_path = os.path.join(envs.PROPERTIES_PATH, file_name)
             self._data[name] = utils.read_json(file_path)
 
-    def get_data(self, name, default=False):
+    def get_data(self, type, default=False):
         data = self._data[envs.PROPERTIES_BASE_NAME][:]
 
-        name = envs.PROPERTIES_MAPPING_NAMES.get(name, name)
+        name = envs.PROPERTIES_MAPPING_NAMES.get(type, type)
         file_path = os.path.join(envs.PROPERTIES_PATH, name+envs.FILE_EXT)
 
         if os.path.isfile(file_path):
@@ -31,5 +31,7 @@ class PropertiesManager(object):
 
         if default:
             data = {d["name"]: d["default"] for d in data}
+            data["type"] = name
+            data["name"] = data["type"]
 
         return data

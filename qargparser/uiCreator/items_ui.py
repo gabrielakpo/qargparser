@@ -15,6 +15,10 @@ class ItemsTreeItem(QtWidgets.QTreeWidgetItem):
 
     @property
     def name(self):
+        return self.type
+
+    @property
+    def type(self):
         return self.text(NAME_IDX)
 
 
