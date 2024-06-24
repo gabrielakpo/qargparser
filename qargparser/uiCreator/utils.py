@@ -10,21 +10,6 @@ from qargparser.utils import (
 from . import envs
 
 
-def get_properties_data(name, default=False):
-    #Get true file name
-    name = envs.PROPERTIES_MAPPING_NAMES.get(name, name)
-    #Get base data
-    data = load_data_from_file(envs.BASE_PROPERTIES_FILE)
-    #Update data
-    path = os.path.join(envs.PROPERTIES_PATH, name+".json")
-    if os.path.isfile(path):
-        data.extend(load_data_from_file(path) or {})
-
-    if default:
-        data = {d["name"]: d["default"] for d in data}
-    return data
-
-
 def make_dir(path):
     if not os.path.exists(path):
         try:
@@ -52,12 +37,15 @@ def split_digits(string):
     return split
 
 
-def get_next_name(string):
-    n, idx = split_digits(string)
-    if not idx:
-        idx = "0"
-    idx = str(int(idx) + 1)
-    return  n + idx
+def get_unique_name(name, names):
+    while name in names:
+        n, idx = split_digits(name)
+        if not idx:
+            idx = "0"
+        idx = str(int(idx) + 1)
+        name = n + idx
+
+    return name
 
 
 def get_example_path(name):

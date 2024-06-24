@@ -6,6 +6,7 @@ from . import envs
 from functools import partial
 from .items_ui import ItemsTree
 from .customs_ui import CustomTree, CustomToolbar
+from .properties_manager import PropertiesManager
 
 TYPE_IDX = 1
 NAME_IDX = 0
@@ -103,7 +104,7 @@ class HierarchyTree(CustomTree):
 
     def add_item(self, type=None, target=None, data=None):
         if not data:
-            data = utils.get_properties_data(type, default=True)
+            data = PropertiesManager().get_data(type, default=True)
             data["type"] = type
             data["name"] = self.search_name(data["type"])
         

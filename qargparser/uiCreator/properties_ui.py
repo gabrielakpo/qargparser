@@ -2,6 +2,7 @@ from Qt import QtWidgets, QtCore
 from . import utils, envs
 from qargparser import ArgParser
 from .customs_ui import CustomToolbar
+from .properties_manager import PropertiesManager
 
 
 class PropertiesWidget(QtWidgets.QWidget):
@@ -34,9 +35,9 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.setDisabled(True)
         self.ap.delete_children()
 
-        if not arg: 
+        if not arg:
             return
-        
+
         data = arg.to_data()
 
         if arg("type") == "item":
@@ -45,7 +46,7 @@ class PropertiesWidget(QtWidgets.QWidget):
         self.arg = arg
         self.setDisabled(False)
 
-        _data = utils.get_properties_data(data["type"])
+        _data = PropertiesManager().get_data(data["type"])
 
         for d in _data:
             k = d["name"] 

@@ -5,7 +5,7 @@ from Qt import QtGui
 
 _root = os.path.dirname(__file__)
 PROPERTIES_PATH = os.path.join(_root, "properties")
-BASE_PROPERTIES_FILE = os.path.join(PROPERTIES_PATH, "base.json")
+PROPERTIES_BASE_NAME = "base"
 PROPERTIES_MAPPING_NAMES = {
     "int": "integer",
     "bool": 'boolean',
