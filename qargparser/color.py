@@ -64,6 +64,7 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         for i in range(4):
             self.spinboxes.append(QtWidgets.QDoubleSpinBox())
             spinbox_layout.addWidget(self.spinboxes[i])
+            self.spinboxes[i].setMaximumWidth(60)
             self.spinboxes[i].setMinimum(0.0)
             self.spinboxes[i].setMaximum(1.0)
             self.spinboxes[i].setSingleStep(0.01)
