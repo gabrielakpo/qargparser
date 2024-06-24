@@ -216,9 +216,15 @@ class HierarchyWidget(QtWidgets.QWidget):
 
         if item.is_block() and item.arg.accept():
             children_menu = menu.addMenu("add child")
-            for name in item.arg.get_accepted_types():
-                children_menu.addAction(envs.ICONS["type_%s" % name], name, partial(
-                    self.on_add_child_requested, item, name))
+            accepted_types = sorted(item.arg.get_accepted_types())
+
+            for name in accepted_types:
+                children_menu.addAction(envs.ICONS["type_%s" % name],
+                                        name,
+                                        partial(self.on_add_child_requested,
+                                                item,
+                                                name))
+
         menu.exec_(self.tree.mapToGlobal(point))
 
     def add_item(self, *args, **kwargs):

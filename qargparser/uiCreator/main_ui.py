@@ -246,6 +246,7 @@ class MainUI(QtWidgets.QMainWindow):
 
     def clear(self):
         envs.CURRENT_AP.delete_children()
+        self.properties_wdg.load()
         self.hierarchy_wdg.reload()
 
     def reset(self):
@@ -372,7 +373,6 @@ class MainUI(QtWidgets.QMainWindow):
     def on_reset_workspace_requested(self):
         self._preferences_manager.settings.restore()
 
-    @throbber_decorator
     def on_show_workspace_menu_requested(self):
         self.workspace_edit_menu.clear()
         menu = self.createPopupMenu()

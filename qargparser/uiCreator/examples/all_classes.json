@@ -2,13 +2,13 @@
     {
         "name": "asTab", 
         "type": "tab", 
-        "default": "I am a string", 
+        "default": {}, 
         "description": "I am a tab",
         "items": [
             {
                 "name": "first tab",
                 "type": "object", 
-                "default": [],
+                "default": {},
                 "description": "I am a tab object",
                 "items": [
                     {
@@ -33,7 +33,7 @@
             {
                 "name": "second tab",
                 "type": "object", 
-                "default": [],
+                "default": {},
                 "description": "I am a tab object",
                 "items": []
             }
