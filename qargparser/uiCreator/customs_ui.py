@@ -136,6 +136,9 @@ class CustomTree(QtWidgets.QTreeWidget):
     def takeChild(self, idx):
         return self.takeTopLevelItem(idx)
 
+    def removeChild(self, child):
+        return self.takeTopLevelItem(self.indexOfTopLevelItem(child))
+
     def indexOfChild(self, item):
         return self.indexOfTopLevelItem(item)
 

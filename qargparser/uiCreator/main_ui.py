@@ -122,7 +122,16 @@ class MainUI(QtWidgets.QMainWindow):
             self.on_show_workspace_menu_requested)
         self.theme_menu.aboutToShow.connect(self.populate_themes_actions)
         self.examples_menu.aboutToShow.connect(self.populate_examples_actions)
-        self.hierarchy_wdg.sel_changed.connect(self.on_hierarchy_sel_changed)
+
+        self.hierarchy_wdg.selection_changed.connect(
+            self.on_hierarchy_selection_changed)
+
+        self.hierarchy_wdg.clear_requested.connect(
+            self.on_hierarchy_clear_requested)
+
+        self.hierarchy_wdg.delete_requested.connect(
+            self.on_hierarchy_delete_requested)
+
         self.items_wdg.add_requested.connect(self.on_add_item_requested)
         self.properties_wdg.edited.connect(self.on_properties_edited)
         self.preview_wdg.reset_requested.connect(self.on_reset_requested)
@@ -196,7 +205,6 @@ class MainUI(QtWidgets.QMainWindow):
 
     def clear(self):
         self.hierarchy_wdg.clear()
-        self.hierarchy_wdg.load()
 
     def reset(self):
         envs.CURRENT_AP.reset()
@@ -212,12 +220,12 @@ class MainUI(QtWidgets.QMainWindow):
 
     def add_item(self, name):
         self.hierarchy_wdg.add_item(name)
-        self.hierarchy_wdg.load()
+        self.hierarchy_wdg.reload()
 
     def load_file(self, path):
         self._current_file = path
         envs.CURRENT_AP.build_from_path(path)
-        self.hierarchy_wdg.load()
+        self.hierarchy_wdg.reload()
         self.update_window_title()
 
     def open_example(self, name):
@@ -280,8 +288,17 @@ class MainUI(QtWidgets.QMainWindow):
     def on_properties_edited(self):
         self.hierarchy_wdg.edit_current_item()
 
-    def on_hierarchy_sel_changed(self, arg):
+    def on_hierarchy_selection_changed(self, arg):
         self.properties_wdg.load(arg)
+
+    def on_hierarchy_clear_requested(self):
+        envs.CURRENT_AP.delete_children()
+        self.hierarchy_wdg.reload()
+
+    def on_hierarchy_delete_requested(self, parent, child):
+        if not parent:
+            parent = envs.CURRENT_AP
+        parent.pop_arg(child)
 
     def on_add_item_requested(self, name):
         self.call_throbber(partial(self.add_item, name))
