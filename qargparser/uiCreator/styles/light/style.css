@@ -263,3 +263,13 @@ QMainWindow::separator:hover,
 QSplitter::handle:hover {
     background-color: #ffffff;
 }
+
+/* QToolTip */
+QToolTip {
+    background-color: #FFFFFF;
+    color: #000000;
+    border: 1px solid #AAAAAA;
+    padding: 5px;
+    border-radius: 3px;
+    opacity: 200; /* Optional: set opacity if needed */
+}
