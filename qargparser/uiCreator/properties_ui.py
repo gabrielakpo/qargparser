@@ -1,5 +1,5 @@
 from Qt import QtWidgets, QtCore
-from . import utils, envs
+from . import envs
 from qargparser import ArgParser
 from .customs_ui import CustomToolbar
 from .properties_manager import PropertiesManager
