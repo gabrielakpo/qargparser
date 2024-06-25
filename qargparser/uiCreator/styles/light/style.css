@@ -166,6 +166,19 @@ QTreeView {
     border: 1px solid #AAAAAA;
 }
 
+QTreeView::item {
+    background-color: #FFFFFF;
+    color: #000000;
+    padding: 0px;
+    margin: 0px;
+}
+
+QTreeView::item:selected {
+    background-color: #DDDDDD;
+    color: #000000;
+}
+
+
 /* QTableView */
 QTableView {
     background-color: #FFFFFF;
@@ -175,7 +188,7 @@ QTableView {
 
 /* QHeaderView */
 QHeaderView::section {
-    background-color: #DDDDDD;
+    background-color: #F0F0F0;
     color: #000000;
     min-height: 11px;
     padding: 5px;

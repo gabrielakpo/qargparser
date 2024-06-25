@@ -166,6 +166,18 @@ QTreeView {
     border: 1px solid #555555;
 }
 
+QTreeView::item {
+    background-color: #3E3E3E;
+    color: #FFFFFF;
+    padding: 0px;
+    margin: 0px;
+}
+
+QTreeView::item:selected {
+    background-color: #2E2E2E;
+    color: #FFFFFF;
+}
+
 /* QTableView */
 QTableView {
     background-color: #3E3E3E;
