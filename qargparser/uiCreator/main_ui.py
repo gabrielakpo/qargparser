@@ -332,7 +332,7 @@ class MainUI(QtWidgets.QMainWindow):
         envs.CURRENT_AP.save_data(path)
 
     def request_open_file(self):
-        path = self._current_file
+        path = self._current_file or ""
         dir_path = ""
 
         if os.path.isfile(path):
