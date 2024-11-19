@@ -20,7 +20,7 @@ private_build_requires = ["TBM_RezManager-dev"]
 
 def commands():
     global env
-    env.PYTHONPATH.append('{this.root}')
+    env.PYTHONPATH.append('{this.root}/python')
     env.PYTHONPATH.append('{this.root}\\examples')
     env.PATH.append('{this.root}\\bin')
 

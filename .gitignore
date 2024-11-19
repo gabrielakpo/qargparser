@@ -4,3 +4,4 @@
 build/
 _build/
 Thumbs.db
+*.egg-info
