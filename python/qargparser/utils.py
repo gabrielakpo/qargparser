@@ -38,7 +38,7 @@ def clean_unicodes(data):
 
 
 def load_data_from_file(path):
-    return read_json(path, object_pairs_hook=OrderedDict)
+    return read_json(path)
 
 
 def to_dict(o_dict):
