@@ -5,7 +5,7 @@
 
 name = 'qargparser'
 
-version = '1.4'
+version = '1.5'
 
 description = 'Build Qt UI by parsing argument'
 
@@ -13,7 +13,7 @@ authors = ['Gabriel AKPO-ALLAVO']
 
 tools = ["qargparser_creator"]
 
-requires = ["python", "Qt.py"]
+requires = ["python", "Qt.py", "PySide2"]
 
 private_build_requires = ["TBM_RezManager-dev"]
 
@@ -21,8 +21,8 @@ private_build_requires = ["TBM_RezManager-dev"]
 def commands():
     global env
     env.PYTHONPATH.append('{this.root}/python')
-    env.PYTHONPATH.append('{this.root}\\examples')
-    env.PATH.append('{this.root}\\bin')
+    env.PYTHONPATH.append('{this.root}/examples')
+    env.PATH.append('{this.root}/bin')
 
 
 def pre_commands():
