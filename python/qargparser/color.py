@@ -8,18 +8,30 @@ class ColorButton(QtWidgets.QPushButton):
             QPushButton{background-color: rgba(%(r)s, %(g)s, %(b)s, %(a)s)} 
     """
 
-    def __init__(self, color=None, *args, **kwargs):
+    def __init__(self, color=None, percentage=None, *args, **kwargs):
+        self._percentage = percentage
+
         super(ColorButton, self).__init__(*args, **kwargs)
+
         if not color:
-            color = [0, 0, 0, 1.0]
+            color = [0, 0, 0, 1.0 if percentage else 255]
+
         self.set_color(color)
 
     def set_color(self, color):
         color = color[:]
+
         if len(color) < 4:
             color.append(1.0)
-        self._color = [c*255 for c in color]
+
+        self._color = color
+        if self._percentage:
+            self._color = [c*255 for c in self._color]
+
         self.update()
+
+    def use_percentage(self, percentage):
+        self._percentage = percentage
 
     def paintEvent(self, event):
         super(ColorButton, self).paintEvent(event)
@@ -35,15 +47,18 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
     def __init__(self, default=[0.0, 0.0, 0.0],
                  slider=False,
                  spinbox=True,
+                 percentage=True,
+                 arrows=False,
                  use_alpha=False):
 
         super(ColorSliderSpinBox, self).__init__()
 
         default = default[:]
         self._use_alpha = use_alpha
+        self._percentage = percentage
 
         # color
-        self.color_button = ColorButton()
+        self.color_button = ColorButton(percentage=percentage)
         self.color_button.setFixedSize(60, 20)
         self.color_button.clicked.connect(self.on_color_clicked)
 
@@ -56,18 +71,17 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         # spinboxes
         self.spinboxes = []
         if len(default) < 4:
-            default.append(1.0)
+            default.append(1.0 if percentage else 255)
 
         spinbox_layout = QtWidgets.QHBoxLayout()
         spinbox_layout.setContentsMargins(0, 0, 0, 0)
         spinbox_layout.setSpacing(0)
+
         for i in range(4):
             self.spinboxes.append(QtWidgets.QDoubleSpinBox())
             spinbox_layout.addWidget(self.spinboxes[i])
             self.spinboxes[i].setMaximumWidth(60)
             self.spinboxes[i].setMinimum(0.0)
-            self.spinboxes[i].setMaximum(1.0)
-            self.spinboxes[i].setSingleStep(0.01)
             self.spinboxes[i].valueChanged.connect(
                 self.on_spinbox_value_changed)
 
@@ -81,6 +95,8 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         self.set_slider_visible(slider)
         self.set_spinbox_visible(spinbox)
         self.use_alpha(use_alpha)
+        self.use_percentage(percentage)
+        self.show_arrows(arrows)
         self.setValue(default)
 
         # connections
@@ -107,26 +123,55 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         self.slider.setVisible(show)
 
     def set_spinbox_visible(self, show):
-        for i in range(4):
-            self.spinboxes[i].setVisible(show)
+        for spinbox in self.spinboxes:
+            spinbox.setVisible(show)
 
     def use_alpha(self, use_alpha):
         self._use_alpha = use_alpha
         self.spinboxes[-1].setVisible(use_alpha)
 
+    def use_percentage(self, percentage):
+        self.color_button.use_percentage(percentage)
+        for spinbox in self.spinboxes:
+            if percentage:
+                spinbox.setMaximum(1.0)
+                spinbox.setSingleStep(0.01)
+                spinbox.setDecimals(2)
+            else:
+                spinbox.setMaximum(255)
+                spinbox.setSingleStep(1)
+                spinbox.setDecimals(0)
+
+    def show_arrows(self, show_arrows):
+        symboles = QtWidgets.QAbstractSpinBox.UpDownArrows \
+            if show_arrows else QtWidgets.QAbstractSpinBox.NoButtons
+        for spinbox in self.spinboxes:
+            spinbox.setButtonSymbols(symboles)
+
     def on_color_clicked(self):
-        color = QtGui.QColor(*[255*c for c in self.value()])
+        value = self.value()
+
+        if self._percentage:
+            value = [255*c for c in value]
+
+        color = QtGui.QColor(*value)
+
         color_wdg = QtWidgets.QColorDialog(color)
         color_wdg.setOption(
             QtWidgets.QColorDialog.ShowAlphaChannel, self._use_alpha)
+
         response = color_wdg.exec_()
 
         if not response:
             return
 
         color = color_wdg.selectedColor()
-        color = [color.red()/255.0, color.green()/255.0,
-                 color.blue()/255.0, color.alpha()/255.0]
+        color = [
+            color.red(), color.green(),
+            color.blue(), color.alpha()]
+
+        if self._percentage:
+            value = [c/255.0 for c in value]
 
         self.setValue(color)
 
@@ -137,6 +182,8 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
 
     def on_slider_value_changed(self, idx):
         color = envs.COLOR_INDEXES[idx]
+        if self._percentage:
+            color = [c*255.0 for c in color]
         self.setValue(color)
 
 
@@ -164,6 +211,8 @@ class Color(Arg):
         wdg = ColorSliderSpinBox(slider=self._data["slider"],
                                  spinbox=self._data["spinbox"],
                                  use_alpha=self._data["alpha"],
+                                 percentage=self._data["percentage"],
+                                 arrows=self._data["arrows"],
                                  default=self._data['default'])
 
         self._write = wdg.setValue
@@ -179,10 +228,13 @@ class Color(Arg):
 
     def _update(self):
         if self._data["alpha"] and len(self._data["default"]) < 4:
-            self._data["default"].append(1.0)
+            self._data["default"].append(
+                1.0 if self._data["percentage"] else 255)
 
         self.wdg.set_slider_visible(self._data["slider"])
         self.wdg.set_spinbox_visible(self._data["spinbox"])
+        self.wdg.use_percentage(self._data["percentage"])
+        self.wdg.show_arrows(self._data["arrows"])
         self.wdg.use_alpha(self._data["alpha"])
 
         super(Color, self)._update()

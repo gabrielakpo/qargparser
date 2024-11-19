@@ -9,6 +9,8 @@ from .types_mapping import TYPES
 from . import utils, envs
 import re
 
+_type = type
+
 _TYPES = TYPES.copy()
 _TYPES.update({
     "item": Item,
@@ -17,6 +19,20 @@ _TYPES.update({
     "str": String,
     "unicode": String
 })
+
+
+def get_object_from_type(type):
+    type = {
+        int: "int",
+        float: "float",
+        bool: "bool",
+        str: "str",
+        list: "array",
+        tuple: "array",
+        dict: "dict",
+    }.get(type, type)
+    
+    return _TYPES[type]
 
 
 def deleteChildWidgets(item):
@@ -46,10 +62,6 @@ def clear_layout(layout):
                 clear_layout(lay)
 
 
-def get_object_from_type(type):
-    return _TYPES[type]
-
-
 class ResetButton(QtWidgets.QPushButton):
     def __init__(self, wdg, *args, **kwargs):
         super(ResetButton, self).__init__(QtGui.QIcon(envs.RELOAD_ICON),
@@ -70,6 +82,7 @@ class ResetButton(QtWidgets.QPushButton):
 def to_label_string(text):
     if text is None:
         text = ""
+    text = re.sub(r'_(\w)', lambda match: ' ' + match.group(1).upper(), text)
     return re.sub(
         r"((?<=[a-z])[A-Z]|(?<!\A)[A-Z](?=[a-z]))",
         r" \1", text
@@ -138,12 +151,14 @@ class ArgParser(QtWidgets.QWidget):
                  data=None,
                  path=None,
                  label_suffix=None,
+                 show_labels=True,
                  description="",
                  parent=None):
 
         # Init
         self._description = description
         self._label_suffix = label_suffix
+        self._show_labels = show_labels
         self._args = []
 
         super(ArgParser, self).__init__(parent)
@@ -182,6 +197,7 @@ class ArgParser(QtWidgets.QWidget):
                 name=None,
                 type=None,
                 default=None,
+                subtype=None,
                 **kwargs):
         """Adds an argument.
 
@@ -211,12 +227,20 @@ class ArgParser(QtWidgets.QWidget):
                 or
                 :class:`~qargparser.text.Mel` instance
         """
+        if default is not None:
+            if not type:
+                type = _type(default)
+    
+            if isinstance(default, (list, tuple)) and len(default):
+                subtype = _type(default[0])
 
-        arg = get_object_from_type(type)(name,
-                                         default,
-                                         **kwargs)
+        arg = get_object_from_type(type)(name, default, **kwargs)
 
         self._add_arg(arg)
+
+        if subtype and arg.is_block():
+            arg.add_arg(type=subtype)
+
         return arg
 
     def _add_arg(self, arg):
@@ -241,6 +265,8 @@ class ArgParser(QtWidgets.QWidget):
         label = arg._data["name"]
 
         label_ui = CustomLabel(label, label_suffix=self._label_suffix)
+        if not self._show_labels:
+            label_ui.setText("")
 
         optional = arg._data.get("optional")
         if optional is not None:
@@ -406,8 +432,8 @@ class ArgParser(QtWidgets.QWidget):
 
     def build_from_path(self, path):
         data = utils.load_data_from_file(path)
-        if not data:
-            raise RuntimeError("Error reading data")
+        # if not data:
+        #     raise RuntimeError("Error reading data")
         self.clear()
         self.build(data)
 
@@ -416,6 +442,11 @@ class ArgParser(QtWidgets.QWidget):
         """
         clear_layout(self.layout())
         self._args = []
+        
+    def duplicate_arg(self, arg):
+        data = arg.to_data()
+        arg = self.add_arg(**data)
+        return arg
 
     def clear(self):
         self.delete_children()
@@ -426,7 +457,8 @@ class ArgParser(QtWidgets.QWidget):
 
         # Edit label
         label = self.get_label(arg)
-        label.setText(arg("name"))
+        if label:
+            label.setText(arg("name"))
 
         self.changed.emit()
 
@@ -434,15 +466,15 @@ class ArgParser(QtWidgets.QWidget):
         layout = self.layout()
         _idx, _ = layout.getWidgetPosition(arg.wdg.parent())
         lay_item = layout.itemAt(_idx, QtWidgets.QFormLayout.LabelRole)
-        label = lay_item.widget()
-        return label
-
+        if lay_item:
+            return lay_item.widget()
+        
     def get_widget(self, arg):
         layout = self.layout()
         _idx, _ = layout.getWidgetPosition(arg.wdg.parent())
         lay_item = layout.itemAt(_idx, QtWidgets.QFormLayout.FieldRole)
-        wdg = lay_item.widget()
-        return wdg
+        if lay_item:
+            return lay_item.widget()
 
     def export_data(self):
         return self._read()

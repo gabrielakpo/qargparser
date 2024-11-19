@@ -208,3 +208,8 @@ class BlockArg(Arg):
 
     def add_arg(self):
         raise NotImplementedError("This function need to be implemented")
+    
+    def duplicate_arg(self, arg):
+        data = arg.to_data()
+        arg = self.add_arg(**data)
+        return arg

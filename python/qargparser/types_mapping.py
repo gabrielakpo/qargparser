@@ -9,9 +9,11 @@ from .color import Color
 from .dict import Dict
 from .tab import Tab
 from .enum import Enum
+from .frame import Frame
 
 TYPES = {
     "object": Object,
+    "frame": Frame,
     "tab": Tab,
     "enum": Enum,
     "info": Info,

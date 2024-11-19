@@ -2,8 +2,14 @@
     {
         "name": "default", 
         "type": "color", 
-        "alpha":  false,
-        "default": [0.0, 0.0, 0.0]
+        "percentage": false,
+        "alpha":  true,
+        "default": [0.0, 0.0, 0.0, 255]
+    }, 
+    {
+        "name": "percentage", 
+        "type": "bool", 
+        "default": true
     }, 
     {
         "name": "slider", 
@@ -14,6 +20,11 @@
         "name": "spinbox", 
         "type": "bool", 
         "default": true
+    },
+    {
+        "name": "arrows", 
+        "type": "bool", 
+        "default": false
     },
     {
         "name": "alpha", 

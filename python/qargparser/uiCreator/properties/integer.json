@@ -6,12 +6,14 @@
     }, 
     {
         "name": "min", 
+        "min": -1000000000, 
         "type": "int", 
         "default": null
     }, 
     {
         "name": "max", 
         "type": "int", 
+        "max": 1000000000, 
         "default": null
     }, 
     {

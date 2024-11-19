@@ -1,0 +1,13 @@
+[
+    {
+        "name": "default", 
+        "type": "object", 
+        "default": {}, 
+        "items": []
+    },
+    {
+        "name": "collapsed", 
+        "type": "bool", 
+        "default": false
+    }
+]

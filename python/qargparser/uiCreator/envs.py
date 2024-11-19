@@ -91,8 +91,10 @@ FILES = DirFiles(os.path.join(_root, "icons"), {
     "move_up": "move_up.png",
     "move_down": "move_down.png",
     "delete": "delete.png",
+    "duplicate": "duplicate.png",
     "clear": "clear.png",
 
+    "type_frame": "type_frame.png",
     "type_array": "type_array.png",
     "type_boolean": "type_boolean.png",
     "type_code": "type_code.png",

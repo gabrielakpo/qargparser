@@ -67,9 +67,25 @@ class Dict(BlockArg):
         return wdg
 
     def __write(self, value):
-        for i, arg in enumerate(self.wdg._args):
-            if arg._write is not None:
-                arg._write(value[i])
+        self.wdg.delete_children()
+        self._create_add_item_button()
+        self._init()
+
+        defaults = value
+        if len(defaults.keys()) > self._data["max"]:
+            for i in range(self._data["max"]):
+                defaults.pop(i)
+
+        for k, v in defaults.items():
+            self.add_item(k, v)
+
+            # Check min
+        remaining = self._data["min"] - len(defaults)
+        if remaining > 0:
+            for i in range(remaining):
+                self.add_item()
+
+        self.changed.emit(None)
 
     def is_edited(self):
         return (len(self.wdg._args) != len(self._data["default"])
@@ -103,6 +119,7 @@ class Dict(BlockArg):
 
     def on_key_text_changed(self, arg, text):
         arg._data["_name"] = text
+        self.changed.emit(arg)
 
     def on_item_delete_resquested(self, arg):
         # Check min items

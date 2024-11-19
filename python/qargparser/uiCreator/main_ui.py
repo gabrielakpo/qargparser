@@ -13,7 +13,7 @@ from .items_ui import ItemsWidget
 from .customs_ui import CustomDockWidget, ThrobberWidget
 
 
-class MainUI(QtWidgets.QMainWindow):
+class ArgParserCreatorWindow(QtWidgets.QMainWindow):
 
     @ staticmethod
     def throbber_decorator(*args, **kwargs):
@@ -62,7 +62,7 @@ class MainUI(QtWidgets.QMainWindow):
 
         envs.CURRENT_AP = ArgParser(label_suffix=":")
 
-        super(MainUI, self).__init__(*args, **kwargs)
+        super(ArgParserCreatorWindow, self).__init__(*args, **kwargs)
         self.setAttribute(QtCore.Qt.WA_DeleteOnClose, True)
         self.setWindowIcon(envs.ICONS["app"])
 
@@ -177,6 +177,9 @@ class MainUI(QtWidgets.QMainWindow):
 
         self.hierarchy_wdg.delete_requested.connect(
             self.on_hierarchy_delete_requested)
+        
+        self.hierarchy_wdg.duplicate_requested.connect(
+            self.on_hierarchy_duplicate_requested)
 
         self.hierarchy_wdg.add_argument_requested.connect(
             self.on_add_argument_requested)
@@ -299,7 +302,7 @@ class MainUI(QtWidgets.QMainWindow):
             self.load_file(path)
 
     def request_save_file(self):
-        path = self.file_le.text()
+        path = self._current_file
 
         if os.path.isfile(path):
             awns = QtWidgets.QMessageBox.question(
@@ -316,7 +319,7 @@ class MainUI(QtWidgets.QMainWindow):
     def request_save_as_file(self):
         path = self._current_file
 
-        if os.path.isfile(path):
+        if path  and os.path.isfile(path):
             path = os.path.dirname(path)
 
         path = QtWidgets.QFileDialog.getSaveFileName(
@@ -367,6 +370,14 @@ class MainUI(QtWidgets.QMainWindow):
     @throbber_decorator
     def on_hierarchy_delete_requested(self, parent, child):
         self.delete_argument(parent, child)
+        
+    @throbber_decorator
+    def on_hierarchy_duplicate_requested(self, parent, child):
+        if not parent:
+            parent = envs.CURRENT_AP
+        new_child = parent.duplicate_arg(child)
+        parent.reset()
+        self.hierarchy_wdg.reload(new_child)
 
     @throbber_decorator
     def on_add_argument_requested(self, source, target=None, source_parent=None):
@@ -426,7 +437,7 @@ class MainUI(QtWidgets.QMainWindow):
 
     def closeEvent(self, event):
         self._preferences_manager.save()
-        super(MainUI, self).closeEvent(event)
+        super(ArgParserCreatorWindow, self).closeEvent(event)
 
 
 def show(path=None):
@@ -436,7 +447,7 @@ def show(path=None):
     except:
         app = QtWidgets.QApplication.instance()
 
-    win_dow = MainUI(path)
+    win_dow = ArgParserCreatorWindow(path)
     win_dow.show()
     try:
         sys.exit(app.exec_())

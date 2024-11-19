@@ -111,6 +111,7 @@ class HierarchyWidget(QtWidgets.QWidget):
     selection_changed = QtCore.Signal(object)
     clear_requested = QtCore.Signal()
     delete_requested = QtCore.Signal(object, object)
+    duplicate_requested = QtCore.Signal(object, object)
     add_argument_requested = QtCore.Signal(object, object, object)
 
     def __init__(self, *args, **kwargs):
@@ -202,9 +203,15 @@ class HierarchyWidget(QtWidgets.QWidget):
             return
 
         menu = QtWidgets.QMenu()
-        menu.addAction(envs.ICONS["delete"],
-                       "delete",
-                       self.on_delete_requested)
+        menu.addAction(
+            envs.ICONS["duplicate"],
+            "duplicate",
+            self.on_duplicate_requested)
+
+        menu.addAction(
+            envs.ICONS["delete"],
+            "delete",
+            self.on_delete_requested)
 
         # check if arguement can have children
         accepted_children_types = item.get_accepted_children_types()
@@ -247,6 +254,21 @@ class HierarchyWidget(QtWidgets.QWidget):
 
         # update ui
         parent_item.removeChild(item)
+        
+    def on_duplicate_requested(self):
+        item = self.tree.currentItem()
+
+        if not item:
+            return
+        
+        # get child to delete and its parent
+        parent_item = item.parent() or self.tree
+
+        parent = None if parent_item is self.tree else parent_item.arg
+        child = item.arg
+
+        # send request to delete
+        self.duplicate_requested.emit(parent, child)
 
     def on_clear_requested(self):
         self.clear_requested.emit()

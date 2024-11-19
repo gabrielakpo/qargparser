@@ -21,6 +21,7 @@ ITEM_DEL_BUTTON_MIN_HEIGHT = 20
 
 ARG_TYPE_NAMES = [
     "object",
+    "frame",
     "tab",
     "enum",
     "info",
@@ -87,6 +88,11 @@ DEFAULT_DATA = {
         "closable": False,
         "items": [],
     },
+    "frame": {
+        "default": {},
+        "collapsed": False,
+        "items": [],
+    },
     "path": {
         "default": "",
         "buttonLabel": "...",
@@ -130,8 +136,10 @@ DEFAULT_DATA = {
     },
     "color": {
         "default": [0.0, 0.0, 0.0],
+        "percentage": True,
         "slider": True,
         "spinbox": True,
+        "arrows": False,
         "alpha": False
     },
     "dict": {
