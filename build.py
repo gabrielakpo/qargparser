@@ -25,6 +25,7 @@ class Build(utils.Build):
             os.path.join(
                 self.build_path, "python", "qargparser", '__version__.py'))
 
+
 if __name__ == "__main__":
     Build(exclude_patterns=["*.pyc", "__pycache__"],
           keep_roots=["python", "resources", "README.md", "examples"])
