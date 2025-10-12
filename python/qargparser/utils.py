@@ -1,6 +1,7 @@
 import json
 import os
 from collections import OrderedDict as BaseOrderedDict
+from contextlib import contextmanager
 import sys
 
 if sys.version_info[0] == 3:
@@ -101,3 +102,22 @@ def make_dir(path):
             pass
 
     return os.path.exists(path)
+
+
+@contextmanager
+def signal_blocker(widgets):
+    """Context manager to temporarily block signals on one or more widgets
+
+    :param widgets: Widget(s) to block signals on
+    :type widgets: QWidget or list/tuple of QWidget
+    """
+    if not isinstance(widgets, (list, tuple)):
+        widgets = (widgets, )
+
+    for widget in widgets:
+        widget.blockSignals(True)
+
+    yield
+
+    for widget in widgets:
+        widget.blockSignals(False)

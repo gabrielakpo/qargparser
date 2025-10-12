@@ -1,6 +1,6 @@
 from .arg import Arg
 from Qt import QtWidgets, QtCore, QtGui
-from . import envs
+from . import envs, utils
 
 
 class ColorButton(QtWidgets.QPushButton):
@@ -114,10 +114,9 @@ class ColorSliderSpinBox(QtWidgets.QWidget):
         self.valueChanged.emit(self.value())
 
     def _set_spinboxes_values(self, values):
-        for i in range(len(values)):
-            self.spinboxes[i].blockSignals(True)
-            self.spinboxes[i].setValue(values[i])
-            self.spinboxes[i].blockSignals(False)
+        with utils.signal_blocker(self.spinboxes):
+            for i in range(len(values)):
+                self.spinboxes[i].setValue(values[i])
 
     def set_slider_visible(self, show):
         self.slider.setVisible(show)
@@ -224,7 +223,8 @@ class Color(Arg):
         return wdg
 
     def reset(self):
-        self._write(self._data['default'])
+        with utils.signal_blocker(self.wdg):
+            self._write(self._data['default'])
 
     def _update(self):
         if self._data["alpha"] and len(self._data["default"]) < 4:

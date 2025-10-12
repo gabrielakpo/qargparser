@@ -1,5 +1,6 @@
 from Qt import QtWidgets
 from .arg import Arg
+from . import utils
 
 
 class Boolean(Arg):
@@ -13,7 +14,10 @@ class Boolean(Arg):
     """
     def create(self):
         wdg = QtWidgets.QCheckBox()
-        wdg.setChecked(bool(self._data['default']))
+        
+        # Block signals during initialization
+        with utils.signal_blocker(wdg):
+            wdg.setChecked(bool(self._data['default']))
 
         self._write = lambda x: wdg.setChecked(bool(x))
         self._read = wdg.isChecked
@@ -24,4 +28,5 @@ class Boolean(Arg):
         return wdg
 
     def reset(self):
-        self._write(self._data['default'])
+        with utils.signal_blocker(self.wdg):
+            self._write(self._data['default'])

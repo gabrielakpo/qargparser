@@ -106,6 +106,8 @@ class ArgParserCreatorWindow(QtWidgets.QMainWindow):
         file_menu.addAction("new", self.on_new_file_requested)
         file_menu.addAction("open", self.on_open_file_requested)
         self.examples_menu = file_menu.addMenu("examples")
+        
+        file_menu.addAction("import", self.on_import_file_requested)
 
         # save / save as
         file_menu.addSeparator()
@@ -187,6 +189,12 @@ class ArgParserCreatorWindow(QtWidgets.QMainWindow):
         self.items_wdg.add_requested.connect(self.on_add_argument_requested)
         self.properties_wdg.edit_requested.connect(self.on_properties_edit_requested)
         self.preview_wdg.reset_requested.connect(self.on_reset_requested)
+        
+    def hide_menus(self):
+        self.menuBar().setVisible(False)
+        
+    def show_menus(self):
+        self.menuBar().setVisible(True)
 
     def call_throbber(self, callback=None, raise_error=True):
 
@@ -300,8 +308,8 @@ class ArgParserCreatorWindow(QtWidgets.QMainWindow):
         path = utils.get_example_path(name)
         if path:
             self.load_file(path)
-
-    def request_save_file(self):
+            
+    def save_file(self):
         path = self._current_file
 
         if os.path.isfile(path):
@@ -315,6 +323,9 @@ class ArgParserCreatorWindow(QtWidgets.QMainWindow):
                 return
 
         envs.CURRENT_AP.save_data(path)
+
+    def request_save_file(self):
+        self.save_file()
 
     def request_save_as_file(self):
         path = self._current_file
@@ -352,6 +363,22 @@ class ArgParserCreatorWindow(QtWidgets.QMainWindow):
 
         # Update path test
         self.load_file(path)
+
+    def request_import_file(self):
+        current_ap = envs.CURRENT_AP
+        if not current_ap:
+            return
+
+        path = QtWidgets.QFileDialog.getOpenFileName(
+            self,
+            "Import file",
+            filter=envs.FILE_FILTERS)[0]
+
+        if not path:
+            return
+
+        current_ap.import_from_path(path)
+        self.hierarchy_wdg.reload()
 
     @throbber_decorator
     def on_properties_edit_requested(self, arg, data):
@@ -422,6 +449,10 @@ class ArgParserCreatorWindow(QtWidgets.QMainWindow):
     @throbber_decorator
     def on_open_file_requested(self):
         self.request_open_file()
+        
+    @throbber_decorator
+    def on_import_file_requested(self):
+        self.request_import_file()
 
     @throbber_decorator
     def on_save_as_file_requested(self):

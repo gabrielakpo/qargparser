@@ -1,5 +1,6 @@
 from Qt import QtWidgets, QtCore
 from .arg import Arg
+from . import utils
 
 
 class String(Arg):
@@ -22,13 +23,15 @@ class String(Arg):
             wdg = QtWidgets.QComboBox()
             wdg.addItems(enum)
 
-            if default is not None and default in enum:
-                idx = wdg.findText(default, QtCore.Qt.MatchExactly)
-                wdg.setCurrentIndex(idx)
-            else:
-                idx = wdg.currentIndex()
-                text = wdg.itemText(idx)
-                self._data['default'] = text
+            # Block signals during initialization
+            with utils.signal_blocker(wdg):
+                if default is not None and default in enum:
+                    idx = wdg.findText(default, QtCore.Qt.MatchExactly)
+                    wdg.setCurrentIndex(idx)
+                else:
+                    idx = wdg.currentIndex()
+                    text = wdg.itemText(idx)
+                    self._data['default'] = text
 
             self._write = lambda x: wdg.setCurrentIndex(
                 wdg.findText(x, QtCore.Qt.MatchExactly))
@@ -38,14 +41,16 @@ class String(Arg):
 
         else:
             wdg = QtWidgets.QLineEdit()
-            wdg.setText(self._data['default'])
 
-            # Info
-            if isinstance(self, Info):
-                wdg.setReadOnly(True)
+            # Block signals during initialization
+            with utils.signal_blocker(wdg):
+                wdg.setText(self._data['default'])
 
-            else:
-                wdg.setPlaceholderText(self._data['placeHolder'])
+                # Info
+                if isinstance(self, Info):
+                    wdg.setReadOnly(True)
+                else:
+                    wdg.setPlaceholderText(self._data['placeHolder'])
 
             self._write = wdg.setText
             self._read = wdg.text
@@ -55,9 +60,11 @@ class String(Arg):
         return wdg
 
     def reset(self):
-        self._write(self._data['default'])
-        if not isinstance(self, Info):
-            self.wdg.setPlaceholderText(self._data['placeHolder'])
+        # Block signals during reset to avoid unnecessary updates
+        with utils.signal_blocker(self.wdg):
+            self._write(self._data['default'])
+            if not isinstance(self, Info):
+                self.wdg.setPlaceholderText(self._data['placeHolder'])
         self.changed.emit(None)
 
     def on_editing_finished(self, wdg):

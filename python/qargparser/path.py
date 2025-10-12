@@ -1,5 +1,6 @@
 from Qt import QtWidgets
 from .arg import Arg
+from . import utils
 import os
 
 
@@ -81,7 +82,11 @@ class Path(Arg):
 
     def create(self):
         self.le = QtWidgets.QLineEdit()
-        self.le.setText(self._data['default'])
+        
+        # Block signals during initialization
+        with utils.signal_blocker(self.le):
+            self.le.setText(self._data['default'])
+        
         self.folder_button = QtWidgets.QPushButton(self._data['buttonLabel'])
         self.folder_button.clicked.connect(self.show_search_path_dialog)
         self.folder_button.setFixedSize(self.le.sizeHint().height(),
@@ -116,7 +121,8 @@ class Path(Arg):
         self.le.setText(path)
 
     def reset(self):
-        self._write(self._data['default'])
+        with utils.signal_blocker(self.le):
+            self._write(self._data['default'])
 
     def _update(self):
         super(Path, self)._update()

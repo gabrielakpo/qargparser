@@ -1,5 +1,6 @@
 from Qt import QtWidgets, QtCore, QtGui
 from .arg import Arg
+from . import utils
 
 
 def format(color, style=''):
@@ -315,7 +316,10 @@ class Text(Arg):
                 PythonHighlighter(wdg.document())
         else:
             wdg = QtWidgets.QPlainTextEdit()
-        wdg.setPlainText(self._data['default'])
+        
+        # Block signals during initialization
+        with utils.signal_blocker(wdg):
+            wdg.setPlainText(self._data['default'])
 
         self._write = wdg.setPlainText
         self._read = wdg.toPlainText
@@ -328,7 +332,8 @@ class Text(Arg):
         return wdg
 
     def reset(self):
-        self._write(self._data['default'])
+        with utils.signal_blocker(self.wdg):
+            self._write(self._data['default'])
 
 
 class Doc(Text):
