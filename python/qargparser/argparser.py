@@ -1,6 +1,7 @@
 from functools import partial, lru_cache
 from collections import OrderedDict
 from Qt import QtWidgets, QtCore, QtGui
+from .data import ArgparserData
 from .string import String
 from .number import Integer
 from .item import Item
@@ -165,6 +166,7 @@ class ArgParser(QtWidgets.QWidget):
         self._description = description
         self._label_suffix = label_suffix
         self._show_labels = show_labels
+        self._data = None
         self._args = []
 
         super(ArgParser, self).__init__(parent)
@@ -194,6 +196,10 @@ class ArgParser(QtWidgets.QWidget):
 
     def __repr__(self):
         return "<{}( {} )>".format(self.__class__.__name__, self._args)
+    
+    @property
+    def data(self):
+        return self._data
 
     @property
     def _row(self):
@@ -428,6 +434,9 @@ class ArgParser(QtWidgets.QWidget):
                     self._args[idx+1].wdg.parent())[0] - 1
 
         layout.insertRow(_idx+1, label, wdg)
+        
+    def get_data_values(self):
+        return self._data.to_values()
 
     def build(self, data):
         """Build itself from data.
@@ -439,16 +448,16 @@ class ArgParser(QtWidgets.QWidget):
             self.add_arg(**d)
 
     def build_from_path(self, path):
-        data = utils.load_data_from_file(path)
+        self._data = ArgparserData.from_path(path)
         self.clear()
-        self.build(data)
+        self.build(self._data)
         
     def import_data(self, data):
         self.build(data)
         
     def import_from_path(self, path):
-        data = utils.load_data_from_file(path)
-        self.build(data)
+        self._data = ArgparserData.from_path(path)
+        self.build(self.data)
 
     def delete_children(self):
         """Deletes all children arguments.
