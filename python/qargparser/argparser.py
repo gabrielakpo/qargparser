@@ -434,7 +434,7 @@ class ArgParser(QtWidgets.QWidget):
                     self._args[idx+1].wdg.parent())[0] - 1
 
         layout.insertRow(_idx+1, label, wdg)
-        
+
     def get_data_values(self):
         return self._data.to_values()
 
@@ -451,10 +451,10 @@ class ArgParser(QtWidgets.QWidget):
         self._data = ArgparserData.from_path(path)
         self.clear()
         self.build(self._data)
-        
+
     def import_data(self, data):
         self.build(data)
-        
+
     def import_from_path(self, path):
         self._data = ArgparserData.from_path(path)
         self.build(self.data)
@@ -464,7 +464,7 @@ class ArgParser(QtWidgets.QWidget):
         """
         clear_layout(self.layout())
         self._args = []
-        
+
     def duplicate_arg(self, arg):
         data = arg.to_data()
         arg = self.add_arg(**data)
