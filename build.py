@@ -27,5 +27,7 @@ class Build(utils.Build):
 
 
 if __name__ == "__main__":
-    Build(exclude_patterns=["*.pyc", "__pycache__"],
+    rez_build = Build(exclude_patterns=["*.pyc", "__pycache__"],
           keep_roots=["python", "resources", "README.md", "examples"])
+
+    rez_build.launch()

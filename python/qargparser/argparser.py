@@ -1,6 +1,7 @@
-from functools import partial
+from functools import partial, lru_cache
 from collections import OrderedDict
 from Qt import QtWidgets, QtCore, QtGui
+from .data import ArgparserData
 from .string import String
 from .number import Integer
 from .item import Item
@@ -19,6 +20,9 @@ _TYPES.update({
     "str": String,
     "unicode": String
 })
+
+# Pre-load icon at module import to avoid any runtime overhead
+_RELOAD_ICON_CACHE = QtGui.QIcon(envs.RELOAD_ICON)
 
 
 def get_object_from_type(type):
@@ -64,7 +68,7 @@ def clear_layout(layout):
 
 class ResetButton(QtWidgets.QPushButton):
     def __init__(self, wdg, *args, **kwargs):
-        super(ResetButton, self).__init__(QtGui.QIcon(envs.RELOAD_ICON),
+        super().__init__(_RELOAD_ICON_CACHE,
                                           "",
                                           *args, **kwargs)
         self.setIconSize(QtCore.QSize(envs.RELOAD_BUTTON_ICON_SIZE,
@@ -79,7 +83,10 @@ class ResetButton(QtWidgets.QPushButton):
         self.setFixedSize(envs.RELOAD_BUTTON_WIDTH, height)
 
 
+@lru_cache(maxsize=128)
 def to_label_string(text):
+    """Convert text to label format with caching to avoid repeated regex
+    operations"""
     if text is None:
         text = ""
     text = re.sub(r'_(\w)', lambda match: ' ' + match.group(1).upper(), text)
@@ -159,6 +166,7 @@ class ArgParser(QtWidgets.QWidget):
         self._description = description
         self._label_suffix = label_suffix
         self._show_labels = show_labels
+        self._data = None
         self._args = []
 
         super(ArgParser, self).__init__(parent)
@@ -188,6 +196,10 @@ class ArgParser(QtWidgets.QWidget):
 
     def __repr__(self):
         return "<{}( {} )>".format(self.__class__.__name__, self._args)
+    
+    @property
+    def data(self):
+        return self._data
 
     @property
     def _row(self):
@@ -248,45 +260,47 @@ class ArgParser(QtWidgets.QWidget):
         # if self.get_arg(name):
         #     raise ValueError("Duplicate argument "%s"" %name)
 
-        # Create widget
-        wdg = arg.create()
-        desc = arg._data.get("description")
-        if desc.strip():
-            wdg.setToolTip(utils.pretty_description(desc))
+        # Block signals during widget creation to avoid unnecessary updates
+        with utils.signal_blocker(self):
+            # Create widget
+            wdg = arg.create()
+            desc = arg._data.get("description")
+            if desc.strip():
+                wdg.setToolTip(utils.pretty_description(desc))
 
-        # Reset
-        reset_button = ResetButton(wdg)
-        reset_button.clicked.connect(arg.reset)
-        arg.changed.connect(partial(self.on_changed, arg, reset_button))
-        reset_button.setVisible(False)
+            # Reset
+            reset_button = ResetButton(wdg)
+            reset_button.clicked.connect(arg.reset)
+            arg.changed.connect(partial(self.on_changed, arg, reset_button))
+            reset_button.setVisible(False)
 
-        # add widget to Layout
-        layout = self.layout()
-        label = arg._data["name"]
+            # add widget to Layout
+            layout = self.layout()
+            label = arg._data["name"]
 
-        label_ui = CustomLabel(label, label_suffix=self._label_suffix)
-        if not self._show_labels:
-            label_ui.setText("")
+            label_ui = CustomLabel(label, label_suffix=self._label_suffix)
+            if not self._show_labels:
+                label_ui.setText("")
 
-        optional = arg._data.get("optional")
-        if optional is not None:
-            row_wdg = QtWidgets.QGroupBox()
-            row_wdg.setCheckable(True)
-            row_wdg.setChecked(optional)
-        else:
-            row_wdg = QtWidgets.QWidget()
+            optional = arg._data.get("optional")
+            if optional is not None:
+                row_wdg = QtWidgets.QGroupBox()
+                row_wdg.setCheckable(True)
+                row_wdg.setChecked(optional)
+            else:
+                row_wdg = QtWidgets.QWidget()
 
-        row_layout = QtWidgets.QHBoxLayout(row_wdg)
-        row_layout.setContentsMargins(0, 0, 0, 0)
-        row_layout.setSpacing(0)
-        row_layout.addWidget(reset_button)
-        row_layout.addWidget(wdg)
+            row_layout = QtWidgets.QHBoxLayout(row_wdg)
+            row_layout.setContentsMargins(0, 0, 0, 0)
+            row_layout.setSpacing(0)
+            row_layout.addWidget(reset_button)
+            row_layout.addWidget(wdg)
 
-        layout.insertRow(self._row,
-                         label_ui,
-                         row_wdg)
+            layout.insertRow(self._row,
+                             label_ui,
+                             row_wdg)
 
-        self._args.append(arg)
+            self._args.append(arg)
 
     def get_arg(self, key):
         """Gets an argument from a name or an index.
@@ -421,6 +435,9 @@ class ArgParser(QtWidgets.QWidget):
 
         layout.insertRow(_idx+1, label, wdg)
 
+    def get_data_values(self):
+        return self._data.to_values()
+
     def build(self, data):
         """Build itself from data.
 
@@ -431,18 +448,23 @@ class ArgParser(QtWidgets.QWidget):
             self.add_arg(**d)
 
     def build_from_path(self, path):
-        data = utils.load_data_from_file(path)
-        # if not data:
-        #     raise RuntimeError("Error reading data")
+        self._data = ArgparserData.from_path(path)
         self.clear()
+        self.build(self._data)
+
+    def import_data(self, data):
         self.build(data)
+
+    def import_from_path(self, path):
+        self._data = ArgparserData.from_path(path)
+        self.build(self.data)
 
     def delete_children(self):
         """Deletes all children arguments.
         """
         clear_layout(self.layout())
         self._args = []
-        
+
     def duplicate_arg(self, arg):
         data = arg.to_data()
         arg = self.add_arg(**data)

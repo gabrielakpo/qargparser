@@ -1,5 +1,6 @@
 from Qt import QtWidgets, QtCore
 from .arg import Arg
+from . import utils
 
 
 class Enum(Arg):
@@ -34,26 +35,29 @@ class Enum(Arg):
         return wdg
 
     def _init(self):
-        self.wdg.addItems(self._data["enums"])
+        # Block signals during initialization
+        with utils.signal_blocker(self.wdg):
+            self.wdg.addItems(self._data["enums"])
 
-        if (self._data['default'] is not None
-                and self._data['default'] in self._data["enums"]):
-            idx = self.wdg.findText(
-                self._data['default'], QtCore.Qt.MatchExactly)
-            self.wdg.setCurrentIndex(idx)
-        else:
-            idx = self.wdg.currentIndex()
-            text = self.wdg.itemText(idx)
-            self._data['default'] = text
+            if (self._data['default'] is not None
+                    and self._data['default'] in self._data["enums"]):
+                idx = self.wdg.findText(
+                    self._data['default'], QtCore.Qt.MatchExactly)
+                self.wdg.setCurrentIndex(idx)
+            else:
+                idx = self.wdg.currentIndex()
+                text = self.wdg.itemText(idx)
+                self._data['default'] = text
 
-        # Descriptions
-        descs = self._data['enumsDescriptions']
-        for i in range(len(self._data["enums"])):
-            if i < len(descs):
-                self.wdg.setItemData(i, descs[i], QtCore.Qt.ToolTipRole)
+            # Descriptions
+            descs = self._data['enumsDescriptions']
+            for i in range(len(self._data["enums"])):
+                if i < len(descs):
+                    self.wdg.setItemData(i, descs[i], QtCore.Qt.ToolTipRole)
 
     def reset(self):
-        self._write(self._data['default'])
+        with utils.signal_blocker(self.wdg):
+            self._write(self._data['default'])
 
     def _update(self):
         super(Enum, self)._update()

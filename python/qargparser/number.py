@@ -1,5 +1,6 @@
 from .arg import Arg
 from Qt import QtWidgets, QtCore
+from . import utils
 
 
 class DoubleSlider(QtWidgets.QSlider):
@@ -126,7 +127,9 @@ class Number(Arg):
         return wdg
 
     def reset(self):
-        self._write(self._data['default'])
+        # Block signals during reset to avoid unnecessary updates
+        with utils.signal_blocker(self.wdg):
+            self._write(self._data['default'])
 
     def _update(self):
         super(Number, self)._update()
