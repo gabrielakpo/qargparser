@@ -15,7 +15,7 @@ tools = ["qargparser_creator"]
 
 requires = ["python", "Qt.py", "PySide2"]
 
-private_build_requires = ["TBM_RezManager"]
+private_build_requires = ["TBM_RezManager-dev"]
 
 
 def commands():
