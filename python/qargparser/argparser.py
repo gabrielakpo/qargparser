@@ -21,8 +21,10 @@ _TYPES.update({
     "unicode": String
 })
 
-# Pre-load icon at module import to avoid any runtime overhead
-_RELOAD_ICON_CACHE = QtGui.QIcon(envs.RELOAD_ICON)
+@lru_cache(maxsize=1)
+def _get_reload_icon():
+    """Build reload QIcon lazily so importing this module works without QGuiApplication."""
+    return QtGui.QIcon(envs.RELOAD_ICON)
 
 
 def get_object_from_type(type):
@@ -68,7 +70,7 @@ def clear_layout(layout):
 
 class ResetButton(QtWidgets.QPushButton):
     def __init__(self, wdg, *args, **kwargs):
-        super().__init__(_RELOAD_ICON_CACHE,
+        super().__init__(_get_reload_icon(),
                                           "",
                                           *args, **kwargs)
         self.setIconSize(QtCore.QSize(envs.RELOAD_BUTTON_ICON_SIZE,
