@@ -5,7 +5,7 @@
 
 name = 'qargparser'
 
-version = '1.5'
+version = '1.7'
 
 description = 'Build Qt UI by parsing argument'
 
